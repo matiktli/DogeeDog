@@ -1,34 +1,41 @@
+'use client'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function PricingCard() {
+  const [isLifetime, setIsLifetime] = useState(false)
+  const price = isLifetime ? 50 : 5
+
   return (
     <div className="w-full max-w-xl mx-auto text-center">
       <h2 className="text-5xl font-[var(--font-anchor-jack)] text-[var(--accent)] mb-6">
-        Become the best version of yourself
+        Transform your daily walks
       </h2>
       
       <div className="bg-white dark:bg-black/20 rounded-2xl p-8 shadow-lg mb-8">
-        <div className="flex items-baseline justify-center gap-1 mb-4">
-          <span className="text-4xl font-bold">$5</span>
-          <span className="text-[var(--foreground)]/60">/month</span>
+        <div className="flex items-baseline justify-center mb-2">
+          <span className="text-5xl font-bold text-[var(--foreground)]">${price}</span>
+          <span className="text-lg text-[var(--foreground)]/60 ml-1">
+            {isLifetime ? '' : '/month'}
+          </span>
         </div>
 
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="relative inline-block">
-            <input 
-              type="checkbox" 
-              id="lifetime" 
-              className="peer sr-only" 
+        <div className="inline-flex items-center gap-3 mb-8">
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isLifetime}
+              onChange={(e) => setIsLifetime(e.target.checked)}
+              className="sr-only peer"
             />
-            <label 
-              htmlFor="lifetime"
-              className="block w-12 h-6 bg-[var(--foreground)]/20 rounded-full cursor-pointer peer-checked:bg-[var(--accent)] transition-colors"
-            >
-              <span className="absolute left-1 top-1 block w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6"></span>
-            </label>
-          </div>
+            <div className="w-11 h-6 bg-gray-200 rounded-full dark:bg-gray-700 
+              peer-checked:after:translate-x-full after:content-[''] 
+              after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full 
+              after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent)]">
+            </div>
+          </label>
           <span className="text-[var(--foreground)]/80">
-            Lifetime deal (yours forever)
+            Lifetime deal <span className="text-[var(--foreground)]/60">(yours forever)</span>
           </span>
         </div>
 
@@ -46,27 +53,27 @@ export default function PricingCard() {
         <ul className="mt-8 space-y-4 text-left">
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Unlimited habits, simple stats, and Habit Grid</span>
+            <span>Unlimited walk tracking and detailed statistics</span>
           </li>
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Daily reminders</span>
+            <span>Daily walk reminders and route planning</span>
           </li>
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Track anywhere (iOS, Android, web)</span>
+            <span>Track walks on any device (iOS, Android, web)</span>
           </li>
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Grow your garden</span>
+            <span>Build your dog&apos;s walking achievements</span>
           </li>
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Achieve daily quests and loot random rewards</span>
+            <span>Complete daily walking quests and earn rewards</span>
           </li>
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Play with 7,000+ users</span>
+            <span>Join community of 5,000+ happy dogs</span>
           </li>
         </ul>
       </div>
