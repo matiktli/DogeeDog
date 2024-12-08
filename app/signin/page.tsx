@@ -2,6 +2,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
+import { useState } from 'react'
+import { signIn } from 'next-auth/react'
+import LoadingScreen from '@/app/components/LoadingScreen'
+import { useLoading } from '@/app/hooks/useLoading'
 
 type SignInFormData = {
   email: string
@@ -9,6 +13,9 @@ type SignInFormData = {
 }
 
 export default function SignIn() {
+  const [error, setError] = useState<string | null>(null)
+  const { isLoading, withLoading } = useLoading()
+
   const {
     register,
     handleSubmit,
@@ -18,9 +25,35 @@ export default function SignIn() {
     reValidateMode: "onBlur"
   })
 
-  const onSubmit = (data: SignInFormData) => {
-    console.log(data)
-    // Handle form submission
+  const onSubmit = async (data: SignInFormData) => {
+    await withLoading(async () => {
+      try {
+        const result = await signIn('credentials', {
+          email: data.email,
+          password: data.password,
+          redirect: false,
+        })
+
+        if (result?.error) {
+          setError('Invalid email or password')
+          return
+        }
+
+        window.location.href = '/dashboard'
+      } catch (error) {
+        console.error('Sign in error:', error)
+        setError('Something went wrong. Please try again.')
+      }
+    })
+  }
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn('google', { callbackUrl: '/dashboard' })
+    } catch (error) {
+      console.error('Google sign-in error:', error)
+      setError('Failed to sign in with Google')
+    }
   }
 
   return (
@@ -36,8 +69,18 @@ export default function SignIn() {
           </p>
         </div>
 
+        {/* Display error message if any */}
+        {error && (
+          <div className="mb-6 p-4 text-sm text-red-500 bg-red-100 dark:bg-red-900/20 rounded-lg">
+            {error}
+          </div>
+        )}
+
         {/* Social Sign In Button */}
-        <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[var(--foreground)]/20 rounded-lg hover:bg-[var(--foreground)]/5 transition-colors">
+        <button 
+          onClick={handleGoogleSignIn}
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[var(--foreground)]/20 rounded-lg hover:bg-[var(--foreground)]/5 transition-colors"
+        >
           <Image 
             src="/google-icon.svg" 
             alt="Google" 
@@ -129,6 +172,7 @@ export default function SignIn() {
           </Link>
         </p>
       </div>
+      {isLoading && <LoadingScreen />}
     </div>
   )
 } 

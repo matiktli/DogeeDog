@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { signIn } from 'next-auth/react'
+import LoadingScreen from '@/app/components/LoadingScreen'
+import { useLoading } from '@/app/hooks/useLoading'
 
 type SignUpFormData = {
   name: string
@@ -14,6 +16,7 @@ type SignUpFormData = {
 export default function SignUp() {
   const [showEmailForm, setShowEmailForm] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const { isLoading, withLoading } = useLoading()
 
   const {
     register,
@@ -24,9 +27,38 @@ export default function SignUp() {
     reValidateMode: "onBlur"
   })
 
-  const onSubmit = (data: SignUpFormData) => {
-    console.log(data)
-    // Handle form submission
+  const onSubmit = async (data: SignUpFormData) => {
+    await withLoading(async () => {
+      try {
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Something went wrong');
+        }
+
+        const signInResult = await signIn('credentials', {
+          email: data.email,
+          password: data.password,
+          redirect: false,
+        });
+
+        if (signInResult?.error) {
+          throw new Error('Failed to sign in after registration');
+        }
+
+        window.location.href = '/dashboard';
+      } catch (error) {
+        console.error('Registration error:', error);
+      }
+    })
   }
 
   const handleGoogleSignIn = async () => {
@@ -213,6 +245,7 @@ export default function SignUp() {
           </Link>
         </p>
       </div>
+      {isLoading && <LoadingScreen />}
     </div>
   )
 } 
