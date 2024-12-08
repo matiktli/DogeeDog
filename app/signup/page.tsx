@@ -2,10 +2,31 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+type SignUpFormData = {
+  name: string
+  email: string
+  password: string
+}
 
 export default function SignUp() {
   const [showEmailForm, setShowEmailForm] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>({
+    mode: "onBlur",
+    reValidateMode: "onBlur"
+  })
+
+  const onSubmit = (data: SignUpFormData) => {
+    console.log(data)
+    // Handle form submission
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[var(--background)]">
@@ -13,7 +34,7 @@ export default function SignUp() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">
-            Welcome aboard
+            Paw-lease come in! 🐾
           </h1>
           <p className="text-[var(--foreground)]/60">
             Ready to start walking with your dog?
@@ -59,19 +80,34 @@ export default function SignUp() {
           </>
         ) : (
           /* Email Form */
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-[var(--foreground)]/80 mb-2">
                 Name
               </label>
               <input
+                {...register('name', {
+                  required: 'Name is required',
+                  minLength: {
+                    value: 2,
+                    message: 'Name must be at least 2 characters'
+                  },
+                  maxLength: {
+                    value: 20,
+                    message: 'Name must be less than 20 characters'
+                  }
+                })}
                 type="text"
                 id="name"
-                className="w-full px-4 py-3 rounded-lg border border-[var(--foreground)]/20 bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
+                className={`w-full px-4 py-3 rounded-lg border ${
+                  errors.name ? 'border-red-500' : 'border-[var(--foreground)]/20'
+                } bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all`}
               />
-              <p className="text-xs text-[var(--foreground)]/60 mt-1">
-                The name must be between 2 and 20 characters.
-              </p>
+              {errors.name && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
 
             <div>
@@ -79,11 +115,25 @@ export default function SignUp() {
                 Email
               </label>
               <input
+                {...register('email', {
+                  required: 'Email is required',
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: 'Invalid email address'
+                  }
+                })}
                 type="email"
                 id="email"
                 placeholder="habits@garden.com"
-                className="w-full px-4 py-3 rounded-lg border border-[var(--foreground)]/20 bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
+                className={`w-full px-4 py-3 rounded-lg border ${
+                  errors.email ? 'border-red-500' : 'border-[var(--foreground)]/20'
+                } bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all`}
               />
+              {errors.email && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
             
             <div>
@@ -92,9 +142,18 @@ export default function SignUp() {
               </label>
               <div className="relative">
                 <input
+                  {...register('password', {
+                    required: 'Password is required',
+                    minLength: {
+                      value: 6,
+                      message: 'Password must be at least 6 characters'
+                    }
+                  })}
                   type={showPassword ? "text" : "password"}
                   id="password"
-                  className="w-full px-4 py-3 rounded-lg border border-[var(--foreground)]/20 bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
+                  className={`w-full px-4 py-3 rounded-lg border ${
+                    errors.password ? 'border-red-500' : 'border-[var(--foreground)]/20'
+                  } bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all`}
                 />
                 <button
                   type="button"
@@ -114,6 +173,11 @@ export default function SignUp() {
                   )}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <button

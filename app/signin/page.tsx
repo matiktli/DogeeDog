@@ -1,7 +1,28 @@
+'use client'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useForm } from 'react-hook-form'
+
+type SignInFormData = {
+  email: string
+  password: string
+}
 
 export default function SignIn() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormData>({
+    mode: "onBlur",
+    reValidateMode: "onBlur"
+  })
+
+  const onSubmit = (data: SignInFormData) => {
+    console.log(data)
+    // Handle form submission
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[var(--background)]">
       <div className="w-full max-w-md bg-white dark:bg-black/20 rounded-2xl p-8 shadow-lg">
@@ -39,17 +60,31 @@ export default function SignIn() {
         </div>
 
         {/* Email Form */}
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-[var(--foreground)]/80 mb-2">
               Email
             </label>
             <input
+              {...register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: 'Invalid email address'
+                }
+              })}
               type="email"
               id="email"
               placeholder="cute@dog.com"
-              className="w-full px-4 py-3 rounded-lg border border-[var(--foreground)]/20 bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
+              className={`w-full px-4 py-3 rounded-lg border ${
+                errors.email ? 'border-red-500' : 'border-[var(--foreground)]/20'
+              } bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all`}
             />
+            {errors.email && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
           
           <div>
@@ -62,10 +97,20 @@ export default function SignIn() {
               </Link>
             </div>
             <input
+              {...register('password', {
+                required: 'Password is required'
+              })}
               type="password"
               id="password"
-              className="w-full px-4 py-3 rounded-lg border border-[var(--foreground)]/20 bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
+              className={`w-full px-4 py-3 rounded-lg border ${
+                errors.password ? 'border-red-500' : 'border-[var(--foreground)]/20'
+              } bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all`}
             />
+            {errors.password && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <button
