@@ -89,7 +89,7 @@ export default function SignIn() {
 
         {/* Sign Up Link */}
         <p className="mt-6 text-center text-[var(--foreground)]/60">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/signup" className="text-[var(--accent)] hover:underline">
             Sign up
           </Link>
