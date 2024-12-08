@@ -1,6 +1,7 @@
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Link from 'next/link'
+import PricingCard from './components/PricingCard'
 
 export default function Home() {
   return (
@@ -118,20 +119,7 @@ export default function Home() {
 
         {/* CTA Section */}
         <section className="w-full py-32">
-          <div className="max-w-6xl mx-auto px-6 text-center">
-            <h2 className="text-5xl font-[var(--font-anchor-jack)] text-[var(--accent)] mb-6">
-              Start Your Walking Journey Today
-            </h2>
-            <p className="text-xl text-[var(--foreground)]/80 mb-12 max-w-2xl mx-auto">
-              Join thousands of happy dogs and their owners on their daily adventures.
-            </p>
-            <Link 
-              href="/signup"
-              className="px-8 py-4 bg-[var(--accent)] text-white rounded-md hover:bg-[var(--accent)]/90 transition-colors text-xl inline-block"
-            >
-              Get Started - It&apos;s Free
-            </Link>
-          </div>
+          <PricingCard />
         </section>
 
         <Footer />
