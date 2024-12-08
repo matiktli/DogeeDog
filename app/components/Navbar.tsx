@@ -6,7 +6,7 @@ export default function Navbar() {
     <nav className="fixed top-0 w-full px-6 py-4 flex justify-between items-center bg-[var(--background)] border-b border-[var(--foreground)]/10">
       <div className="flex items-center gap-2">
         <Image 
-          src="/dog-icon.svg" 
+          src="/icon.svg" 
           alt="DogeeDog Logo" 
           width={32} 
           height={32}

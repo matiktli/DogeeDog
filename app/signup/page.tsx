@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { signIn } from 'next-auth/react'
 
 type SignUpFormData = {
   name: string
@@ -28,6 +29,14 @@ export default function SignUp() {
     // Handle form submission
   }
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn('google', { callbackUrl: '/' })
+    } catch (error) {
+      console.error('Google sign-in error:', error)
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[var(--background)]">
       <div className="w-full max-w-md bg-white dark:bg-black/20 rounded-2xl p-8 shadow-lg">
@@ -44,7 +53,10 @@ export default function SignUp() {
         {!showEmailForm ? (
           <>
             {/* Social Sign Up Button */}
-            <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[var(--foreground)]/20 rounded-lg hover:bg-[var(--foreground)]/5 transition-colors">
+            <button 
+              onClick={handleGoogleSignIn}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[var(--foreground)]/20 rounded-lg hover:bg-[var(--foreground)]/5 transition-colors"
+            >
               <Image 
                 src="/google-icon.svg" 
                 alt="Google" 
