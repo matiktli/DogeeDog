@@ -1,5 +1,4 @@
 import Navbar from './components/Navbar'
-import Image from 'next/image'
 import Footer from './components/Footer'
 import Link from 'next/link'
 
@@ -20,7 +19,7 @@ export default function Home() {
           </h1>
           <p className="text-xl text-[var(--foreground)]/80 max-w-2xl mx-auto mb-12">
             Turn your daily dog walks into exciting quests to beat procrastination
-            and boost both yours and your dog's health!
+            and boost both yours and your dog&apos;s health!
           </p>
           <div className="flex flex-col items-center gap-4">
             <Link 
@@ -60,7 +59,7 @@ export default function Home() {
         <section className="w-full px-6 py-32">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-5xl font-[var(--font-anchor-jack)] text-center text-[var(--accent)] mb-4">
-              Walking Your Dog Shouldn't Be a Chore
+              Walking Your Dog Shouldn&apos;t Be a Chore
             </h2>
             <p className="text-xl text-center text-[var(--foreground)]/80 mb-20 max-w-2xl mx-auto">
               Many dog owners want to provide better exercise for their furry friends...
@@ -69,17 +68,17 @@ export default function Home() {
               <div className="bg-white/50 dark:bg-black/5 rounded-2xl p-10 text-center">
                 <div className="text-6xl mb-6">🎯</div>
                 <h3 className="text-2xl font-bold mb-3">Set Walking Goals</h3>
-                <p className="text-[var(--foreground)]/80">"We should walk more together"</p>
+                <p className="text-[var(--foreground)]/80">&quot;We should walk more together&quot;</p>
               </div>
               <div className="bg-white/50 dark:bg-black/5 rounded-2xl p-10 text-center">
                 <div className="text-6xl mb-6">🌧️</div>
                 <h3 className="text-2xl font-bold mb-3">Face Challenges</h3>
-                <p className="text-[var(--foreground)]/80">"Weather's bad, maybe tomorrow..."</p>
+                <p className="text-[var(--foreground)]/80">&quot;Weather&apos;s bad, maybe tomorrow...&quot;</p>
               </div>
               <div className="bg-white/50 dark:bg-black/5 rounded-2xl p-10 text-center">
                 <div className="text-6xl mb-6">😔</div>
                 <h3 className="text-2xl font-bold mb-3">Miss Opportunities</h3>
-                <p className="text-[var(--foreground)]/80">"Another day without exercise"</p>
+                <p className="text-[var(--foreground)]/80">&quot;Another day without exercise&quot;</p>
               </div>
             </div>
           </div>
@@ -130,7 +129,7 @@ export default function Home() {
               href="/signup"
               className="px-8 py-4 bg-[var(--accent)] text-white rounded-md hover:bg-[var(--accent)]/90 transition-colors text-xl inline-block"
             >
-              Get Started - It's Free
+              Get Started - It&apos;s Free
             </Link>
           </div>
         </section>
