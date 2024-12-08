@@ -15,27 +15,16 @@ export default function SignIn() {
           </p>
         </div>
 
-        {/* Social Sign In Buttons */}
-        <div className="space-y-4">
-          <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[var(--foreground)]/20 rounded-lg hover:bg-[var(--foreground)]/5 transition-colors">
-            <Image 
-              src="/google-icon.svg" 
-              alt="Google" 
-              width={20} 
-              height={20}
-            />
-            <span>SIGN IN WITH GOOGLE</span>
-          </button>
-          <button className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-black text-white dark:bg-white dark:text-black rounded-lg hover:opacity-90 transition-opacity">
-            <Image 
-              src="/apple-icon.svg" 
-              alt="Apple" 
-              width={20} 
-              height={20}
-            />
-            <span>SIGN IN WITH APPLE</span>
-          </button>
-        </div>
+        {/* Social Sign In Button */}
+        <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[var(--foreground)]/20 rounded-lg hover:bg-[var(--foreground)]/5 transition-colors">
+          <Image 
+            src="/google-icon.svg" 
+            alt="Google" 
+            width={20} 
+            height={20}
+          />
+          <span>SIGN IN WITH GOOGLE</span>
+        </button>
 
         {/* Divider */}
         <div className="relative my-8">
