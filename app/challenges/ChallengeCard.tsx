@@ -59,7 +59,7 @@ export default function ChallengeCard({
   }
 
   return (
-    <div className="relative">
+    <div className="relative w-[300px]">
       <Link 
         href="#"
         onClick={(e) => {
@@ -78,51 +78,45 @@ export default function ChallengeCard({
           />
           
           <div className="relative p-6 flex flex-col h-full">
-            <div className="flex gap-4 h-full">
-              {/* Left Column: Icon and Content */}
-              <div className="flex-grow flex flex-col">
-                {/* Icon */}
-                <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl bg-white/80 dark:bg-black/20 mb-4">
-                  <span className="text-2xl">{challenge.icon}</span>
-                </div>
-
-                {/* Title and Description */}
-                <div className="flex-grow">
-                  <h3 className="text-lg font-semibold mb-2 truncate">{challenge.title}</h3>
-                  <p className="text-sm text-[var(--foreground)]/60 line-clamp-2">
-                    {challenge.description}
-                  </p>
-                </div>
+            <div className="flex justify-between items-start mb-4">
+              <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl bg-white/80 dark:bg-black/20">
+                <span className="text-2xl">{challenge.icon}</span>
               </div>
 
-              {/* Right Column: Badges */}
-              <div className="flex flex-col items-end justify-between">
-                {/* Top Badges */}
-                <div className="flex flex-col items-end gap-2">
-                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    challenge.period === 'DAY' 
-                      ? 'bg-blue-500/10 text-blue-500'
-                      : 'bg-purple-500/10 text-purple-500'
-                  }`}>
-                    {challenge.period === 'DAY' ? 'Daily' : 'Weekly'}
+              <div className="flex flex-col items-end gap-2">
+                <span className={`text-xs font-medium px-2 py-1 rounded-full whitespace-nowrap ${
+                  challenge.period === 'DAY' 
+                    ? 'bg-blue-500/10 text-blue-500'
+                    : 'bg-purple-500/10 text-purple-500'
+                }`}>
+                  {challenge.period === 'DAY' ? 'Daily' : 'Weekly'}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <Cookie className="w-4 h-4 text-[var(--accent)]" />
+                  <span className="text-sm font-medium text-[var(--accent)]">
+                    {challenge.reward} treats
                   </span>
-                  <div className="flex items-center gap-1.5">
-                    <Cookie className="w-4 h-4 text-[var(--accent)]" />
-                    <span className="text-sm font-medium text-[var(--accent)]">
-                      {challenge.reward} treats
-                    </span>
-                  </div>
                 </div>
-
-                {/* Bottom: User Pill */}
-                {challenge.type === 'USER' && challenge.createdBy !== session?.user?.id && (
-                  <div className="flex items-center gap-2 text-sm text-[var(--foreground)]/60">
-                    <span>By:</span>
-                    <UserPill userId={challenge.createdBy} />
-                  </div>
-                )}
               </div>
             </div>
+
+            <div className="flex-grow">
+              <h3 className="text-lg font-semibold mb-2 truncate">
+                {challenge.title}
+              </h3>
+              <p className="text-sm text-[var(--foreground)]/60 line-clamp-2">
+                {challenge.description}
+              </p>
+            </div>
+
+            {challenge.type === 'USER' && challenge.createdBy !== session?.user?.id && (
+              <div className="flex justify-end mt-auto pt-4">
+                <div className="flex items-center gap-2 text-sm text-[var(--foreground)]/60">
+                  <span className="whitespace-nowrap">By:</span>
+                  <UserPill userId={challenge.createdBy} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </Link>

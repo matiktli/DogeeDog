@@ -18,7 +18,6 @@ interface ChallengeListProps {
 
 export default function ChallengeList({ 
   challenges, 
-  title,
   emptyStateType = 'system',
   showAddButton = false, 
   onAddClick, 
@@ -109,54 +108,56 @@ export default function ChallengeList({
         </button>
       )}
 
-      <div
-        ref={scrollContainerRef}
-        className={`
-          ${singleRow 
-            ? 'flex overflow-x-auto scrollbar-hide gap-6 px-4 -mx-4' 
-            : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-          }
-        `}
-        onScroll={singleRow ? handleScroll : undefined}
-        style={singleRow ? {
-          scrollSnapType: 'x mandatory',
-          WebkitOverflowScrolling: 'touch',
-        } : undefined}
-      >
-        {challenges.map((challenge) => (
-          <div 
-            key={challenge._id} 
-            className={singleRow ? 'flex-shrink-0 w-[300px] scroll-snap-align-start' : ''}
-            style={singleRow ? { scrollSnapAlign: 'start' } : undefined}
-          >
-            <ChallengeCard
-              challenge={challenge}
-              editable={showAddButton}
-              onDelete={onChallengeDelete}
-            />
-          </div>
-        ))}
-        
-        {showAddButton && (
-          <div 
-            className={singleRow ? 'flex-shrink-0 w-[300px] scroll-snap-align-start' : ''}
-            style={singleRow ? { scrollSnapAlign: 'start' } : undefined}
-          >
-            <button 
-              onClick={onAddClick}
-              className="group relative bg-white/50 dark:bg-black/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all h-full"
+      <div className={singleRow ? 'px-4 -mx-4' : ''}>
+        <div
+          ref={scrollContainerRef}
+          className={`
+            ${singleRow 
+              ? 'flex overflow-x-auto scrollbar-hide gap-6' 
+              : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+            }
+          `}
+          onScroll={singleRow ? handleScroll : undefined}
+          style={singleRow ? {
+            scrollSnapType: 'x mandatory',
+            WebkitOverflowScrolling: 'touch',
+          } : undefined}
+        >
+          {challenges.map((challenge) => (
+            <div 
+              key={challenge._id} 
+              className={singleRow ? 'flex-shrink-0 w-[300px] scroll-snap-align-start' : ''}
+              style={singleRow ? { scrollSnapAlign: 'start' } : undefined}
             >
-              <div className="p-6 flex flex-col items-center justify-center h-full min-h-[160px]">
-                <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-[var(--accent)]/10 mb-3 group-hover:scale-110 transition-transform">
-                  <PlusCircle className="w-6 h-6 text-[var(--accent)]" />
+              <ChallengeCard
+                challenge={challenge}
+                editable={showAddButton}
+                onDelete={onChallengeDelete}
+              />
+            </div>
+          ))}
+          
+          {showAddButton && (
+            <div 
+              className={singleRow ? 'flex-shrink-0 w-[300px] scroll-snap-align-start' : ''}
+              style={singleRow ? { scrollSnapAlign: 'start' } : undefined}
+            >
+              <button 
+                onClick={onAddClick}
+                className="group relative bg-white/50 dark:bg-black/10 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all h-full"
+              >
+                <div className="p-6 flex flex-col items-center justify-center h-full min-h-[160px]">
+                  <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-[var(--accent)]/10 mb-3 group-hover:scale-110 transition-transform">
+                    <PlusCircle className="w-6 h-6 text-[var(--accent)]" />
+                  </div>
+                  <p className="text-[var(--foreground)]/60 font-medium group-hover:text-[var(--foreground)] transition-colors">
+                    Create New Challenge
+                  </p>
                 </div>
-                <p className="text-[var(--foreground)]/60 font-medium group-hover:text-[var(--foreground)] transition-colors">
-                  Create New Challenge
-                </p>
-              </div>
-            </button>
-          </div>
-        )}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

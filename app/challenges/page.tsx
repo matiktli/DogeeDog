@@ -59,11 +59,6 @@ export default function ChallengesPage() {
     setShowModal(true)
   }
 
-  const handleEditChallenge = (challenge: Challenge) => {
-    setSelectedChallenge(challenge)
-    setShowModal(true)
-  }
-
   const handleModalClose = () => {
     setShowModal(false)
     setSelectedChallenge(undefined)
