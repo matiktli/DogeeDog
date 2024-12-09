@@ -44,8 +44,8 @@ export default function UserFormModal({
       // Only include image if it's changed
       if (imagePreview && imagePreview !== initialData?.imageUrl) {
         // Convert base64 to blob
-        const response = await fetch(imagePreview)
-        const blob = await response.blob()
+        const base64Response = await fetch(imagePreview)
+        const blob = await base64Response.blob()
         
         // Create a File object with proper name and type
         const file = new File([blob], 'profile-image.jpg', { 
