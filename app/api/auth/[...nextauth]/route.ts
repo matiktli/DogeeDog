@@ -46,7 +46,7 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ }) {
       return true
     },
     async session({ session, token }) {
@@ -55,7 +55,7 @@ export const authOptions: AuthOptions = {
       }
       return session
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
         token.sub = user.id
       }
