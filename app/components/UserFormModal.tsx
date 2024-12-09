@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { X, User as UserIcon } from 'lucide-react'
 import ImageUploadCrop from './ImageUploadCrop'
+import GradientButton from './GradientButton'
 
 interface UserFormModalProps {
   isOpen: boolean
@@ -124,13 +125,13 @@ export default function UserFormModal({
               />
             </div>
 
-            <button
+            <GradientButton
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#8B4513] text-white py-3 rounded-xl hover:bg-[#6B3410] transition-colors disabled:opacity-50 font-medium mt-8"
+              className="w-full py-3 font-medium mt-8"
             >
               {isLoading ? 'Saving...' : 'Save Changes'}
-            </button>
+            </GradientButton>
           </form>
         </div>
       </div>

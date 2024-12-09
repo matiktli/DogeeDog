@@ -12,6 +12,21 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      keyframes: {
+        'card-load': {
+          '0%': { transform: 'translateX(-100%)' },
+          '50%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(100%)' }
+        },
+        'card-unload': {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(-100%)' }
+        }
+      },
+      animation: {
+        'card-load': 'card-load 1.5s ease-in-out forwards',
+        'card-unload': 'card-unload 1.5s ease-in-out'
+      }
     },
   },
   plugins: [],

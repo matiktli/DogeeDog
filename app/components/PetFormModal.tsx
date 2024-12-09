@@ -5,6 +5,7 @@ import { X, Dog, Camera, Upload } from 'lucide-react'
 import Image from 'next/image'
 import ReactCrop, { Crop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
+import GradientButton from './GradientButton'
 
 interface Breed {
   key: string
@@ -310,13 +311,13 @@ export default function PetFormModal({
               </div>
             </div>
 
-            <button
+            <GradientButton
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#8B4513] text-white py-3 rounded-xl hover:bg-[#6B3410] transition-colors disabled:opacity-50 font-medium mt-8"
+              className="w-full py-3 font-medium mt-8"
             >
               {isLoading ? 'Saving...' : initialData ? 'Save Changes' : 'Add Pet'}
-            </button>
+            </GradientButton>
           </form>
         </div>
       </div>
@@ -345,23 +346,24 @@ export default function PetFormModal({
               </ReactCrop>
             </div>
             <div className="flex justify-end gap-3 mt-4">
-              <button
+              <GradientButton
                 onClick={() => {
                   setImagePreview(null)
                   setShowCropper(false)
                 }}
-                className="px-6 py-2 rounded-lg text-[#8B4513] hover:bg-gray-100 dark:hover:bg-gray-700"
+                variant="outline"
+                className="px-6 py-2"
               >
                 Cancel
-              </button>
-              <button
+              </GradientButton>
+              <GradientButton
                 onClick={() => {
                   setShowCropper(false)
                 }}
-                className="px-6 py-2 bg-[#8B4513] text-white rounded-lg hover:bg-[#6B3410]"
+                className="px-6 py-2"
               >
                 Apply
-              </button>
+              </GradientButton>
             </div>
           </div>
         </div>
