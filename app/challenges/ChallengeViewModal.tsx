@@ -6,6 +6,7 @@ import { Challenge } from '@/app/types/challenge'
 import GradientButton from '../components/GradientButton'
 import DogSelectionModal from './DogSelectionModal'
 import { Dog } from '@/app/types/dog'
+import Portal from '../components/Portal'
 
 interface ChallengeViewModalProps {
   challenge: Challenge
@@ -44,7 +45,7 @@ export default function ChallengeViewModal({
   if (!isOpen) return null
 
   return (
-    <>
+    <Portal>
       <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
         <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-2xl relative">
           {/* Close Button */}
@@ -111,6 +112,6 @@ export default function ChallengeViewModal({
         challenge={challenge}
         preloadedDogs={dogs}
       />
-    </>
+    </Portal>
   )
 } 

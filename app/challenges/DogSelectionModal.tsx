@@ -75,21 +75,34 @@ export default function DogSelectionModal({
               <button
                 key={dog._id}
                 onClick={() => handleDogSelect(dog._id)}
-                className={`p-2 rounded-xl border-2 transition-all ${
-                  selectedDogs.includes(dog._id)
-                    ? 'border-[var(--accent)] bg-[var(--accent)]/10'
+                className={`
+                  relative p-2 rounded-xl border-2 transition-all
+                  ${selectedDogs.includes(dog._id)
+                    ? 'border-[var(--accent)] bg-[var(--accent)]/10 ring-2 ring-[var(--accent)]'
                     : 'border-gray-200 dark:border-gray-700 hover:border-[var(--accent)]'
-                }`}
+                  }
+                `}
               >
                 <div className="relative w-full aspect-square rounded-lg overflow-hidden mb-1">
                   <Image
                     src={dog.imageUrl}
                     alt={dog.name}
                     fill
-                    className="object-cover"
+                    className={`object-cover transition-transform ${
+                      selectedDogs.includes(dog._id) ? 'scale-95' : ''
+                    }`}
                   />
+                  {selectedDogs.includes(dog._id) && (
+                    <div className="absolute inset-0 bg-[var(--accent)]/20 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-[var(--accent)] text-white flex items-center justify-center">
+                        ✓
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <p className="text-sm font-medium truncate text-center">
+                <p className={`text-sm font-medium truncate text-center ${
+                  selectedDogs.includes(dog._id) ? 'text-[var(--accent)]' : ''
+                }`}>
                   {dog.name}
                 </p>
               </button>
