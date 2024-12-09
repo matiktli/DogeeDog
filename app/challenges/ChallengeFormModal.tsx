@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X } from 'lucide-react'
+import { X, Bot, Loader2 } from 'lucide-react'
 import GradientButton from '../components/GradientButton'
 import { Challenge } from '@/app/types/challenge'
 import EmojiPicker from '../components/EmojiPicker'
@@ -25,6 +25,12 @@ export default function ChallengeFormModal({
   const [rewardError, setRewardError] = useState<string | null>(null)
   const [selectedEmoji, setSelectedEmoji] = useState<string>(initialData?.icon || '')
   const [selectedPeriod, setSelectedPeriod] = useState<'DAY' | 'WEEK'>(initialData?.period || 'DAY')
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [formData, setFormData] = useState({
+    title: initialData?.title || '',
+    description: initialData?.description || '',
+    reward: initialData?.reward || 10,
+  })
 
   const validateTitle = (value: string): boolean => {
     if (value.length < 2) {
@@ -48,6 +54,43 @@ export default function ChallengeFormModal({
     return true
   }
 
+  const handleGenerateWithAI = async () => {
+    try {
+      setIsGenerating(true)
+      const response = await fetch('/api/challenges/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          period: selectedPeriod,
+          count: 1,
+          type: 'USER'
+        }),
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate challenge')
+      }
+
+      const [generatedChallenge] = await response.json()
+      
+      setFormData({
+        title: generatedChallenge.title,
+        description: generatedChallenge.description,
+        reward: generatedChallenge.reward,
+      })
+      setSelectedEmoji(generatedChallenge.icon)
+
+    } catch (error) {
+      console.error('Error generating challenge:', error)
+      alert('Failed to generate challenge. Please try again.')
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!selectedEmoji) {
@@ -55,18 +98,8 @@ export default function ChallengeFormModal({
       return
     }
 
-    const form = e.target as HTMLFormElement
-    const titleInput = form.querySelector<HTMLInputElement>('input[name="title"]')
-    const descriptionInput = form.querySelector<HTMLTextAreaElement>('textarea[name="description"]')
-    const rewardInput = form.querySelector<HTMLInputElement>('input[name="reward"]')
-    
-    if (!titleInput?.value || !descriptionInput?.value || !rewardInput?.value) {
-      throw new Error('Please fill in all required fields')
-    }
-
-    // Validate all fields before submission
-    const isTitleValid = validateTitle(titleInput.value)
-    const isDescriptionValid = validateDescription(descriptionInput.value)
+    const isTitleValid = validateTitle(formData.title)
+    const isDescriptionValid = validateDescription(formData.description)
     
     if (!isTitleValid || !isDescriptionValid) {
       return
@@ -76,9 +109,9 @@ export default function ChallengeFormModal({
       setIsLoading(true)
 
       const data = {
-        title: titleInput.value,
-        description: descriptionInput.value,
-        reward: parseInt(rewardInput.value),
+        title: formData.title,
+        description: formData.description,
+        reward: formData.reward,
         icon: selectedEmoji,
         period: selectedPeriod,
         type: 'USER'
@@ -107,14 +140,6 @@ export default function ChallengeFormModal({
     }
   }
 
-  const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    validateTitle(e.target.value)
-  }
-
-  const handleDescriptionBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-    validateDescription(e.target.value)
-  }
-
   const handleRewardBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const reward = parseInt(e.target.value)
     if (isNaN(reward) || reward < 1) {
@@ -140,7 +165,6 @@ export default function ChallengeFormModal({
           </h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Emoji Picker */}
             <div className="flex flex-col items-center gap-2">
               <label className="block text-sm font-medium">Choose an emoji</label>
               <EmojiPicker
@@ -149,7 +173,6 @@ export default function ChallengeFormModal({
               />
             </div>
 
-            {/* Period Selection */}
             <div>
               <label className="block text-sm font-medium mb-2">Challenge Period</label>
               <div className="grid grid-cols-2 gap-3">
@@ -178,7 +201,6 @@ export default function ChallengeFormModal({
               </div>
             </div>
 
-            {/* Title Input */}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Title <span className="text-xs text-[var(--foreground)]/60">(2-50 characters)</span>
@@ -186,14 +208,15 @@ export default function ChallengeFormModal({
               <input
                 type="text"
                 name="title"
-                defaultValue={initialData?.title}
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 required
                 maxLength={50}
                 className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600 ${
                   titleError ? 'border-red-500' : ''
                 }`}
                 placeholder="Enter challenge title"
-                onBlur={handleTitleBlur}
+                onBlur={(e) => validateTitle(e.target.value)}
                 onFocus={() => setTitleError(null)}
               />
               {titleError && (
@@ -201,14 +224,14 @@ export default function ChallengeFormModal({
               )}
             </div>
 
-            {/* Description Input */}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Description <span className="text-xs text-[var(--foreground)]/60">(max 400 characters)</span>
               </label>
               <textarea
                 name="description"
-                defaultValue={initialData?.description}
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 required
                 maxLength={400}
                 rows={4}
@@ -216,7 +239,7 @@ export default function ChallengeFormModal({
                   descriptionError ? 'border-red-500' : ''
                 }`}
                 placeholder="Describe your challenge"
-                onBlur={handleDescriptionBlur}
+                onBlur={(e) => validateDescription(e.target.value)}
                 onFocus={() => setDescriptionError(null)}
               />
               {descriptionError && (
@@ -224,13 +247,13 @@ export default function ChallengeFormModal({
               )}
             </div>
 
-            {/* Reward Input */}
             <div>
               <label className="block text-sm font-medium mb-1">Reward Points</label>
               <input
                 type="number"
                 name="reward"
-                defaultValue={initialData?.reward || 10}
+                value={formData.reward}
+                onChange={(e) => setFormData(prev => ({ ...prev, reward: parseInt(e.target.value) || 0 }))}
                 required
                 min="1"
                 className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600 ${
@@ -245,13 +268,31 @@ export default function ChallengeFormModal({
               )}
             </div>
 
-            <GradientButton
-              type="submit"
-              disabled={isLoading}
-              className="w-full px-6 py-3 font-medium"
-            >
-              {isLoading ? 'Saving...' : initialData ? 'Save Changes' : 'Create Challenge'}
-            </GradientButton>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={handleGenerateWithAI}
+                disabled={isGenerating || isLoading}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 
+                  border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)]/10 
+                  transition-colors disabled:opacity-50 font-medium"
+              >
+                {isGenerating ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Bot className="w-5 h-5" />
+                )}
+                Generate with AI
+              </button>
+
+              <GradientButton
+                type="submit"
+                disabled={isLoading || isGenerating}
+                className="flex-1 px-6 py-3 font-medium"
+              >
+                {isLoading ? 'Saving...' : initialData ? 'Save Changes' : 'Create Challenge'}
+              </GradientButton>
+            </div>
           </form>
         </div>
       </div>
