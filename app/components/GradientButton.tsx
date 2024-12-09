@@ -1,37 +1,25 @@
-interface GradientButtonProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  size?: 'small' | 'medium' | 'large';
-  disabled?: boolean;
-  type?: 'button' | 'submit' | 'reset';
+import { ButtonHTMLAttributes } from 'react'
+
+export interface GradientButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'solid' | 'outline'
+  className?: string
 }
 
-export default function GradientButton({ 
-  children, 
-  onClick, 
-  size = 'medium',
-  disabled = false,
-  type = 'button'
+export default function GradientButton({
+  children,
+  variant = 'solid',
+  className = '',
+  ...props
 }: GradientButtonProps) {
-  const sizeClasses = {
-    small: 'px-3 py-1.5 text-sm',
-    medium: 'px-4 py-2',
-    large: 'px-6 py-2'
-  }
+  const baseStyles = 'rounded-xl transition-all duration-200 disabled:opacity-50'
+  const variantStyles = variant === 'outline'
+    ? 'border-2 border-[#8B4513] text-[#8B4513] hover:bg-[#8B4513] hover:text-white'
+    : 'bg-gradient-to-r from-[#8B4513] to-[#D2691E] text-white hover:opacity-90'
 
   return (
     <button
-      onClick={onClick}
-      className={`
-        bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)]
-        hover:brightness-110
-        text-white rounded-lg transition-all duration-200 
-        shadow-md hover:shadow-lg
-        ${sizeClasses[size]}
-        ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-      `}
-      disabled={disabled}
-      type={type}
+      className={`${baseStyles} ${variantStyles} ${className}`}
+      {...props}
     >
       {children}
     </button>

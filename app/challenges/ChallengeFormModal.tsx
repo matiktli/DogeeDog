@@ -248,7 +248,7 @@ export default function ChallengeFormModal({
             <GradientButton
               type="submit"
               disabled={isLoading}
-              size="large"
+              className="w-full px-6 py-3 font-medium"
             >
               {isLoading ? 'Saving...' : initialData ? 'Save Changes' : 'Create Challenge'}
             </GradientButton>

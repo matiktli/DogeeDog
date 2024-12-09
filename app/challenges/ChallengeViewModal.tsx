@@ -95,8 +95,8 @@ export default function ChallengeViewModal({
             <div className="flex justify-end">
               <GradientButton
                 onClick={() => setShowDogSelection(true)}
-                size="large"
                 disabled={isLoadingDogs}
+                className="px-6 py-3 font-medium"
               >
                 {isLoadingDogs ? 'Loading Dogs...' : 'Accept Challenge'}
               </GradientButton>

@@ -99,7 +99,7 @@ export default function DogSelectionModal({
           <GradientButton
             onClick={handleSubmit}
             disabled={selectedDogs.length === 0 || isLoading}
-            size="large"
+            className="w-full px-6 py-3 font-medium"
           >
             {isLoading ? 'Accepting Challenge...' : 'Accept Challenge'}
           </GradientButton>
