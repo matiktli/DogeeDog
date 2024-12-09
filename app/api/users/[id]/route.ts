@@ -15,10 +15,10 @@ const s3 = new S3Client({
 })
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const id = params.id
+  request: Request
+): Promise<NextResponse> {
+    const url = new URL(request.url)
+    const id = url.pathname.split('/').pop()
   
   try {
     const session = await getServerSession(authOptions)
@@ -44,10 +44,10 @@ export async function GET(
 }
 
 export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
+    request: Request
 ) {
-  const id = params.id
+    const url = new URL(request.url)
+    const id = url.pathname.split('/').pop()
   
   try {
     await connectDB()
@@ -61,7 +61,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const formData = await req.formData()
+    const formData = await request.formData()
     const name = formData.get('name') as string
     const image = formData.get('image') as File | null
 

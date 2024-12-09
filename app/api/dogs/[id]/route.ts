@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/auth'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
@@ -15,9 +15,8 @@ const s3 = new S3Client({
 })
 
 export async function GET(
-  request: Request,
-  context: { params: { id: string } }
-) {
+  request: Request
+): Promise<NextResponse> {
   try {
     await dbConnect()
 
@@ -29,7 +28,9 @@ export async function GET(
       )
     }
 
-    const dog = await Dog.findById(context.params.id)
+    const url = new URL(request.url)
+    const id = url.pathname.split('/').pop()
+    const dog = await Dog.findById(id)
     
     if (!dog) {
       return NextResponse.json(
@@ -49,9 +50,8 @@ export async function GET(
 } 
 
 export async function PUT(
-  request: Request,
-  context: { params: { id: string } }
-) {
+  request: Request
+): Promise<NextResponse> {
   try {
     await dbConnect()
     const session = await getServerSession(authOptions)
@@ -60,8 +60,9 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const dogId = await context.params.id
-    const dog = await Dog.findById(dogId)
+    const url = new URL(request.url)
+    const id = url.pathname.split('/').pop()
+    const dog = await Dog.findById(id)
     
     if (!dog) {
       return NextResponse.json({ error: 'Dog not found' }, { status: 404 })
@@ -107,7 +108,7 @@ export async function PUT(
     }
 
     const updatedDog = await Dog.findByIdAndUpdate(
-      dogId,
+      id,
       updateData,
       { new: true }
     )
@@ -123,9 +124,8 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
-  context: { params: { id: string } }
-) {
+  request: NextRequest
+): Promise<NextResponse> {
   try {
     await dbConnect()
     const session = await getServerSession(authOptions)
@@ -133,8 +133,9 @@ export async function DELETE(
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
-    const dog = await Dog.findById(context.params.id)
+    const url = new URL(request.url)
+    const id = url.pathname.split('/').pop()
+    const dog = await Dog.findById(id)
     if (!dog) {
       return NextResponse.json({ error: 'Dog not found' }, { status: 404 })
     }
@@ -144,7 +145,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    await Dog.findByIdAndDelete(context.params.id)
+    await Dog.findByIdAndDelete(id)
 
     return NextResponse.json({ message: 'Dog deleted successfully' })
   } catch (error) {
