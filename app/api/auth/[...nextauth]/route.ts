@@ -4,8 +4,9 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import dbConnect from "@/app/lib/mongodb"
 import User from "@/app/models/User"
+import type { NextAuthOptions } from 'next-auth'
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
@@ -59,6 +60,10 @@ const handler = NextAuth({
       return session
     },
   },
-})
+  session: {
+    strategy: 'jwt'
+  }
+}
 
+const handler = NextAuth(authOptions)
 export { handler as GET, handler as POST } 

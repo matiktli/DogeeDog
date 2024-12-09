@@ -1,6 +1,7 @@
 import './globals.css'
 import { anchorJack } from './config/fonts'
 import AuthProvider from './providers/AuthProvider'
+import Navbar from './components/Navbar'
 
 export default function RootLayout({
   children,
@@ -11,7 +12,10 @@ export default function RootLayout({
     <html lang="en" className={`${anchorJack.variable}`}>
       <body>
         <AuthProvider>
-          {children}
+          <Navbar />
+          <main className="pt-16">
+            {children}
+          </main>
         </AuthProvider>
       </body>
     </html>

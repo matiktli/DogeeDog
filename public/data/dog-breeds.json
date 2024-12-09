@@ -1,0 +1,19 @@
+{
+  "breeds": [
+    { "key": "Labrador Retriever", "avatar": "" },
+    { "key": "German Shepherd", "avatar": "" },
+    { "key": "Golden Retriever", "avatar": "" },
+    { "key": "French Bulldog", "avatar": "" },
+    { "key": "Bulldog", "avatar": "" },
+    { "key": "Poodle", "avatar": "" },
+    { "key": "Beagle", "avatar": "" },
+    { "key": "Rottweiler", "avatar": "" },
+    { "key": "Dachshund", "avatar": "" },
+    { "key": "Yorkshire Terrier", "avatar": "" },
+    { "key": "Boxer", "avatar": "" },
+    { "key": "Pug", "avatar": "" },
+    { "key": "Siberian Husky", "avatar": "" },
+    { "key": "Great Dane", "avatar": "" },
+    { "key": "Shih Tzu", "avatar": "" }
+  ]
+} 
