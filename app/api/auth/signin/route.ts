@@ -1,1 +1,0 @@
-// This file can be deleted as authentication is now handled by NextAuth 
