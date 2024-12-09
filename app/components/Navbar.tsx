@@ -4,9 +4,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { useState, useRef, useEffect } from 'react'
+import { useUser } from '@/app/hooks/useUser'
 
 export default function Navbar() {
   const { data: session } = useSession()
+  const { user } = useUser(session?.user?.id)
   const [showDropdown, setShowDropdown] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -85,15 +87,27 @@ export default function Navbar() {
             ref={dropdownRef}
             onMouseLeave={handleMouseLeave}
           >
-            <div 
+            <Link 
+              href="/dashboard"
               className="flex items-center gap-2 px-4 py-2 text-[var(--foreground)] hover:text-[var(--accent)] transition-colors cursor-pointer"
               onMouseEnter={handleMouseEnter}
             >
-              <div className="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center text-white">
-                {session.user?.name?.[0]?.toUpperCase() || 'U'}
-              </div>
+              {user?.imageUrl ? (
+                <div className="relative w-8 h-8">
+                  <Image
+                    src={user.imageUrl}
+                    alt={user.name || ''}
+                    fill
+                    className="rounded-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center text-white">
+                  {session.user?.name?.[0]?.toUpperCase() || 'U'}
+                </div>
+              )}
               <span>Hey, {session.user?.name?.split(' ')[0]}</span>
-            </div>
+            </Link>
 
             {/* Safe zone and dropdown */}
             {showDropdown && (
@@ -109,10 +123,10 @@ export default function Navbar() {
                   onMouseEnter={handleShowDropdown}
                 >
                   <Link 
-                    href="/dashboard"
+                    href="/profile"
                     className="block px-4 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--accent)]/10 transition-colors"
                   >
-                    Dashboard
+                    Profile
                   </Link>
                   <button
                     onClick={() => signOut({ callbackUrl: '/' })}

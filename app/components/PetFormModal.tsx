@@ -5,25 +5,38 @@ import { X, Dog, Camera, Upload } from 'lucide-react'
 import Image from 'next/image'
 import ReactCrop, { Crop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
-import { useSession } from 'next-auth/react'
 
 interface Breed {
   key: string
   avatar: string
 }
 
-interface AddPetModalProps {
+interface PetFormModalProps {
   isOpen: boolean
   onClose: () => void
+  initialData?: {
+    id: string
+    name: string
+    breed: string
+    gender: string
+    imageUrl: string
+  }
 }
 
-export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+export default function PetFormModal({ 
+  isOpen, 
+  onClose,
+  initialData 
+}: PetFormModalProps) {
+  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imageUrl || null)
   const [isLoading, setIsLoading] = useState(false)
   const [breeds, setBreeds] = useState<Breed[]>([])
-  const [breedInput, setBreedInput] = useState('')
+  const [breedInput, setBreedInput] = useState(initialData?.breed || '')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [filteredBreeds, setFilteredBreeds] = useState<Breed[]>([])
+  const [nameError, setNameError] = useState<string | null>(null)
+  const [breedError, setBreedError] = useState<string | null>(null)
+  const [showCropper, setShowCropper] = useState(false)
   const [crop, setCrop] = useState<Crop>({
     unit: '%',
     width: 100,
@@ -31,11 +44,6 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
     x: 0,
     y: 0,
   })
-  const [showCropper, setShowCropper] = useState(false)
-  const [nameError, setNameError] = useState(false)
-  const [breedError, setBreedError] = useState<string | null>(null)
-
-  const { data: session } = useSession()
 
   useEffect(() => {
     fetch('/data/dog-breeds.json')
@@ -72,66 +80,68 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
     }
   }
 
-  const handleCropComplete = (croppedImage: string) => {
-    setImagePreview(croppedImage)
-    setShowCropper(false)
-  }
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!imagePreview) return
+    if (!imagePreview && !initialData) return // Allow edit without changing image
 
     try {
       setIsLoading(true)
 
-      // Convert base64 to blob
-      const response = await fetch(imagePreview)
-      const blob = await response.blob()
-      const file = new File([blob], 'pet-image.jpg', { type: 'image/jpeg' })
-
       const form = e.target as HTMLFormElement
-      const formData = new FormData()
       const nameInput = form.querySelector<HTMLInputElement>('input[name="name"]')
       const genderInput = form.querySelector<HTMLInputElement>('input[name="gender"]:checked')
       
       if (!nameInput?.value || !breedInput || !genderInput?.value) {
         throw new Error('Please fill in all required fields')
       }
-      
+
+      const formData = new FormData()
       formData.append('name', nameInput.value)
       formData.append('breed', breedInput)
       formData.append('gender', genderInput.value)
-      formData.append('image', file)
 
-      const res = await fetch('/api/dogs', {
-        method: 'POST',
+      // Only include image if it's changed or it's a new pet
+      if (imagePreview && imagePreview !== initialData?.imageUrl) {
+        const response = await fetch(imagePreview)
+        const blob = await response.blob()
+        const file = new File([blob], 'pet-image.jpg', { type: 'image/jpeg' })
+        formData.append('image', file)
+      }
+
+      const url = initialData 
+        ? `/api/dogs/${initialData.id}`
+        : '/api/dogs'
+
+      const res = await fetch(url, {
+        method: initialData ? 'PUT' : 'POST',
         body: formData,
       })
 
-      if (!res.ok) {
-        throw new Error('Failed to create pet')
-      }
+      if (!res.ok) throw new Error('Failed to save pet')
 
       onClose()
     } catch (error) {
-      console.error('Error creating pet:', error)
-      // TODO: Add error notification here
+      console.error('Error saving pet:', error)
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleNameBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    setNameError(e.target.value.trim() === '')
+    if (!e.target.value.trim()) {
+      setNameError("Every pup deserves a name! 🐾")
+    }
+  }
+
+  const handleNameFocus = () => {
+    setNameError(null)
   }
 
   const handleBreedBlur = () => {
-    if (breedInput.trim() === '') {
-      setBreedError('We\'d love to know your pup\'s breed!')
-    } else if (!breeds.some(breed => breed.key.toLowerCase() === breedInput.toLowerCase())) {
-      setBreedError('Sorry, we haven\'t heard about this breed')
-    } else {
-      setBreedError(null)
+    if (breedInput && !breeds.some(breed => 
+      breed.key.toLowerCase() === breedInput.toLowerCase()
+    )) {
+      setBreedError("Hmm, we haven't heard of this breed yet! 🤔 Please select from the list.")
     }
   }
 
@@ -148,7 +158,9 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
         </button>
 
         <div className="p-6">
-          <h2 className="text-2xl font-bold mb-6">Add New Pet</h2>
+          <h2 className="text-2xl font-bold mb-6">
+            {initialData ? 'Edit Pet' : 'Add New Pet'}
+          </h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Image Upload Section */}
@@ -184,7 +196,7 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
                   type="file"
                   name="image"
                   accept="image/*"
-                  required
+                  required={!initialData}
                   onChange={handleImageChange}
                   className="hidden"
                 />
@@ -197,14 +209,18 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
               <input
                 type="text"
                 name="name"
+                defaultValue={initialData?.name}
                 required
-                className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8B4513] dark:bg-gray-700 dark:border-gray-600"
+                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8B4513] dark:bg-gray-700 dark:border-gray-600 ${
+                  nameError ? 'border-red-500' : ''
+                }`}
                 placeholder="What's your pet's name?"
                 onBlur={handleNameBlur}
+                onFocus={handleNameFocus}
               />
-              {nameError && <span className="mt-1 text-sm text-red-500">
-                Every pup deserves a name! What's your furry friend called?
-              </span>}
+              {nameError && (
+                <p className="mt-1 text-red-500 text-sm">{nameError}</p>
+              )}
             </div>
 
             {/* Breed Input */}
@@ -225,14 +241,17 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
                   }}
                   onBlur={handleBreedBlur}
                   required
-                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8B4513] dark:bg-gray-700 dark:border-gray-600"
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8B4513] dark:bg-gray-700 dark:border-gray-600 ${
+                    breedError ? 'border-red-500' : ''
+                  }`}
                   placeholder="Search for a breed..."
                 />
                 <Dog className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
-              {breedError && <span className="mt-1 text-sm text-red-500">
-                {breedError}
-              </span>}
+              {breedError && (
+                <p className="mt-1 text-red-500 text-sm">{breedError}</p>
+              )}
+
               {showSuggestions && filteredBreeds.length > 0 && (
                 <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl shadow-lg max-h-60 overflow-auto">
                   {filteredBreeds.map((breed) => (
@@ -269,6 +288,7 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
                     type="radio" 
                     name="gender" 
                     value="male" 
+                    defaultChecked={initialData?.gender === 'male'}
                     required 
                     className="peer hidden" 
                   />
@@ -279,7 +299,8 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
                   <input 
                     type="radio" 
                     name="gender" 
-                    value="female" 
+                    value="female"
+                    defaultChecked={initialData?.gender === 'female'}
                     required 
                     className="peer hidden" 
                   />
@@ -294,7 +315,7 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
               disabled={isLoading}
               className="w-full bg-[#8B4513] text-white py-3 rounded-xl hover:bg-[#6B3410] transition-colors disabled:opacity-50 font-medium mt-8"
             >
-              {isLoading ? 'Adding...' : 'Add Pet'}
+              {isLoading ? 'Saving...' : initialData ? 'Save Changes' : 'Add Pet'}
             </button>
           </form>
         </div>
@@ -313,10 +334,13 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
                 circularCrop
                 className="max-h-full"
               >
-                <img 
+                <Image 
                   src={imagePreview} 
                   alt="Crop preview" 
                   className="max-h-[50vh] object-contain"
+                  width={300}
+                  height={300}
+                  style={{ objectFit: 'cover' }}
                 />
               </ReactCrop>
             </div>
@@ -331,7 +355,9 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
                 Cancel
               </button>
               <button
-                onClick={() => handleCropComplete(imagePreview)}
+                onClick={() => {
+                  setShowCropper(false)
+                }}
                 className="px-6 py-2 bg-[#8B4513] text-white rounded-lg hover:bg-[#6B3410]"
               >
                 Apply

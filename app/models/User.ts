@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  imageUrl: {
+    type: String,
+    default: null,
+  },
   emailConfirmed: {
     type: Boolean,
     default: false,
@@ -22,9 +26,12 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+}, {
+  strict: true,
+  timestamps: true
 });
 
-// Prevent mongoose from creating a plural collection name
+// Check if the model exists before creating a new one
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 export default User; 

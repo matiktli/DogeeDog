@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import LoadingScreen from '@/app/components/LoadingScreen'
 import { useLoading } from '@/app/hooks/useLoading'
+import { useRouter } from 'next/navigation'
 
 type SignInFormData = {
   email: string
@@ -13,6 +14,7 @@ type SignInFormData = {
 }
 
 export default function SignIn() {
+  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const { isLoading, withLoading } = useLoading()
 
@@ -39,7 +41,8 @@ export default function SignIn() {
           return
         }
 
-        window.location.href = '/dashboard'
+        router.push('/dashboard')
+        router.refresh()
       } catch (error) {
         console.error('Sign in error:', error)
         setError('Something went wrong. Please try again.')

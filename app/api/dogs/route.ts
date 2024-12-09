@@ -107,7 +107,12 @@ export async function GET(req: Request) {
     const gender = searchParams.get('gender')
 
     // Build query
-    const query: any = {}
+    const query: {
+      userId?: string;
+      name?: RegExp;
+      breed?: { $in: string[] };
+      gender?: string;
+    } = {}
     
     if (userId) query.userId = userId
     if (name) query.name = new RegExp(name, 'i')
