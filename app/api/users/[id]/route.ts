@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/auth'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
@@ -15,11 +15,35 @@ const s3 = new S3Client({
 })
 
 export async function GET(
-  request: Request
+  request: NextRequest
 ): Promise<NextResponse> {
-    const url = new URL(request.url)
-    const id = url.pathname.split('/').pop()
-  
+  const url = new URL(request.url)
+  const id = url.pathname.split('/').pop()
+
+  if (id && id !== 'users') {
+    try {
+      const session = await getServerSession(authOptions)
+      if (!session?.user?.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+
+      await connectDB()
+
+      const user = await User.findById(id).select('-passwordHash')
+      if (!user) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      }
+
+      return NextResponse.json(user)
+    } catch (error) {
+      console.error('Error fetching user:', error)
+      return NextResponse.json(
+        { error: 'Failed to fetch user' },
+        { status: 500 }
+      )
+    }
+  }
+
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
@@ -28,16 +52,40 @@ export async function GET(
 
     await connectDB()
 
-    const user = await User.findById(id).select('-passwordHash')
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    const searchParams = url.searchParams
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('size') || '20')
+    const name = searchParams.get('name') || ''
+
+    const skip = (page - 1) * limit
+
+    const query: any = {}
+    if (name) {
+      query.name = { $regex: name, $options: 'i' }
     }
 
-    return NextResponse.json(user)
+    const [users, total] = await Promise.all([
+      User.find(query)
+        .select('-passwordHash')
+        .skip(skip)
+        .limit(limit)
+        .sort({ name: 1 }),
+      User.countDocuments(query)
+    ])
+
+    return NextResponse.json({
+      users,
+      pagination: {
+        currentPage: page,
+        pageSize: limit,
+        totalItems: total,
+        totalPages: Math.ceil(total / limit)
+      }
+    })
   } catch (error) {
-    console.error('Error fetching user:', error)
+    console.error('Error listing users:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch user' },
+      { error: 'Failed to list users' },
       { status: 500 }
     )
   }
