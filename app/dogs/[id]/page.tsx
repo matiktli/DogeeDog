@@ -205,16 +205,17 @@ export default function DogPage({ params }: PageProps) {
 
           {/* Challenges Section */}
           <section className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">Challenges</h2>
-            <div className="bg-white dark:bg-black/20 rounded-2xl p-6 shadow-lg">
-              {isLoadingChallenges ? (
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Challenges</h2>
+            </div>
+            {isLoadingChallenges ? (
                 <div className="flex justify-center items-center py-8">
                   <LoadingScreen />
                 </div>
               ) : (
-                <DogChallengeList dogChallenges={dogChallenges} />
+                <DogChallengeList dogChallenges={dogChallenges} singleRow={true} />
               )}
-            </div>
+            
           </section>
         </div>
       </div>
