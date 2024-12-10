@@ -26,7 +26,7 @@ export async function GET(req: Request) {
     const query: {
       type?: string
       period?: string
-      createdBy?: any
+      createdBy?: string |object
     } = {}
 
     if (type) query.type = type

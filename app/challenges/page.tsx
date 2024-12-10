@@ -7,6 +7,8 @@ import ChallengeList from './ChallengeList'
 import LoadingScreen from '@/app/components/LoadingScreen'
 import { useLoading } from '@/app/hooks/useLoading'
 import ChallengeFormModal from './ChallengeFormModal'
+import Link from 'next/link'
+import Breadcrumb from '@/app/components/Breadcrumb'
 
 export default function ChallengesPage() {
   const { data: session } = useSession()
@@ -66,11 +68,25 @@ export default function ChallengesPage() {
   }
 
   return (
-    <div className="min-h-screen p-6 pt-24 bg-[var(--background)]">
+    <div className="min-h-screen p-6 pt-12 bg-[var(--background)]">
       <div className="max-w-7xl mx-auto px-8">
+        <Breadcrumb 
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Challenges' }
+          ]}
+        />
         {/* System Daily Challenges */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Daily Challenges</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Daily Challenges</h2>
+            <Link 
+              href="/challenges/filtered?type=daily"
+              className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors text-sm"
+            >
+              View All
+            </Link>
+          </div>
           <ChallengeList
             challenges={dailyChallenges}
             title="Daily Challenges"
@@ -81,7 +97,15 @@ export default function ChallengesPage() {
 
         {/* System Weekly Challenges */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Weekly Challenges</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Weekly Challenges</h2>
+            <Link 
+              href="/challenges/filtered?type=weekly"
+              className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors text-sm"
+            >
+              View All
+            </Link>
+          </div>
           <ChallengeList
             challenges={weeklyChallenges}
             title="Weekly Challenges"
@@ -95,6 +119,12 @@ export default function ChallengesPage() {
           <section className="mb-12">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Your Challenges</h2>
+              <Link 
+                href="/challenges/filtered?type=user"
+                className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors text-sm"
+              >
+                View All
+              </Link>
             </div>
             <ChallengeList
               challenges={userChallenges}
@@ -110,7 +140,15 @@ export default function ChallengesPage() {
 
         {/* Community Challenges */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Community Challenges</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Community Challenges</h2>
+            <Link 
+              href="/challenges/filtered?type=community"
+              className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors text-sm"
+            >
+              View All
+            </Link>
+          </div>
           <ChallengeList
             challenges={communityChallenges}
             title="Community Challenges"

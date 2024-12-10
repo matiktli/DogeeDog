@@ -4,8 +4,9 @@ import { useSession } from 'next-auth/react'
 import { redirect, useRouter } from 'next/navigation'
 import { useState, useEffect, useRef, use } from 'react'
 import Image from 'next/image'
-import { Dog, ArrowLeft, Settings, Edit, Trash2 } from 'lucide-react'
+import { Dog, Settings, Edit, Trash2 } from 'lucide-react'
 import LoadingScreen from '@/app/components/LoadingScreen'
+import Breadcrumb from '@/app/components/Breadcrumb'
 
 interface DogData {
   _id: string
@@ -99,94 +100,95 @@ export default function DogPage({ params }: PageProps) {
   if (!dog) return null
 
   return (
-    <div className="min-h-screen p-6 bg-[var(--background)]">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-2 text-[#8B4513] hover:opacity-80 transition-opacity"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back to Dashboard
-          </button>
+    <div className="min-h-screen p-6 pt-12 bg-[var(--background)]">
+      <div className="max-w-7xl mx-auto px-8">
+        <Breadcrumb 
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: dog?.name || 'Dog Profile' }
+          ]}
+        />
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-end mb-6">
+            {isOwner && (
+              <div className="relative" ref={menuRef}>
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <Settings className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                </button>
 
-          {isOwner && (
-            <div className="relative" ref={menuRef}>
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                <Settings className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-              </button>
-
-              {isMenuOpen && (
-                <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-10">
-                  <button
-                    onClick={() => router.push(`/dogs/${dogId}/edit`)}
-                    className="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    <Edit className="w-4 h-4" />
-                    Edit
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                    className="w-full px-4 py-2 text-left flex items-center gap-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    {isDeleting ? 'Removing...' : 'Remove'}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Dog Profile Section */}
-        <div className="bg-white dark:bg-black/20 rounded-2xl overflow-hidden shadow-lg">
-          <div className="relative h-64 w-full">
-            {dog.imageUrl ? (
-              <Image
-                src={dog.imageUrl}
-                alt={dog.name}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-                <Dog className="w-16 h-16 text-gray-400" />
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-10">
+                    <button
+                      onClick={() => router.push(`/dogs/${dogId}/edit`)}
+                      className="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <Edit className="w-4 h-4" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                      className="w-full px-4 py-2 text-left flex items-center gap-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      {isDeleting ? 'Removing...' : 'Remove'}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
-          
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-3xl font-bold">{dog.name}</h1>
-              <span className={`px-4 py-2 rounded-full text-sm ${
-                dog.gender === 'male' 
-                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300' 
-                  : 'bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-300'
-              }`}>
-                {dog.gender === 'male' ? '♂️ Male' : '♀️ Female'}
-              </span>
+
+          {/* Dog Profile Section */}
+          <div className="bg-white dark:bg-black/20 rounded-2xl overflow-hidden shadow-lg">
+            <div className="relative h-64 w-full">
+              {dog.imageUrl ? (
+                <Image
+                  src={dog.imageUrl}
+                  alt={dog.name}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+                  <Dog className="w-16 h-16 text-gray-400" />
+                </div>
+              )}
             </div>
             
-            <div className="space-y-2 text-[var(--foreground)]/80">
-              <p><span className="font-medium">Breed:</span> {dog.breed}</p>
-              <p><span className="font-medium">Joined:</span> {new Date(dog.createdAt).toLocaleDateString()}</p>
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h1 className="text-3xl font-bold">{dog.name}</h1>
+                <span className={`px-4 py-2 rounded-full text-sm ${
+                  dog.gender === 'male' 
+                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300' 
+                    : 'bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-300'
+                }`}>
+                  {dog.gender === 'male' ? '♂️ Male' : '♀️ Female'}
+                </span>
+              </div>
+              
+              <div className="space-y-2 text-[var(--foreground)]/80">
+                <p><span className="font-medium">Breed:</span> {dog.breed}</p>
+                <p><span className="font-medium">Joined:</span> {new Date(dog.createdAt).toLocaleDateString()}</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Progress Section */}
-        <section className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">Progress</h2>
-          <div className="bg-white dark:bg-black/20 rounded-2xl p-6 shadow-lg">
-            <p className="text-[var(--foreground)]/60">
-              Progress tracking coming soon...
-            </p>
-          </div>
-        </section>
+          {/* Progress Section */}
+          <section className="mt-8">
+            <h2 className="text-xl font-semibold mb-4">Progress</h2>
+            <div className="bg-white dark:bg-black/20 rounded-2xl p-6 shadow-lg">
+              <p className="text-[var(--foreground)]/60">
+                Progress tracking coming soon...
+              </p>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   )
