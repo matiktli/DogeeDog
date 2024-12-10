@@ -7,6 +7,8 @@ import Image from 'next/image'
 import { Dog, Settings, Edit, Trash2 } from 'lucide-react'
 import LoadingScreen from '@/app/components/LoadingScreen'
 import Breadcrumb from '@/app/components/Breadcrumb'
+import DogChallengeList from '@/app/components/DogChallengeList'
+import { DogChallenge } from '@/app/types/dogchallenge'
 
 interface DogData {
   _id: string
@@ -32,6 +34,8 @@ export default function DogPage({ params }: PageProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const [dogChallenges, setDogChallenges] = useState<DogChallenge[]>([])
+  const [isLoadingChallenges, setIsLoadingChallenges] = useState(true)
 
   const { data: session, status } = useSession({
     required: true,
@@ -72,6 +76,26 @@ export default function DogPage({ params }: PageProps) {
       fetchDog()
     }
   }, [dogId, session?.user?.id, router])
+
+  useEffect(() => {
+    const fetchDogChallenges = async () => {
+      try {
+        setIsLoadingChallenges(true)
+        const response = await fetch(`/api/challenges/dogs?dogIds=${dogId}`)
+        if (!response.ok) throw new Error('Failed to fetch challenges')
+        const data = await response.json()
+        setDogChallenges(data.dogChallenges)
+      } catch (error) {
+        console.error('Error fetching dog challenges:', error)
+      } finally {
+        setIsLoadingChallenges(false)
+      }
+    }
+
+    if (dogId) {
+      fetchDogChallenges()
+    }
+  }, [dogId])
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to remove this pet?')) {
@@ -179,13 +203,17 @@ export default function DogPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Progress Section */}
+          {/* Challenges Section */}
           <section className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">Progress</h2>
+            <h2 className="text-xl font-semibold mb-4">Challenges</h2>
             <div className="bg-white dark:bg-black/20 rounded-2xl p-6 shadow-lg">
-              <p className="text-[var(--foreground)]/60">
-                Progress tracking coming soon...
-              </p>
+              {isLoadingChallenges ? (
+                <div className="flex justify-center items-center py-8">
+                  <LoadingScreen />
+                </div>
+              ) : (
+                <DogChallengeList dogChallenges={dogChallenges} />
+              )}
             </div>
           </section>
         </div>

@@ -68,7 +68,7 @@ export default function ChallengesPage() {
   }
 
   return (
-    <div className="min-h-screen p-6 pt-12 bg-[var(--background)]">
+    <div className="min-h-screen p-6 pt-24 bg-[var(--background)]">
       <div className="max-w-7xl mx-auto px-8">
         <Breadcrumb 
           items={[
@@ -82,7 +82,7 @@ export default function ChallengesPage() {
             <h2 className="text-2xl font-bold">Daily Challenges</h2>
             <Link 
               href="/challenges/filtered?type=daily"
-              className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors text-sm"
+              className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
             >
               View All
             </Link>
@@ -101,7 +101,7 @@ export default function ChallengesPage() {
             <h2 className="text-2xl font-bold">Weekly Challenges</h2>
             <Link 
               href="/challenges/filtered?type=weekly"
-              className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors text-sm"
+              className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
             >
               View All
             </Link>
@@ -121,7 +121,7 @@ export default function ChallengesPage() {
               <h2 className="text-2xl font-bold">Your Challenges</h2>
               <Link 
                 href="/challenges/filtered?type=user"
-                className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors text-sm"
+                className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
               >
                 View All
               </Link>
@@ -144,7 +144,7 @@ export default function ChallengesPage() {
             <h2 className="text-2xl font-bold">Community Challenges</h2>
             <Link 
               href="/challenges/filtered?type=community"
-              className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors text-sm"
+              className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
             >
               View All
             </Link>
