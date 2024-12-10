@@ -26,12 +26,19 @@ export async function GET(req: Request) {
     const query: {
       type?: string
       period?: string
-      createdBy?: string
+      createdBy?: any
     } = {}
 
     if (type) query.type = type
     if (period) query.period = period
-    if (createdBy) query.createdBy = createdBy
+    if (createdBy) {
+      // Handle the 'notme' special case
+      if (createdBy === 'notme') {
+        query.createdBy = { $ne: session.user.id }
+      } else {
+        query.createdBy = createdBy
+      }
+    }
 
     const challenges = await Challenge.find(query).sort({ createdAt: -1 })
 

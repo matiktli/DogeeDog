@@ -27,18 +27,15 @@ export default function ChallengesPage() {
         fetch('/api/challenges?type=SYSTEM&period=WEEK').then(res => res.json()),
         // User's own challenges
         fetch(`/api/challenges?type=USER&createdBy=${session?.user?.id}`).then(res => res.json()),
-        // Community challenges (all USER type challenges except user's own)
-        fetch('/api/challenges?type=USER').then(res => res.json())
+        // Community challenges (all USER type challenges except current user's)
+        fetch('/api/challenges?type=USER&createdBy=notme').then(res => res.json())
       ])
 
       setDailyChallenges(dailyData)
       setWeeklyChallenges(weeklyData)
       setUserChallenges(userData)
-      // Filter out user's own challenges from community challenges
-      const filteredCommunityData = communityData.filter(
-        (challenge: Challenge) => challenge.createdBy !== session?.user?.id
-      )
-      setCommunityChallenges(filteredCommunityData)
+      // Remove the filter since the backend will handle it
+      setCommunityChallenges(communityData)
     } catch (error) {
       console.error('Error fetching challenges:', error)
     }
