@@ -12,26 +12,28 @@ interface DogSelectionModalProps {
   isOpen: boolean
   onClose: () => void
   preloadedDogs: Dog[]
+  onChallengeAccepted: (dogNames: string[]) => void
 }
 
 export default function DogSelectionModal({
   challenge,
   isOpen,
   onClose,
-  preloadedDogs
+  preloadedDogs,
+  onChallengeAccepted
 }: DogSelectionModalProps) {
-  const [selectedDogs, setSelectedDogs] = useState<string[]>([])
+  const [selectedDogs, setSelectedDogs] = useState<Dog[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleDogSelect = (dogId: string) => {
+  const handleDogSelect = (dog: Dog) => {
     setSelectedDogs(prev => 
-      prev.includes(dogId) 
-        ? prev.filter(id => id !== dogId)
-        : [...prev, dogId]
+      prev.includes(dog) 
+        ? prev.filter(d => d._id !== dog._id)
+        : [...prev, dog]
     )
   }
 
-  const handleSubmit = async () => {
+  const handleAcceptChallenge = async () => {
     if (selectedDogs.length === 0) return
 
     setIsLoading(true)
@@ -43,11 +45,11 @@ export default function DogSelectionModal({
         },
         body: JSON.stringify({
           challengeId: challenge._id,
-          dogIds: selectedDogs
+          dogIds: selectedDogs.map(dog => dog._id)
         }),
       })
 
-      onClose()
+      onChallengeAccepted(selectedDogs.map(dog => dog.name))
     } catch (error) {
       console.error('Error accepting challenge:', error)
     } finally {
@@ -74,10 +76,10 @@ export default function DogSelectionModal({
             {preloadedDogs.map(dog => (
               <button
                 key={dog._id}
-                onClick={() => handleDogSelect(dog._id)}
+                onClick={() => handleDogSelect(dog)}
                 className={`
                   relative p-2 rounded-xl border-2 transition-all
-                  ${selectedDogs.includes(dog._id)
+                  ${selectedDogs.includes(dog)
                     ? 'border-[var(--accent)] bg-[var(--accent)]/10 ring-2 ring-[var(--accent)]'
                     : 'border-gray-200 dark:border-gray-700 hover:border-[var(--accent)]'
                   }
@@ -89,10 +91,10 @@ export default function DogSelectionModal({
                     alt={dog.name}
                     fill
                     className={`object-cover transition-transform ${
-                      selectedDogs.includes(dog._id) ? 'scale-95' : ''
+                      selectedDogs.includes(dog) ? 'scale-95' : ''
                     }`}
                   />
-                  {selectedDogs.includes(dog._id) && (
+                  {selectedDogs.includes(dog) && (
                     <div className="absolute inset-0 bg-[var(--accent)]/20 flex items-center justify-center">
                       <div className="w-6 h-6 rounded-full bg-[var(--accent)] text-white flex items-center justify-center">
                         ✓
@@ -101,7 +103,7 @@ export default function DogSelectionModal({
                   )}
                 </div>
                 <p className={`text-sm font-medium truncate text-center ${
-                  selectedDogs.includes(dog._id) ? 'text-[var(--accent)]' : ''
+                  selectedDogs.includes(dog) ? 'text-[var(--accent)]' : ''
                 }`}>
                   {dog.name}
                 </p>
@@ -110,7 +112,7 @@ export default function DogSelectionModal({
           </div>
 
           <GradientButton
-            onClick={handleSubmit}
+            onClick={handleAcceptChallenge}
             disabled={selectedDogs.length === 0 || isLoading}
             className="w-full px-6 py-3 font-medium"
           >
