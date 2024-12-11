@@ -3,15 +3,44 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { User } from '@/app/types/user'
+import { useSession } from 'next-auth/react'
+import { AvatarGroup } from './AvatarGroup'
+import { useEffect, useState } from 'react'
 
 interface UserCardProps {
   user: User
 }
 
+type Dog = {
+  _id: string
+  imageUrl: string
+  name: string
+}
+
 export default function UserCard({ user }: UserCardProps) {
+  const { data: session } = useSession()
+  const isCurrentUser = session?.user?.id === user._id
+  const [dogs, setDogs] = useState<Dog[]>([])
+
+  useEffect(() => {
+    const fetchDogs = async () => {
+      try {
+        const response = await fetch(`/api/dogs?userId=${user._id}`)
+        if (response.ok) {
+          const dogsData = await response.json()
+          setDogs(dogsData)
+        }
+      } catch (error) {
+        console.error('Error fetching dogs:', error)
+      }
+    }
+
+    fetchDogs()
+  }, [user._id])
+
   return (
     <Link 
-      href={`/users/${user._id}`}
+      href={`/profile/${user._id}`}
       className="block group/card"
     >
       <div className="relative bg-[#FF8551]/10 hover:bg-[#FF8551]/20 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all h-[200px]">
@@ -44,28 +73,24 @@ export default function UserCard({ user }: UserCardProps) {
                 {user.name}
               </h3>
               <p className="text-sm text-[var(--foreground)]/60">
-                Member
+                {isCurrentUser ? 'You' : 'Member'}
               </p>
             </div>
           </div>
 
           <div className="mt-auto">
-            <div className="flex items-center gap-2 text-sm text-[var(--foreground)]/60">
-              <span>View Profile</span>
-              <svg
-                className="w-4 h-4 transform transition-transform group-hover/card:translate-x-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </div>
+            {dogs.length > 0 ? (
+              <AvatarGroup
+                items={dogs}
+                getImageUrl={(dog) => dog.imageUrl}
+                getId={(dog) => dog._id}
+                maxDisplay={3}
+                expandTo={10}
+                className="hover:bg-gray-200 transition-colors"
+              />
+            ) : (
+              <p className="text-sm text-[var(--foreground)]/60">No dogs yet</p>
+            )}
           </div>
         </div>
       </div>

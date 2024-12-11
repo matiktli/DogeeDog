@@ -21,13 +21,20 @@ export default {
         'card-unload': {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(-100%)' }
+        },
+        in: {
+          '0%': { opacity: '0', transform: 'translateX(-10px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
         }
       },
       animation: {
         'card-load': 'card-load 1.5s ease-in-out forwards',
-        'card-unload': 'card-unload 1.5s ease-in-out'
+        'card-unload': 'card-unload 1.5s ease-in-out',
+        'in': 'in 0.5s ease-out',
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwindcss-animate')
+  ],
 } satisfies Config;

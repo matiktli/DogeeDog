@@ -29,12 +29,19 @@ export async function GET(
 
       await connectDB()
 
-      const user = await User.findById(id).select('-passwordHash')
+      const user = await User.findById(id)
       if (!user) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 })
       }
 
-      return NextResponse.json(user)
+      // Only include email if the user is requesting their own profile
+      const userResponse = {
+        ...user.toObject(),
+        passwordHash: undefined,
+        email: session.user.id === id ? user.email : undefined
+      }
+
+      return NextResponse.json(userResponse)
     } catch (error) {
       console.error('Error fetching user:', error)
       return NextResponse.json(
