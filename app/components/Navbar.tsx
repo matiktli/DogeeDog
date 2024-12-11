@@ -107,6 +107,12 @@ export default function Navbar() {
           >
             Community
           </Link>
+          <Link 
+            href="/activity" 
+            className="px-4 py-2 text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
+          >
+            Activity
+          </Link>
         </div>
 
         {session ? (
@@ -284,6 +290,13 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Community
+            </Link>
+            <Link
+              href="/activity"
+              className="block py-3 text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Activity
             </Link>
           </div>
 
