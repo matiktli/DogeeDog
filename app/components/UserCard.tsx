@@ -4,8 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { User } from '@/app/types/user'
 import { useSession } from 'next-auth/react'
-import { AvatarGroup } from './AvatarGroup'
 import { useEffect, useState } from 'react'
+import { AvatarGroup } from './AvatarGroup'
 
 interface UserCardProps {
   user: User

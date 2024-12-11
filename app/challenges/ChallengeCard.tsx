@@ -8,11 +8,29 @@ import { Challenge } from '@/app/types/challenge'
 import { useRouter } from 'next/navigation'
 import ChallengeViewModal from './ChallengeViewModal'
 import UserPill from '@/app/components/UserPill'
+import { useQuery } from '@tanstack/react-query'
+import { AvatarGroup } from '../components/AvatarGroup'
 
 interface ChallengeCardProps {
   challenge: Challenge
   editable?: boolean
   onDelete?: () => void
+}
+
+interface User {
+  _id: string
+  imageUrl: string
+  name: string
+}
+
+interface DogChallenge {
+  _id: string
+  createdBy: string
+  challengeId: string
+  progress: {
+    current: number
+    goal: number
+  }
 }
 
 export default function ChallengeCard({ 
@@ -26,6 +44,33 @@ export default function ChallengeCard({
   const router = useRouter()
   const { data: session } = useSession()
   const [showViewModal, setShowViewModal] = useState(false)
+
+  const { data: dogChallenges } = useQuery<{ dogChallenges: DogChallenge[] }>({
+    queryKey: ['dogChallenges', challenge._id],
+    queryFn: async () => {
+      const res = await fetch(`/api/challenges/dogs?challengeIds=${challenge._id}&pageSize=15`)
+      if (!res.ok) throw new Error('Failed to fetch dog challenges')
+      return res.json()
+    }
+  })
+
+  const { data: users } = useQuery<User[]>({
+    queryKey: ['challengeUsers', dogChallenges?.dogChallenges],
+    queryFn: async () => {
+      if (!dogChallenges?.dogChallenges) return []
+      
+      const userIds = [...new Set(dogChallenges.dogChallenges.map((dc: DogChallenge) => dc.createdBy))]
+      
+      const userPromises = userIds.map(async (userId) => {
+        const res = await fetch(`/api/users/${userId}`)
+        if (!res.ok) throw new Error('Failed to fetch user')
+        return res.json()
+      })
+
+      return Promise.all(userPromises)
+    },
+    enabled: !!dogChallenges?.dogChallenges
+  })
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -109,14 +154,27 @@ export default function ChallengeCard({
               </p>
             </div>
 
-            {challenge.type === 'USER' && challenge.createdBy !== session?.user?.id && (
-              <div className="flex justify-end mt-auto pt-4">
+            <div className="mt-auto pt-4 flex justify-between items-center">
+              <div className="flex-shrink-0">
+                {users && users.length > 0 && (
+                  <AvatarGroup
+                  items={users}
+                  getImageUrl={(user) => user.imageUrl}
+                  getId={(user) => user._id}
+                  maxDisplay={3}
+                  expandTo={10}
+                  className="hover:bg-gray-200 transition-colors"
+                  />
+                )}
+              </div>
+
+              {challenge.type === 'USER' && challenge.createdBy !== session?.user?.id && (
                 <div className="flex items-center gap-2 text-sm text-[var(--foreground)]/60">
                   <span className="whitespace-nowrap">By:</span>
                   <UserPill userId={challenge.createdBy} />
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </Link>
