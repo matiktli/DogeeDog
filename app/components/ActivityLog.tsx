@@ -2,24 +2,13 @@ import { useEffect, useState } from 'react'
 import ActivityLogCard from './ActivityLogCard'
 
 type Activity = {
-  type: 'NEW_DOG' | 'NEW_CHALLENGE' | 'CHALLENGE_ACCEPTED'
-  user: {
+  type: 'NEW_DOG' | 'NEW_CHALLENGE' | 'CHALLENGE_ACCEPTED' | 'NEW_USER'
+  actor: {
     _id: string
     name: string
+    imageUrl: string
   }
-  dog?: {
-    _id: string
-    name: string
-  }
-  challenge?: {
-    _id: string
-    title: string
-  }
-  dogChallenge?: {
-    _id: string
-    dogId: string
-    challengeId: string
-  }
+  data: object
   createdAt: string
 }
 
@@ -47,45 +36,16 @@ export default function ActivityLog({ type, userId, challengeId }: ActivityLogPr
           ...(challengeId && { challengeId })
         })
 
-        if (!type) {
-          const types = ['NEW_DOG', 'NEW_CHALLENGE', 'CHALLENGE_ACCEPTED'] as const
-          const responses = await Promise.all(
-            types.map(activityType =>
-              fetch(`/api/activity?${new URLSearchParams({
-                ...params,
-                type: activityType
-              })}`)
-            )
-          )
-
-          const results = await Promise.all(responses.map(r => r.json()))
-          
-          const allActivities = results.flatMap(result => result.activities)
-          const sortedActivities = allActivities.sort((a, b) => 
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
-
-          const totalItems = results.reduce((sum, result) => sum + result.pagination.totalItems, 0)
-          
-          if (page === 1) {
-            setActivities(sortedActivities.slice(0, 10))
-          } else {
-            setActivities(prev => [...prev, ...sortedActivities.slice((page - 1) * 10, page * 10)])
-          }
-
-          setHasMore(activities.length < totalItems)
-        } else {
-          const response = await fetch(`/api/activity?${params}`)
-          const data = await response.json()
-
-          if (page === 1) {
-            setActivities(data.activities)
-          } else {
-            setActivities(prev => [...prev, ...data.activities])
-          }
-
-          setHasMore(data.pagination.currentPage < data.pagination.totalPages)
-        }
+        const response = await fetch(`/api/activity?${params}`)
+            const data = await response.json()
+  
+            if (page === 1) {
+              setActivities(data.activities)
+            } else {
+              setActivities(prev => [...prev, ...data.activities])
+            }
+  
+            setHasMore(data.pagination.currentPage < data.pagination.totalPages)
       } catch (error) {
         console.error('Failed to fetch activities:', error)
       } finally {
@@ -100,7 +60,7 @@ export default function ActivityLog({ type, userId, challengeId }: ActivityLogPr
     <div className="space-y-4">
       {activities.map((activity) => (
         <ActivityLogCard 
-          key={`${activity.type}-${activity.createdAt}-${activity.user._id}`} 
+          key={`${activity.type}-${activity.createdAt}-${activity.actor._id}`} 
           activity={activity} 
         />
       ))}
