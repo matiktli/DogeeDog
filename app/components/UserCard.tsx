@@ -1,11 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
 import { User } from '@/app/types/user'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { AvatarGroup } from './AvatarGroup'
+import { useRouter } from 'next/navigation'
 
 interface UserCardProps {
   user: User
@@ -21,6 +21,7 @@ export default function UserCard({ user }: UserCardProps) {
   const { data: session } = useSession()
   const isCurrentUser = session?.user?.id === user._id
   const [dogs, setDogs] = useState<Dog[]>([])
+  const router = useRouter()
 
   useEffect(() => {
     const fetchDogs = async () => {
@@ -39,9 +40,18 @@ export default function UserCard({ user }: UserCardProps) {
   }, [user._id])
 
   return (
-    <Link 
-      href={`/profile/${user._id}`}
-      className="block group/card"
+    <div 
+      onClick={(e) => {
+        // Get the clicked element
+        const target = e.target as HTMLElement
+        // Check if the click is on the AvatarGroup
+        const isAvatarGroupClick = target.closest('[data-avatar-group]') !== null
+        
+        if (!isAvatarGroupClick) {
+          router.push(`/profile/${user._id}`)
+        }
+      }}
+      className="block group/card cursor-pointer"
     >
       <div className="relative bg-[#FF8551]/10 hover:bg-[#FF8551]/20 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all h-[200px]">
         <div 
@@ -84,6 +94,8 @@ export default function UserCard({ user }: UserCardProps) {
                 items={dogs}
                 getImageUrl={(dog) => dog.imageUrl}
                 getId={(dog) => dog._id}
+                getName={(dog) => dog.name}
+                getPath={(dog) => `/dogs/${dog._id}`}
                 maxDisplay={3}
                 expandTo={10}
                 className="hover:bg-gray-200 transition-colors"
@@ -94,6 +106,6 @@ export default function UserCard({ user }: UserCardProps) {
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   )
 } 

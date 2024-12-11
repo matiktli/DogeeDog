@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Settings, Edit, Trash2, Cookie } from 'lucide-react'
-import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { Challenge } from '@/app/types/challenge'
 import { useRouter } from 'next/navigation'
@@ -105,13 +104,17 @@ export default function ChallengeCard({
 
   return (
     <div className="relative w-full sm:w-[300px]">
-      <Link 
-        href="#"
+      <div 
         onClick={(e) => {
-          e.preventDefault()
-          setShowViewModal(true)
+          const target = e.target as HTMLElement
+          const isAvatarGroupClick = target.closest('[data-avatar-group]') !== null
+          const isUserPillClick = target.closest('[data-user-pill]') !== null
+          
+          if (!isAvatarGroupClick && !isUserPillClick) {
+            setShowViewModal(true)
+          }
         }}
-        className="block group/card h-[200px]"
+        className="block group/card cursor-pointer"
       >
         <div className="relative bg-[#FF8551]/10 hover:bg-[#FF8551]/20 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all h-full">
           <div 
@@ -161,6 +164,8 @@ export default function ChallengeCard({
                   items={users}
                   getImageUrl={(user) => user.imageUrl}
                   getId={(user) => user._id}
+                  getName={(user) => user.name}
+                  getPath={(user) => `/profile/${user._id}`}
                   maxDisplay={3}
                   expandTo={10}
                   className="hover:bg-gray-200 transition-colors"
@@ -177,7 +182,7 @@ export default function ChallengeCard({
             </div>
           </div>
         </div>
-      </Link>
+      </div>
 
       {editable && (
         <div className="absolute top-4 right-4" ref={menuRef}>

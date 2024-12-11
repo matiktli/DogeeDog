@@ -58,7 +58,7 @@ export default function UserPill({ userId, className = '' }: UserPillProps) {
   }
 
   return (
-    <div className={`inline-flex items-center gap-2 bg-white/50 dark:bg-black/20 rounded-full py-1 px-3 ${className}`}>
+    <div data-user-pill className={`inline-flex items-center gap-2 bg-white/50 dark:bg-black/20 rounded-full py-1 px-3 ${className}`}>
       {user.imageUrl ? (
         <div className="relative w-5 h-5 rounded-full overflow-hidden">
           <Image
