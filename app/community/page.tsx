@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import SearchableList from '@/app/components/SearchableList'
 import UserCard from '@/app/components/UserCard'
 import { User } from '@/app/types/user'
@@ -13,12 +13,18 @@ export default function CommunityPage() {
     totalItems: 0,
     totalPages: 0
   })
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [searchParams, setSearchParams] = useState<Record<string, string>>({})
+  const loadingRef = useRef(false)
 
   const fetchUsers = useCallback(async (page: number, isLoadMore: boolean = false) => {
+    // Prevent duplicate fetches
+    if (loadingRef.current) return
+    
     try {
       setIsLoading(true)
+      loadingRef.current = true
+      
       const params = new URLSearchParams({
         ...searchParams,
         page: page.toString()
@@ -33,6 +39,7 @@ export default function CommunityPage() {
       console.error('Error fetching users:', error)
     } finally {
       setIsLoading(false)
+      loadingRef.current = false
     }
   }, [searchParams])
 
@@ -43,7 +50,7 @@ export default function CommunityPage() {
   }, [searchParams, fetchUsers])
 
   const handleLoadMore = useCallback(() => {
-    if (pagination.currentPage < pagination.totalPages) {
+    if (pagination.currentPage < pagination.totalPages && !loadingRef.current) {
       fetchUsers(pagination.currentPage + 1, true)
     }
   }, [pagination.currentPage, pagination.totalPages, fetchUsers])

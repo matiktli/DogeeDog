@@ -37,27 +37,36 @@ export default function SearchableList({
   hasMore
 }: SearchableListProps) {
   const observerTarget = useRef<HTMLDivElement>(null)
+  const loadingRef = useRef(false)
 
   useEffect(() => {
+    loadingRef.current = isLoading
+  }, [isLoading])
+
+  useEffect(() => {
+    const currentTarget = observerTarget.current
+
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
+        const firstEntry = entries[0]
+        if (firstEntry.isIntersecting && hasMore && !loadingRef.current) {
           onLoadMore()
         }
       },
       { threshold: 0.1 }
     )
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current)
+    if (currentTarget) {
+      observer.observe(currentTarget)
     }
 
     return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current)
+      if (currentTarget) {
+        observer.unobserve(currentTarget)
       }
+      observer.disconnect()
     }
-  }, [hasMore, isLoading, onLoadMore])
+  }, [hasMore, onLoadMore])
 
   return (
     <div className={`space-y-6 ${className}`}>
