@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { Challenge } from '@/app/types/challenge'
 import ChallengeList from './ChallengeList'
-import LoadingScreen from '@/app/components/LoadingScreen'
 import { useLoading } from '@/app/hooks/useLoading'
 import ChallengeFormModal from './ChallengeFormModal'
 import Link from 'next/link'
@@ -49,10 +48,6 @@ export default function ChallengesPage() {
     }
   }, [session?.user?.id, withLoading])
 
-  if (isLoading) {
-    return <LoadingScreen />
-  }
-
   const handleCreateChallenge = () => {
     setSelectedChallenge(undefined)
     setShowModal(true)
@@ -92,6 +87,7 @@ export default function ChallengesPage() {
             title="Daily Challenges"
             emptyStateType="system"
             singleRow={true}
+            isLoading={isLoading}
           />
         </section>
 
@@ -111,10 +107,11 @@ export default function ChallengesPage() {
             title="Weekly Challenges"
             emptyStateType="system"
             singleRow={true}
+            isLoading={isLoading}
           />
         </section>
 
-        {/* User's Own Challenges - Only show when logged in */}
+        {/* User's Own Challenges */}
         {session?.user && (
           <section className="mb-12">
             <div className="flex justify-between items-center mb-6">
@@ -134,6 +131,7 @@ export default function ChallengesPage() {
               onAddClick={handleCreateChallenge}
               onChallengeDelete={handleModalSuccess}
               singleRow={true}
+              isLoading={isLoading}
             />
           </section>
         )}
@@ -154,6 +152,7 @@ export default function ChallengesPage() {
             title="Community Challenges"
             emptyStateType="system"
             singleRow={true}
+            isLoading={isLoading}
           />
         </section>
 

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import SearchableList from '@/app/components/SearchableList'
 import UserCard from '@/app/components/UserCard'
+import Loading from '@/app/components/Loading'
 import { User } from '@/app/types/user'
 
 export default function CommunityPage() {
@@ -49,15 +50,29 @@ export default function CommunityPage() {
     fetchUsers(1)
   }, [searchParams, fetchUsers])
 
-  const handleLoadMore = useCallback(() => {
-    if (pagination.currentPage < pagination.totalPages && !loadingRef.current) {
-      fetchUsers(pagination.currentPage + 1, true)
+  const handleLoadMore = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      if (pagination.currentPage < pagination.totalPages && !loadingRef.current) {
+        fetchUsers(pagination.currentPage + 1, true)
+      }
+    } catch (error) {
+      console.error('Error loading more data:', error)
+    } finally {
+      setIsLoading(false)
     }
   }, [pagination.currentPage, pagination.totalPages, fetchUsers])
 
-  const handleSearch = (newSearchParams: Record<string, string>) => {
-    setSearchParams(newSearchParams)
-  }
+  const handleSearch = useCallback(async (newSearchParams: Record<string, string>) => {
+    setIsLoading(true)
+    try {
+      setSearchParams(newSearchParams)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
   const searchFields = [
     {
@@ -77,13 +92,22 @@ export default function CommunityPage() {
         fields={searchFields}
         onSearch={handleSearch}
         pagination={pagination}
-        isLoading={isLoading}
         onLoadMore={handleLoadMore}
         hasMore={hasMore}
+        isLoading={isLoading}
       >
-        {users.map(user => (
-          <UserCard key={user._id} user={user} />
-        ))}
+        {isLoading && users.length === 0 ? (
+          <Loading height="h-[50vh]" />
+        ) : (
+          <>
+            {users.map(user => (
+              <UserCard key={user._id} user={user} />
+            ))}
+            {isLoading && users.length > 0 && (
+              <Loading height="h-32" />
+            )}
+          </>
+        )}
       </SearchableList>
     </div>
   )

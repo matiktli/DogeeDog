@@ -108,9 +108,9 @@ export default function ChallengeCard({
         onClick={(e) => {
           const target = e.target as HTMLElement
           const isAvatarGroupClick = target.closest('[data-avatar-group]') !== null
-          const isUserPillClick = target.closest('[data-user-pill]') !== null
+          const isPillClick = target.closest('[data-pill]') !== null
           
-          if (!isAvatarGroupClick && !isUserPillClick) {
+          if (!isAvatarGroupClick && !isPillClick) {
             setShowViewModal(true)
           }
         }}

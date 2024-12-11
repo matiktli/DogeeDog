@@ -16,11 +16,14 @@ export async function GET(
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    return NextResponse.json({
+    const data = {
       id: user._id,
       name: user.name,
-      imageUrl: user.imageUrl
-    })
+      imageUrl: user.imageUrl,
+      path: `/profile/${user._id}`
+    }
+
+    return NextResponse.json(data)
   } catch (error) {
     console.error('Error fetching user:', error)
     return NextResponse.json(

@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useSearchParams } from 'next/navigation'
 import { Challenge } from '@/app/types/challenge'
 import ChallengeList from '../ChallengeList'
-import LoadingScreen from '@/app/components/LoadingScreen'
+import Loading from '@/app/components/Loading'
 import { useLoading } from '@/app/hooks/useLoading'
 import ChallengeFormModal from '../ChallengeFormModal'
 import Breadcrumb from '@/app/components/Breadcrumb'
@@ -18,6 +18,11 @@ function FilteredChallengesContent() {
   const { isLoading, withLoading } = useLoading()
   const [showModal, setShowModal] = useState(false)
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | undefined>(undefined)
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const getTitleByType = (type: string | null) => {
     switch (type) {
@@ -66,10 +71,6 @@ function FilteredChallengesContent() {
     }
   }, [type, session?.user?.id])
 
-  if (isLoading) {
-    return <LoadingScreen />
-  }
-
   const handleCreateChallenge = () => {
     setSelectedChallenge(undefined)
     setShowModal(true)
@@ -95,15 +96,20 @@ function FilteredChallengesContent() {
         />
 
         <h1 className="text-3xl font-bold mb-8">{getTitleByType(type)}</h1>
-        <ChallengeList
-          challenges={challenges}
-          title={getTitleByType(type)}
-          emptyStateType={type === 'user' ? 'user' : 'system'}
-          singleRow={false}
-          showAddButton={type === 'user'}
-          onAddClick={handleCreateChallenge}
-          onChallengeDelete={handleModalSuccess}
-        />
+        
+        {isLoading ? (
+          <Loading height="h-[50vh]" />
+        ) : (
+          <ChallengeList
+            challenges={challenges}
+            title={getTitleByType(type)}
+            emptyStateType={type === 'user' ? 'user' : 'system'}
+            singleRow={false}
+            showAddButton={type === 'user'}
+            onAddClick={handleCreateChallenge}
+            onChallengeDelete={handleModalSuccess}
+          />
+        )}
 
         <ChallengeFormModal
           isOpen={showModal}
@@ -118,7 +124,7 @@ function FilteredChallengesContent() {
 
 export default function FilteredChallengesPage() {
   return (
-    <Suspense fallback={<LoadingScreen />}>
+    <Suspense fallback={<Loading height="h-screen" />}>
       <FilteredChallengesContent />
     </Suspense>
   )

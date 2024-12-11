@@ -150,22 +150,22 @@ export default function ChallengeFormModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4">
       <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md relative">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          className="absolute right-2 top-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
 
-        <div className="p-6">
-          <h2 className="text-2xl font-bold mb-6">
+        <div className="p-3 sm:p-6">
+          <h2 className="text-lg sm:text-2xl font-bold mb-3 sm:mb-6 pr-6">
             {initialData ? 'Edit Challenge' : 'Create New Challenge'}
           </h2>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex flex-col items-center gap-2">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-6">
+            <div className="flex flex-col items-center gap-1 sm:gap-2">
               <label className="block text-sm font-medium">Choose an emoji</label>
               <EmojiPicker
                 onEmojiSelect={setSelectedEmoji}
@@ -174,12 +174,12 @@ export default function ChallengeFormModal({
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Challenge Period</label>
-              <div className="grid grid-cols-2 gap-3">
+              <label className="block text-sm font-medium mb-1 sm:mb-2">Challenge Period</label>
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setSelectedPeriod('DAY')}
-                  className={`px-4 py-2 rounded-xl border-2 transition-colors ${
+                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border-2 transition-colors text-sm ${
                     selectedPeriod === 'DAY'
                       ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]'
                       : 'border-gray-200 dark:border-gray-700 hover:border-[var(--accent)]'
@@ -190,7 +190,7 @@ export default function ChallengeFormModal({
                 <button
                   type="button"
                   onClick={() => setSelectedPeriod('WEEK')}
-                  className={`px-4 py-2 rounded-xl border-2 transition-colors ${
+                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border-2 transition-colors text-sm ${
                     selectedPeriod === 'WEEK'
                       ? 'border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--accent)]'
                       : 'border-gray-200 dark:border-gray-700 hover:border-[var(--accent)]'
@@ -203,7 +203,7 @@ export default function ChallengeFormModal({
 
             <div>
               <label className="block text-sm font-medium mb-1">
-                Title <span className="text-xs text-[var(--foreground)]/60">(2-50 characters)</span>
+                Title <span className="text-xs text-[var(--foreground)]/60">(2-50 chars)</span>
               </label>
               <input
                 type="text"
@@ -212,7 +212,7 @@ export default function ChallengeFormModal({
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 required
                 maxLength={50}
-                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600 ${
+                className={`w-full px-3 py-2 sm:px-4 sm:py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600 text-sm ${
                   titleError ? 'border-red-500' : ''
                 }`}
                 placeholder="Enter challenge title"
@@ -220,13 +220,13 @@ export default function ChallengeFormModal({
                 onFocus={() => setTitleError(null)}
               />
               {titleError && (
-                <p className="mt-1 text-red-500 text-sm">{titleError}</p>
+                <p className="mt-0.5 text-red-500 text-xs sm:text-sm">{titleError}</p>
               )}
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-1">
-                Description <span className="text-xs text-[var(--foreground)]/60">(max 400 characters)</span>
+                Description <span className="text-xs text-[var(--foreground)]/60">(max 400)</span>
               </label>
               <textarea
                 name="description"
@@ -234,8 +234,8 @@ export default function ChallengeFormModal({
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 required
                 maxLength={400}
-                rows={4}
-                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600 ${
+                rows={3}
+                className={`w-full px-3 py-2 sm:px-4 sm:py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600 text-sm ${
                   descriptionError ? 'border-red-500' : ''
                 }`}
                 placeholder="Describe your challenge"
@@ -243,7 +243,7 @@ export default function ChallengeFormModal({
                 onFocus={() => setDescriptionError(null)}
               />
               {descriptionError && (
-                <p className="mt-1 text-red-500 text-sm">{descriptionError}</p>
+                <p className="mt-0.5 text-red-500 text-xs sm:text-sm">{descriptionError}</p>
               )}
             </div>
 
@@ -256,7 +256,7 @@ export default function ChallengeFormModal({
                 onChange={(e) => setFormData(prev => ({ ...prev, reward: parseInt(e.target.value) || 0 }))}
                 required
                 min="1"
-                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600 ${
+                className={`w-full px-3 py-2 sm:px-4 sm:py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] dark:bg-gray-700 dark:border-gray-600 text-sm ${
                   rewardError ? 'border-red-500' : ''
                 }`}
                 placeholder="Enter reward points"
@@ -264,23 +264,23 @@ export default function ChallengeFormModal({
                 onFocus={() => setRewardError(null)}
               />
               {rewardError && (
-                <p className="mt-1 text-red-500 text-sm">{rewardError}</p>
+                <p className="mt-0.5 text-red-500 text-xs sm:text-sm">{rewardError}</p>
               )}
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={handleGenerateWithAI}
                 disabled={isGenerating || isLoading}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 
+                className="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-xl border-2 
                   border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)]/10 
-                  transition-colors disabled:opacity-50 font-medium"
+                  transition-colors disabled:opacity-50 font-medium text-sm"
               >
                 {isGenerating ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  <Bot className="w-5 h-5" />
+                  <Bot className="w-4 h-4" />
                 )}
                 Generate with AI
               </button>
@@ -288,7 +288,7 @@ export default function ChallengeFormModal({
               <GradientButton
                 type="submit"
                 disabled={isLoading || isGenerating}
-                className="flex-1 px-6 py-3 font-medium"
+                className="px-3 py-2 sm:px-6 sm:py-3 font-medium text-sm"
               >
                 {isLoading ? 'Saving...' : initialData ? 'Save Changes' : 'Create Challenge'}
               </GradientButton>

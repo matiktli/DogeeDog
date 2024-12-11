@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/lib/auth'
+import { prompts } from '@/app/resources/config/prompts';
 
 // Configure OpenAI
 const openai = new OpenAI({
@@ -38,49 +39,33 @@ export async function POST(request: Request) {
       );
     }
 
-    const prompt = `Generate ${count} unique and fun dog challenges. Return the result as a JSON array where each challenge object has these exact fields matching the following TypeScript interface:
-
-    interface Challenge {
-      title: string;        // A short, engaging title (2-50 characters)
-      description: string;  // Clear description of what the dog owner needs to do (max 400 characters)
-      icon: string;        // A single emoji that represents the challenge
-      reward: number;      // A number between 10 and 25
-    }
-
-    Example response format:
-    [
-      {
-        "title": "Morning Walk Challenge",
-        "description": "Take your dog for a 15-minute walk before breakfast",
-        "icon": "🌅",
-        "reward": 15
-      }
-    ]
-
-    Make sure:
-    1. Each title is unique and engaging
-    2. Descriptions are clear and actionable
-    3. Icons are relevant single emojis
-    4. Reward points are numbers between 10 and 25
-    
-    These challenges are for a ${period.toLowerCase()}ly period.`;
+    const prompt = prompts.challengeGeneration(period, count);
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
+          role: "system",
+          content: "You are a creative dog trainer who loves to make engaging and sometimes silly challenges for dog owners. Mix practical training with fun activities. Respond with raw JSON only, no markdown formatting or explanation text.",
+        },
+        {
           role: "user",
           content: prompt,
         },
       ],
-      temperature: 0.7,
+      temperature: 0.9,
+      presence_penalty: 0.6,
+      frequency_penalty: 0.6,
     });
 
     const response = completion.choices[0].message?.content;
     let challenges = [];
     
     try {
-      challenges = JSON.parse(response || '[]');
+      // Clean the response by removing any markdown formatting
+      const cleanedResponse = response?.replace(/```json\n?|```\n?/g, '') || '[]';
+      challenges = JSON.parse(cleanedResponse);
+      
       if (!Array.isArray(challenges)) {
         challenges = [challenges];
       }
@@ -93,6 +78,7 @@ export async function POST(request: Request) {
       }));
 
     } catch (error) {
+      console.error('Parse error:', error, 'Response:', response);
       return NextResponse.json(
         { error: 'Failed to parse ChatGPT response: ' + error },
         { status: 500 }

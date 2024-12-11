@@ -15,20 +15,20 @@ export default function LoadingScreen() {
   }, [])
 
   return (
-    <div className="fixed inset-0 bg-[var(--background)]/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
+    <div className="absolute inset-0 bg-[var(--background)]/90 backdrop-blur-sm z-[100] flex flex-col items-center justify-center">
       <div className="animate-bounce">
-        <div className="w-16 h-16">
+        <div className="w-12 h-12">
           <Image
             src="/loading.svg"
             alt="Loading"
-            width={64}
-            height={64}
+            width={48}
+            height={48}
             className="opacity-80"
           />
         </div>
       </div>
-      <div className="mt-4 font-mono text-xl text-[var(--foreground)]/80">
-        <span className="inline-block w-12 text-center">{dots}</span>
+      <div className="mt-2 font-mono text-base text-[var(--foreground)]/80">
+        <span className="inline-block w-8 text-center">{dots}</span>
       </div>
     </div>
   )

@@ -5,6 +5,7 @@ import ChallengeCard from './ChallengeCard'
 import { Challenge } from '@/app/types/challenge'
 import GradientButton from '@/app/components/GradientButton'
 import ScrollableList from '@/app/components/ScrollableList'
+import Loading from '@/app/components/Loading'
 
 interface ChallengeListProps {
   challenges: Challenge[]
@@ -14,6 +15,7 @@ interface ChallengeListProps {
   onAddClick?: () => void
   onChallengeDelete?: () => void
   singleRow?: boolean
+  isLoading?: boolean
 }
 
 export default function ChallengeList({ 
@@ -22,8 +24,13 @@ export default function ChallengeList({
   showAddButton = false, 
   onAddClick, 
   onChallengeDelete,
-  singleRow = false
+  singleRow = false,
+  isLoading = false
 }: ChallengeListProps) {
+  if (isLoading) {
+    return <Loading height="h-[240px]" />
+  }
+
   if (challenges.length === 0) {
     if (emptyStateType === 'user') {
       return (
