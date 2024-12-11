@@ -22,9 +22,6 @@ export async function GET(
         const type = searchParams.get('type')
         const userId = searchParams.get('userId')
         const challengeId = searchParams.get('challengeId')
-        
-        // add sleep for 1 second
-        await new Promise(resolve => setTimeout(resolve, 1000))
 
         const skip = (page - 1) * limit
 

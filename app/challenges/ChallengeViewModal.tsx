@@ -8,6 +8,7 @@ import DogSelectionModal from './DogSelectionModal'
 import { Dog } from '@/app/types/dog'
 import Portal from '../components/Portal'
 import GoodLuckModal from './GoodLuckModal'
+import SmallCardList from '../components/SmallCardList'
 
 interface ChallengeViewModalProps {
   challenge: Challenge
@@ -25,6 +26,7 @@ export default function ChallengeViewModal({
   const [selectedDogNames, setSelectedDogNames] = useState<string[]>([])
   const [dogs, setDogs] = useState<Dog[]>([])
   const [isLoadingDogs, setIsLoadingDogs] = useState(true)
+  const [participatingDogs, setParticipatingDogs] = useState<Dog[]>([])
 
   useEffect(() => {
     const fetchDogs = async () => {
@@ -40,10 +42,33 @@ export default function ChallengeViewModal({
       }
     }
 
+    const fetchParticipatingDogs = async () => {
+      try {
+        // First get all user's dogs
+        const dogsResponse = await fetch('/api/dogs')
+        const userDogs = await dogsResponse.json()
+        
+        // Then fetch participating dogs for this challenge
+        const dogIds = userDogs.map((dog: Dog) => dog._id).join(',')
+        const response = await fetch(`/api/challenges/dogs?challengeIds=${challenge._id}&dogIds=${dogIds}`)
+        const data = await response.json()
+        
+        // Map participating dogs back to full dog objects
+        const participatingDogIds = new Set(data.dogChallenges.map((dc: any) => dc.dogId))
+        const participatingDogsFull = userDogs.filter((dog: Dog) => participatingDogIds.has(dog._id))
+        
+        setParticipatingDogs(participatingDogsFull)
+      } catch (error) {
+        console.error('Error fetching participating dogs:', error)
+      } finally {
+      }
+    }
+
     if (isOpen) {
       fetchDogs()
+      fetchParticipatingDogs()
     }
-  }, [isOpen])
+  }, [isOpen, challenge._id])
 
   const handleChallengeAccepted = (dogNames: string[]) => {
     setShowDogSelection(false)
@@ -111,9 +136,23 @@ export default function ChallengeViewModal({
               {/* Description */}
               <div className="mt-6 mb-8">
                 <h3 className="text-lg font-semibold mb-2">Description</h3>
-                <p className="text-[var(--foreground)]/60">
+                <p className="text-[var(--foreground)]/60 mb-6">
                   {challenge.description}
                 </p>
+
+                {/* Participating Dogs Section */}
+                {participatingDogs.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
+                      🐾 Your Pups Taking On This Challenge
+                    </h3>
+                    <SmallCardList
+                      dogs={participatingDogs}
+                      maxEntriesInRow={5}
+                      singleRow={true}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Footer with Accept Button */}
