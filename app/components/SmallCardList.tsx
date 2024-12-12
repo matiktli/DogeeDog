@@ -6,6 +6,9 @@ interface SmallCardListProps {
   maxEntriesInRow: number;
   singleRow?: boolean;
   onDogClick?: (dogId: string) => void;
+  selectedDogIds?: string[];
+  completedDogIds?: string[];
+  challengeIcon?: string;
 }
 
 const SmallCardList = ({
@@ -13,6 +16,9 @@ const SmallCardList = ({
   maxEntriesInRow,
   singleRow = false,
   onDogClick,
+  selectedDogIds = [],
+  completedDogIds = [],
+  challengeIcon = ''
 }: SmallCardListProps) => {
   const visibleDogs = singleRow ? dogs.slice(0, maxEntriesInRow) : dogs;
   const remainingCount = singleRow ? dogs.length - maxEntriesInRow : 0;
@@ -25,6 +31,9 @@ const SmallCardList = ({
           imageUrl={dog.imageUrl}
           name={dog.name}
           onClick={() => onDogClick?.(dog._id)}
+          isSelected={selectedDogIds.includes(dog._id)}
+          isCompleted={completedDogIds.includes(dog._id)}
+          challengeIcon={challengeIcon}
         />
       ))}
       

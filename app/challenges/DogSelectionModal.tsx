@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
-import Image from 'next/image'
 import { Challenge } from '@/app/types/challenge'
 import { Dog } from '@/app/types/dog'
 import GradientButton from '../components/GradientButton'
+import SmallDogCard from '../components/SmallDogCard'
 
 interface DogSelectionModalProps {
   challenge: Challenge
@@ -24,8 +24,28 @@ export default function DogSelectionModal({
 }: DogSelectionModalProps) {
   const [selectedDogs, setSelectedDogs] = useState<Dog[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [participatingDogIds, setParticipatingDogIds] = useState<string[]>([])
+
+  useEffect(() => {
+    const fetchParticipatingDogs = async () => {
+      try {
+        const response = await fetch(`/api/challenges/dogs?challengeIds=${challenge._id}`)
+        const data = await response.json()
+        const participatingIds = data.dogChallenges.map((dc: any) => dc.dogId)
+        setParticipatingDogIds(participatingIds)
+      } catch (error) {
+        console.error('Error fetching participating dogs:', error)
+      }
+    }
+
+    if (isOpen) {
+      fetchParticipatingDogs()
+    }
+  }, [isOpen, challenge._id])
 
   const handleDogSelect = (dog: Dog) => {
+    if (participatingDogIds.includes(dog._id)) return
+    
     setSelectedDogs(prev => 
       prev.includes(dog) 
         ? prev.filter(d => d._id !== dog._id)
@@ -38,7 +58,7 @@ export default function DogSelectionModal({
 
     setIsLoading(true)
     try {
-      await fetch('/api/challenges/accept', {
+      const response = await fetch('/api/challenges/dogs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -48,6 +68,20 @@ export default function DogSelectionModal({
           dogIds: selectedDogs.map(dog => dog._id)
         }),
       })
+
+      const data = await response.json()
+      
+      if (!response.ok) {
+        if (data.existingDogIds) {
+          // Handle case where some dogs are already participating
+          const availableDogs = selectedDogs.filter(
+            dog => !data.existingDogIds.includes(dog._id)
+          )
+          setSelectedDogs(availableDogs)
+          return
+        }
+        throw new Error(data.error)
+      }
 
       onChallengeAccepted(selectedDogs.map(dog => dog.name))
     } catch (error) {
@@ -72,42 +106,18 @@ export default function DogSelectionModal({
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-6">Select Your Dogs</h2>
           
-          <div className="grid grid-cols-3 gap-3 mb-6 max-h-[300px] overflow-y-auto">
+          <div className="grid grid-cols-4 gap-4 mb-6 h-[90px] content-start overflow-y-auto px-2">
             {preloadedDogs.map(dog => (
-              <button
-                key={dog._id}
-                onClick={() => handleDogSelect(dog)}
-                className={`
-                  relative p-2 rounded-xl border-2 transition-all
-                  ${selectedDogs.includes(dog)
-                    ? 'border-[var(--accent)] bg-[var(--accent)]/10 ring-2 ring-[var(--accent)]'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-[var(--accent)]'
-                  }
-                `}
-              >
-                <div className="relative w-full aspect-square rounded-lg overflow-hidden mb-1">
-                  <Image
-                    src={dog.imageUrl}
-                    alt={dog.name}
-                    fill
-                    className={`object-cover transition-transform ${
-                      selectedDogs.includes(dog) ? 'scale-95' : ''
-                    }`}
-                  />
-                  {selectedDogs.includes(dog) && (
-                    <div className="absolute inset-0 bg-[var(--accent)]/20 flex items-center justify-center">
-                      <div className="w-6 h-6 rounded-full bg-[var(--accent)] text-white flex items-center justify-center">
-                        ✓
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <p className={`text-sm font-medium truncate text-center ${
-                  selectedDogs.includes(dog) ? 'text-[var(--accent)]' : ''
-                }`}>
-                  {dog.name}
-                </p>
-              </button>
+              <div key={dog._id} className="h-fit">
+                <SmallDogCard
+                  imageUrl={dog.imageUrl}
+                  name={dog.name}
+                  onClick={() => handleDogSelect(dog)}
+                  isSelected={selectedDogs.includes(dog)}
+                  isCompleted={participatingDogIds.includes(dog._id)}
+                  challengeIcon={challenge.icon}
+                />
+              </div>
             ))}
           </div>
 

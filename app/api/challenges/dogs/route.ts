@@ -87,4 +87,67 @@ export async function GET(req: Request) {
       { status: 500 }
     )
   }
+}
+
+export async function POST(req: Request) {
+  try {
+    await dbConnect()
+
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const body = await req.json()
+    const { challengeId, dogIds } = body
+
+    // Check if any of the dogs are already participating in this challenge
+    const existingChallenges = await DogChallenge.find({
+      challengeId,
+      dogId: { $in: dogIds }
+    })
+
+    if (existingChallenges.length > 0) {
+      const existingDogIds = existingChallenges.map(ec => ec.dogId)
+      return NextResponse.json(
+        { 
+          error: 'Some dogs are already participating in this challenge',
+          existingDogIds 
+        },
+        { status: 400 }
+      )
+    }
+
+    // Create new dog challenges for each dog
+    const newDogChallenges = await Promise.all(
+      dogIds.map(async (dogId: string) => {
+        return DogChallenge.create({
+          dogId,
+          challengeId,
+          createdBy: session.user.id,
+          progress: {
+            current: 0,
+            goal: 1 // You might want to get this from the challenge model
+          },
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+      })
+    )
+
+    return NextResponse.json({
+      message: 'Dog challenges created successfully',
+      dogChallenges: newDogChallenges
+    })
+
+  } catch (error) {
+    console.error('Error creating dog challenge:', error)
+    return NextResponse.json(
+      { error: 'Failed to create dog challenge' },
+      { status: 500 }
+    )
+  }
 } 

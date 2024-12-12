@@ -7,7 +7,7 @@ import { Challenge } from '@/app/types/challenge'
 import { useRouter } from 'next/navigation'
 import ChallengeViewModal from './ChallengeViewModal'
 import UserPill from '@/app/components/UserPill'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AvatarGroup } from '../components/AvatarGroup'
 
 interface ChallengeCardProps {
@@ -43,6 +43,7 @@ export default function ChallengeCard({
   const router = useRouter()
   const { data: session } = useSession()
   const [showViewModal, setShowViewModal] = useState(false)
+  const queryClient = useQueryClient()
 
   const { data: dogChallenges } = useQuery<{ dogChallenges: DogChallenge[] }>({
     queryKey: ['dogChallenges', challenge._id],
@@ -54,21 +55,36 @@ export default function ChallengeCard({
   })
 
   const { data: users } = useQuery<User[]>({
-    queryKey: ['challengeUsers', dogChallenges?.dogChallenges],
+    queryKey: ['users', dogChallenges?.dogChallenges?.map(dc => dc.createdBy).join(',')],
     queryFn: async () => {
       if (!dogChallenges?.dogChallenges) return []
       
-      const userIds = [...new Set(dogChallenges.dogChallenges.map((dc: DogChallenge) => dc.createdBy))]
+      const userIds = [...new Set(dogChallenges.dogChallenges.map(dc => dc.createdBy))]
       
-      const userPromises = userIds.map(async (userId) => {
-        const res = await fetch(`/api/users/${userId}`)
-        if (!res.ok) throw new Error('Failed to fetch user')
-        return res.json()
+      // Check cache first
+      const cachedUsers = userIds.map(id => 
+        queryClient.getQueryData<User>(['user', id])
+      ).filter(Boolean)
+
+      if (cachedUsers.length === userIds.length) {
+        return cachedUsers
+      }
+
+      // Fetch all missing users in one request
+      const res = await fetch(`/api/users?ids=${userIds.join(',')}`)
+      if (!res.ok) throw new Error('Failed to fetch users')
+      const fetchedUsers = await res.json()
+
+      // Cache individual users for future use
+      fetchedUsers.forEach((user: User) => {
+        queryClient.setQueryData(['user', user._id], user)
       })
 
-      return Promise.all(userPromises)
+      return fetchedUsers
     },
-    enabled: !!dogChallenges?.dogChallenges
+    enabled: !!dogChallenges?.dogChallenges,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    gcTime: 30 * 60 * 1000,   // Keep in cache for 30 minutes (formerly cacheTime)
   })
 
   useEffect(() => {

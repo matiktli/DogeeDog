@@ -22,6 +22,10 @@ const dogChallengeSchema = new mongoose.Schema({
       default: 0
     }
   },
+  completedDate: {
+    type: Date,
+    default: null
+  },
   createdAt: {
     type: Date,
     default: Date.now

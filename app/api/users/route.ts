@@ -15,27 +15,34 @@ export async function GET(
 
     await connectDB()
 
-    const url = new URL(request.url)
-    const searchParams = url.searchParams
+    const { searchParams } = new URL(request.url)
+    
+    // Handle both specific user IDs and paginated search
+    const userIds = searchParams.get('ids')?.split(',') || []
     const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('size') || '4')
-    const name = searchParams.get('name') || ''
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const search = searchParams.get('search') || ''
 
     const skip = (page - 1) * limit
 
-    // Build the query
-    const query: any = {}
-    if (name) {
-      query.name = { $regex: name, $options: 'i' }
+    let query = {}
+    
+    if (userIds.length) {
+      query = { _id: { $in: userIds } }
+    } else if (search) {
+      query = {
+        $or: [
+          { name: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } }
+        ]
+      }
     }
 
-    // Execute query with pagination
     const [users, total] = await Promise.all([
       User.find(query)
-        .select('-passwordHash')
         .skip(skip)
         .limit(limit)
-        .sort({ name: 1 }),
+        .select('name email image'),
       User.countDocuments(query)
     ])
 
@@ -43,9 +50,8 @@ export async function GET(
       users,
       pagination: {
         currentPage: page,
-        pageSize: limit,
-        totalItems: total,
-        totalPages: Math.ceil(total / limit)
+        totalPages: Math.ceil(total / limit),
+        totalItems: total
       }
     })
   } catch (error) {

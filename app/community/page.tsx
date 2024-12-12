@@ -5,16 +5,17 @@ import SearchableList from '@/app/components/SearchableList'
 import UserCard from '@/app/components/UserCard'
 import Loading from '@/app/components/Loading'
 import { User } from '@/app/types/user'
+import { Pagination } from '@/app/types/pagination'
 
 export default function CommunityPage() {
   const [users, setUsers] = useState<User[]>([])
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState<Pagination>({
     currentPage: 1,
-    pageSize: 4,
-    totalItems: 0,
-    totalPages: 0
+    totalPages: 1,
+    pageSize: 10,
+    totalItems: 0
   })
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [searchParams, setSearchParams] = useState<Record<string, string>>({})
   const loadingRef = useRef(false)
 
@@ -35,7 +36,7 @@ export default function CommunityPage() {
       const data = await response.json()
       
       setUsers(prev => isLoadMore ? [...prev, ...data.users] : data.users)
-      setPagination(data.pagination)
+      updatePagination(data.pagination)
     } catch (error) {
       console.error('Error fetching users:', error)
     } finally {
@@ -46,9 +47,19 @@ export default function CommunityPage() {
 
   // Initial load and search
   useEffect(() => {
-    setUsers([]) // Clear users when search params change
-    fetchUsers(1)
-  }, [searchParams, fetchUsers])
+    const loadUsers = async () => {
+      try {
+        setIsLoading(true)
+        await fetchUsers(pagination.currentPage)
+      } catch (error) {
+        console.error('Error loading users:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadUsers()
+  }, [pagination.currentPage, fetchUsers])
 
   const handleLoadMore = useCallback(async () => {
     setIsLoading(true)
@@ -83,6 +94,15 @@ export default function CommunityPage() {
   ]
 
   const hasMore = pagination.currentPage < pagination.totalPages
+
+  const updatePagination = (data: any) => {
+    setPagination({
+      currentPage: data.currentPage || 1,
+      totalPages: data.totalPages || 1,
+      pageSize: data.pageSize || 10,
+      totalItems: data.totalItems || 0
+    })
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
