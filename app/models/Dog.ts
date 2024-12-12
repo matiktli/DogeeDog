@@ -19,6 +19,11 @@ const dogSchema = new mongoose.Schema({
     required: true,
     enum: ['male', 'female']
   },
+  description: {
+    type: String,
+    maxLength: 500,
+    default: ''
+  },
   imageUrl: {
     type: String,
     required: true

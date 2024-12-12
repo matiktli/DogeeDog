@@ -21,6 +21,7 @@ interface PetFormModalProps {
     breed: string
     gender: string
     imageUrl: string
+    description?: string
   }
 }
 
@@ -45,6 +46,10 @@ export default function PetFormModal({
     x: 0,
     y: 0,
   })
+  const [formData, setFormData] = useState({
+    description: initialData?.description || ''
+  })
+  const [isExpanded, setIsExpanded] = useState(false)
 
   useEffect(() => {
     fetch('/data/dog-breeds.json')
@@ -81,9 +86,16 @@ export default function PetFormModal({
     }
   }
 
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      description: e.target.value
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!imagePreview && !initialData) return // Allow edit without changing image
+    if (!imagePreview && !initialData) return
 
     try {
       setIsLoading(true)
@@ -91,7 +103,8 @@ export default function PetFormModal({
       const form = e.target as HTMLFormElement
       const nameInput = form.querySelector<HTMLInputElement>('input[name="name"]')
       const genderInput = form.querySelector<HTMLInputElement>('input[name="gender"]:checked')
-      
+      const descriptionTextarea = form.querySelector<HTMLTextAreaElement>('textarea[name="description"]')
+
       if (!nameInput?.value || !breedInput || !genderInput?.value) {
         throw new Error('Please fill in all required fields')
       }
@@ -100,6 +113,12 @@ export default function PetFormModal({
       formData.append('name', nameInput.value)
       formData.append('breed', breedInput)
       formData.append('gender', genderInput.value)
+      
+      if (descriptionTextarea?.value) {
+        formData.append('description', descriptionTextarea.value)
+      } else {
+        console.log('No description provided')
+      }
 
       // Only include image if it's changed or it's a new pet
       if (imagePreview && imagePreview !== initialData?.imageUrl) {
@@ -308,6 +327,33 @@ export default function PetFormModal({
                   <span className="relative z-10">♀️ Female</span>
                   <div className="absolute inset-0 bg-pink-500 opacity-0 group-hover:opacity-10 peer-checked:opacity-20 rounded-xl transition-opacity duration-200"></div>
                 </label>
+              </div>
+            </div>
+
+            {/* Add this description field before the submit button */}
+            <div className="form-control">
+              <label className="block text-sm font-medium mb-1">Description</label>
+              <div className="relative">
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleDescriptionChange}
+                  className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8B4513] dark:bg-gray-700 dark:border-gray-600 ${
+                    isExpanded ? 'h-48' : 'h-24'
+                  } transition-all duration-200`}
+                  maxLength={500}
+                  placeholder="Tell us about your dog..."
+                />
+                <button 
+                  type="button"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="absolute right-2 bottom-2 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                >
+                  {isExpanded ? 'Show less' : 'Show more'}
+                </button>
+              </div>
+              <div className="text-sm text-gray-500 text-right mt-1">
+                {formData.description.length}/500
               </div>
             </div>
 

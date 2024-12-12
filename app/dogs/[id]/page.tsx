@@ -9,12 +9,13 @@ import LoadingScreen from '@/app/components/LoadingScreen'
 import Breadcrumb from '@/app/components/Breadcrumb'
 import DogChallengeList from '@/app/components/DogChallengeList'
 import { DogChallenge } from '@/app/types/dogchallenge'
+import DogProfile from '@/components/DogProfile'
 
 interface DogData {
   _id: string
   name: string
   breed: string
-  gender: string
+  gender: "male" | "female"
   imageUrl: string
   createdAt: string
   userId: string
@@ -201,6 +202,10 @@ export default function DogPage({ params }: PageProps) {
                 <p><span className="font-medium">Joined:</span> {new Date(dog.createdAt).toLocaleDateString()}</p>
               </div>
             </div>
+          </div>
+
+          <div className="bg-white dark:bg-black/20 rounded-2xl overflow-hidden shadow-lg mt-6 p-6">
+            <DogProfile dog={dog} />
           </div>
 
           {/* Challenges Section */}

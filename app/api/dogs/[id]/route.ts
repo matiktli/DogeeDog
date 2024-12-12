@@ -5,6 +5,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { v4 as uuidv4 } from 'uuid'
 import dbConnect from '@/app/lib/mongodb'
 import { Dog } from '@/app/models/Dog'
+import type { DogData } from '@/types/dog'
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -39,7 +40,12 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(dog)
+    const dogData: DogData = {
+      ...dog,
+      gender: dog.gender.toLowerCase() as "male" | "female"
+    }
+
+    return NextResponse.json(dogData)
   } catch (error) {
     console.error('Error fetching dog:', error)
     return NextResponse.json(
@@ -78,6 +84,8 @@ export async function PUT(
     const name = formData.get('name') as string
     const breed = formData.get('breed') as string
     const gender = formData.get('gender') as string
+    const description = formData.get('description') as string
+
     const image = formData.get('image') as File | null
 
     const updateData: {
@@ -85,10 +93,12 @@ export async function PUT(
       breed: string;
       gender: string;
       imageUrl?: string;
+      description?: string;
     } = {
       name,
       breed,
-      gender
+      gender,
+      description
     }
 
     // Handle image upload if provided
