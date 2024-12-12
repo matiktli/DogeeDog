@@ -7,6 +7,7 @@ interface SmallDogCardProps {
   onClick?: () => void;
   isSelected?: boolean;
   isCompleted?: boolean;
+  isInProgress?: boolean;
   challengeIcon?: string;
 }
 
@@ -16,6 +17,7 @@ const SmallDogCard = ({
   onClick,
   isSelected = false,
   isCompleted = false,
+  isInProgress = false,
   challengeIcon = ''
 }: SmallDogCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -26,11 +28,13 @@ const SmallDogCard = ({
         relative w-16 h-16 cursor-pointer group
         ${isSelected ? 'ring-2 ring-[var(--accent)]' : ''}
         ${isCompleted ? 'ring-2 ring-green-500 ring-opacity-50 cursor-default' : ''}
+        ${isInProgress ? 'ring-2 ring-gray-500 ring-opacity-50 cursor-default' : ''}
         ${isCompleted ? 'shadow-[0_0_15px_rgba(34,197,94,0.3)]' : ''}
+        ${isInProgress ? 'shadow-[0_0_15px_rgba(156,163,175,0.3)]' : ''}
       `}
-      onMouseEnter={() => !isCompleted && setIsHovered(true)}
-      onMouseLeave={() => !isCompleted && setIsHovered(false)}
-      onClick={!isCompleted ? onClick : undefined}
+      onMouseEnter={() => !isCompleted && !isInProgress && setIsHovered(true)}
+      onMouseLeave={() => !isCompleted && !isInProgress && setIsHovered(false)}
+      onClick={!isCompleted && !isInProgress ? onClick : undefined}
     >
       <div className={`
         absolute inset-0 rounded-lg overflow-hidden border-2 
@@ -65,10 +69,18 @@ const SmallDogCard = ({
             </div>
           </div>
         )}
+
+        {isInProgress && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-500/10">
+            <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center text-lg shadow-md">
+              ⏳
+            </div>
+          </div>
+        )}
       </div>
       
-      {isHovered && !isCompleted && (
-        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-[var(--background)] px-2 py-1 rounded-full text-xs shadow-sm whitespace-nowrap border border-[var(--secondary)]/30 text-[var(--foreground)]">
+      {isHovered && !isCompleted && !isInProgress && (
+        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-[var(--background)] px-2 py-1 rounded-full text-xs shadow-sm whitespace-nowrap border border-[var(--secondary)]/30">
           {name}
         </div>
       )}
@@ -76,6 +88,12 @@ const SmallDogCard = ({
       {isCompleted && (
         <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-green-500 px-2 py-1 rounded-full text-xs shadow-sm whitespace-nowrap text-white">
           Completed
+        </div>
+      )}
+
+      {isInProgress && (
+        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-gray-500 px-2 py-1 rounded-full text-xs shadow-sm whitespace-nowrap text-white">
+          In Progress
         </div>
       )}
     </div>

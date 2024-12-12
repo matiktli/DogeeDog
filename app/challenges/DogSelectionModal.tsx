@@ -15,6 +15,16 @@ interface DogSelectionModalProps {
   onChallengeAccepted: (dogNames: string[]) => void
 }
 
+interface DogChallenge {
+  _id: string
+  dogId: string
+  challengeId: string
+  progress: {
+    current: number
+    goal: number
+  }
+}
+
 export default function DogSelectionModal({
   challenge,
   isOpen,
@@ -24,27 +34,39 @@ export default function DogSelectionModal({
 }: DogSelectionModalProps) {
   const [selectedDogs, setSelectedDogs] = useState<Dog[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [participatingDogIds, setParticipatingDogIds] = useState<string[]>([])
+  const [dogChallenges, setDogChallenges] = useState<DogChallenge[]>([])
 
   useEffect(() => {
-    const fetchParticipatingDogs = async () => {
+    const fetchDogChallenges = async () => {
+      if (!isOpen || !preloadedDogs.length) return
+      
       try {
-        const response = await fetch(`/api/challenges/dogs?challengeIds=${challenge._id}`)
+        const dogIds = preloadedDogs.map(dog => dog._id).join(',')
+        const response = await fetch(`/api/challenges/dogs?challengeIds=${challenge._id}&dogIds=${dogIds}`)
         const data = await response.json()
-        const participatingIds = data.dogChallenges.map((dc: any) => dc.dogId)
-        setParticipatingDogIds(participatingIds)
+        setDogChallenges(data.dogChallenges || [])
       } catch (error) {
-        console.error('Error fetching participating dogs:', error)
+        console.error('Error fetching dog challenges:', error)
       }
     }
 
-    if (isOpen) {
-      fetchParticipatingDogs()
-    }
-  }, [isOpen, challenge._id])
+    fetchDogChallenges()
+  }, [isOpen, challenge._id, preloadedDogs])
+
+  const getDogChallengeState = (dogId: string): 'none' | 'in_progress' | 'completed' => {
+    const dogChallenge = dogChallenges.find(dc => dc.dogId === dogId)
+    if (!dogChallenge) return 'none'
+    return dogChallenge.progress.current >= dogChallenge.progress.goal 
+      ? 'completed' 
+      : 'in_progress'
+  }
+
+  const getAvailableDogCount = () => {
+    return preloadedDogs.filter(dog => getDogChallengeState(dog._id) === 'none').length
+  }
 
   const handleDogSelect = (dog: Dog) => {
-    if (participatingDogIds.includes(dog._id)) return
+    if (getDogChallengeState(dog._id) !== 'none') return
     
     setSelectedDogs(prev => 
       prev.includes(dog) 
@@ -91,6 +113,22 @@ export default function DogSelectionModal({
     }
   }
 
+  const getButtonText = () => {
+    if (isLoading) return 'Accepting Challenge...'
+    
+    const availableDogs = getAvailableDogCount()
+    if (availableDogs === 0) {
+      const allCompleted = preloadedDogs.every(
+        dog => getDogChallengeState(dog._id) === 'completed'
+      )
+      return allCompleted 
+        ? '🎉 All your pups mastered this challenge!'
+        : '⏳ Your pups are working on it!'
+    }
+    
+    return 'Accept Challenge'
+  }
+
   if (!isOpen) return null
 
   return (
@@ -107,26 +145,32 @@ export default function DogSelectionModal({
           <h2 className="text-2xl font-bold mb-6">Select Your Dogs</h2>
           
           <div className="grid grid-cols-4 gap-4 mb-6 h-[90px] content-start overflow-y-auto px-2">
-            {preloadedDogs.map(dog => (
-              <div key={dog._id} className="h-fit">
-                <SmallDogCard
-                  imageUrl={dog.imageUrl}
-                  name={dog.name}
-                  onClick={() => handleDogSelect(dog)}
-                  isSelected={selectedDogs.includes(dog)}
-                  isCompleted={participatingDogIds.includes(dog._id)}
-                  challengeIcon={challenge.icon}
-                />
-              </div>
-            ))}
+            {preloadedDogs.map(dog => {
+              const state = getDogChallengeState(dog._id)
+              return (
+                <div key={dog._id} className="h-fit">
+                  <SmallDogCard
+                    imageUrl={dog.imageUrl}
+                    name={dog.name}
+                    onClick={() => handleDogSelect(dog)}
+                    isSelected={selectedDogs.includes(dog)}
+                    isCompleted={state === 'completed'}
+                    isInProgress={state === 'in_progress'}
+                    challengeIcon={challenge.icon}
+                  />
+                </div>
+              )
+            })}
           </div>
 
           <GradientButton
             onClick={handleAcceptChallenge}
-            disabled={selectedDogs.length === 0 || isLoading}
-            className="w-full px-6 py-3 font-medium"
+            disabled={selectedDogs.length === 0 || isLoading || getAvailableDogCount() === 0}
+            className={`w-full px-6 py-3 font-medium ${
+              getAvailableDogCount() === 0 ? 'bg-gray-500/20 cursor-default' : ''
+            }`}
           >
-            {isLoading ? 'Accepting Challenge...' : 'Accept Challenge'}
+            {getButtonText()}
           </GradientButton>
         </div>
       </div>

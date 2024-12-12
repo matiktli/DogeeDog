@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { Challenge } from '@/app/types/challenge'
 import ChallengeList from './ChallengeList'
@@ -8,8 +8,11 @@ import { useLoading } from '@/app/hooks/useLoading'
 import ChallengeFormModal from './ChallengeFormModal'
 import Link from 'next/link'
 import Breadcrumb from '@/app/components/Breadcrumb'
+import { useSearchParams } from 'next/navigation'
+import ChallengeViewModal from './ChallengeViewModal'
+import Loading from '@/app/components/Loading'
 
-export default function ChallengesPage() {
+function ChallengesContent() {
   const { data: session } = useSession()
   const [dailyChallenges, setDailyChallenges] = useState<Challenge[]>([])
   const [weeklyChallenges, setWeeklyChallenges] = useState<Challenge[]>([])
@@ -18,6 +21,9 @@ export default function ChallengesPage() {
   const { isLoading, withLoading } = useLoading()
   const [showModal, setShowModal] = useState(false)
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | undefined>(undefined)
+  const searchParams = useSearchParams()
+  const [viewModalOpen, setViewModalOpen] = useState(false)
+  const [viewChallenge, setViewChallenge] = useState<Challenge | undefined>(undefined)
 
   const fetchChallenges = async () => {
     try {
@@ -47,6 +53,24 @@ export default function ChallengesPage() {
       withLoading(fetchChallenges)
     }
   }, [session?.user?.id, withLoading])
+
+  useEffect(() => {
+    const challengeId = searchParams.get('challengeId')
+    if (challengeId) {
+      const fetchChallenge = async () => {
+        try {
+          const response = await fetch(`/api/challenges/${challengeId}`)
+          if (!response.ok) throw new Error('Failed to fetch challenge')
+          const challenge = await response.json()
+          setViewChallenge(challenge)
+          setViewModalOpen(true)
+        } catch (error) {
+          console.error('Error fetching challenge:', error)
+        }
+      }
+      fetchChallenge()
+    }
+  }, [searchParams])
 
   const handleCreateChallenge = () => {
     setSelectedChallenge(undefined)
@@ -162,7 +186,34 @@ export default function ChallengesPage() {
           initialData={selectedChallenge}
           onSuccess={handleModalSuccess}
         />
+
+        {/* Separate ChallengeViewModal */}
+        {viewChallenge && (
+          <ChallengeViewModal
+            isOpen={viewModalOpen}
+            onClose={() => {
+              setViewModalOpen(false)
+              setViewChallenge(undefined)
+              // Clear the URL parameter when closing the modal
+              if (window.history.pushState) {
+                const newurl = window.location.pathname
+                window.history.pushState({ path: newurl }, '', newurl)
+              }
+            }}
+            challenge={viewChallenge}
+          />
+        )}
       </div>
+    </div>
+  )
+}
+
+export default function ChallengesPage() {
+  return (
+    <div>
+      <Suspense fallback={<Loading height="h-screen" containerClassName="fixed inset-0" />}>
+        <ChallengesContent />
+      </Suspense>
     </div>
   )
 } 

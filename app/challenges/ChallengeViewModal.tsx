@@ -10,6 +10,7 @@ import Portal from '../components/Portal'
 import GoodLuckModal from './GoodLuckModal'
 import SmallCardList from '../components/SmallCardList'
 import CongratulationsModal from './CongratulationsModal'
+import Loading from '../components/Loading'
 
 interface ChallengeViewModalProps {
   challenge: Challenge
@@ -80,7 +81,7 @@ export default function ChallengeViewModal({
         
         setParticipatingDogs(participatingDogsFull)
         
-        // Set completed dog IDs
+        // Set completed dog IDs - only if progress matches goal
         const completedDogIds = data.dogChallenges
           .filter((dc: DogChallenge) => dc.progress.current >= dc.progress.goal)
           .map((dc: DogChallenge) => dc.dogId)
@@ -260,11 +261,13 @@ export default function ChallengeViewModal({
                 </p>
 
                 {/* Participating Dogs Section */}
-                {participatingDogs.length > 0 && (
-                  <div className="mt-6">
-                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
-                       Your Pups Taking On This Challenge
-                    </h3>
+                <div className="mt-6">
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
+                    Your Pups Taking On This Challenge
+                  </h3>
+                  {isLoadingDogs ? (
+                    <Loading height="h-20" containerClassName="rounded-xl" />
+                  ) : participatingDogs.length > 0 ? (
                     <SmallCardList
                       dogs={participatingDogs}
                       maxEntriesInRow={5}
@@ -274,8 +277,12 @@ export default function ChallengeViewModal({
                       completedDogIds={completedDogIds}
                       challengeIcon={challenge.icon}
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div className="text-sm text-[var(--foreground)]/60 italic">
+                      None of your pups are taking this challenge yet
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Footer with Button */}

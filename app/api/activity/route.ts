@@ -219,6 +219,96 @@ export async function GET(
                 }
             },
 
+            // Add new union with CHALLENGE_COMPLETED activities
+            {
+                $unionWith: {
+                    coll: 'dogchallenges',
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ['$progress.current', '$progress.goal'] },
+                                completedDate: { $exists: true }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'dogs',
+                                let: { dogId: { $toObjectId: '$dogId' } },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: { $eq: ['$_id', '$$dogId'] }
+                                        }
+                                    }
+                                ],
+                                as: 'dog'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'challenges',
+                                let: { challengeId: { $toObjectId: '$challengeId' } },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: { $eq: ['$_id', '$$challengeId'] }
+                                        }
+                                    }
+                                ],
+                                as: 'challenge'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'users',
+                                let: { userId: { $toObjectId: '$createdBy' } },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: { $eq: ['$_id', '$$userId'] }
+                                        }
+                                    }
+                                ],
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $unwind: '$user'
+                        },
+                        {
+                            $unwind: '$dog'
+                        },
+                        {
+                            $unwind: '$challenge'
+                        },
+                        {
+                            $project: {
+                                type: { $literal: 'CHALLENGE_COMPLETED' },
+                                actor: {
+                                    _id: '$user._id',
+                                    name: '$user.name',
+                                    imageUrl: '$user.imageUrl'
+                                },
+                                data: {
+                                    _id: '$_id',
+                                    dog: {
+                                        _id: '$dog._id',
+                                        name: '$dog.name',
+                                        imageUrl: '$dog.imageUrl'
+                                    },
+                                    challenge: {
+                                        _id: '$challenge._id',
+                                        title: '$challenge.title',
+                                        icon: '$challenge.icon'
+                                    }
+                                },
+                                createdAt: '$completedDate'
+                            }
+                        }
+                    ]
+                }
+            },
+
             // Match conditions from query parameters
             {
                 $match: matchConditions
