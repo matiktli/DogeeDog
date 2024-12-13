@@ -7,6 +7,11 @@ import Loading from '@/app/components/Loading'
 import PetFormModal from '@/app/components/PetFormModal'
 import DogList from '@/app/components/DogList'
 import Breadcrumb from '@/app/components/Breadcrumb'
+import Link from 'next/link'
+import ChallengeList from '@/app/challenges/ChallengeList'
+import { Challenge } from '@/app/types/challenge'
+import ChallengeFormModal from '@/app/challenges/ChallengeFormModal'
+import { useRouter } from 'next/navigation'
 
 interface Dog {
   _id: string
@@ -21,6 +26,9 @@ export default function DashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [dogs, setDogs] = useState<Dog[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [activeChallenges, setActiveChallenges] = useState<Challenge[]>([])
+  const [showChallengeModal, setShowChallengeModal] = useState(false)
+  const router = useRouter()
 
   const { data: session, status } = useSession({
     required: true,
@@ -48,6 +56,43 @@ export default function DashboardPage() {
     }
   }, [session?.user?.id]);
 
+  useEffect(() => {
+    const fetchActiveChallenges = async () => {
+      if (!session?.user?.id) return
+
+      try {
+        // First fetch incomplete dog challenges
+        const dogChallengesResponse = await fetch(`/api/challenges/dogs?createdBy=${session.user.id}&completed=false`)
+        const dogChallengesData = await dogChallengesResponse.json()
+        
+        // Get unique challenge IDs
+        const uniqueChallengeIds = Array.from(
+          new Set(dogChallengesData.dogChallenges.map((dc: any) => dc.challengeId))
+        )
+        
+        if (uniqueChallengeIds.length === 0) {
+          setActiveChallenges([])
+          return
+        }
+
+        // Fetch the actual challenges
+        const challengesPromises = uniqueChallengeIds.map(id =>
+          fetch(`/api/challenges/${id}`).then(res => res.json())
+        )
+        const challenges = await Promise.all(challengesPromises)
+        setActiveChallenges(challenges)
+      } catch (error) {
+        console.error('Error fetching active challenges:', error)
+      }
+    }
+
+    fetchActiveChallenges()
+  }, [session?.user?.id])
+
+  const handleScrollToCommunity = () => {
+    router.push('/challenges#community-challenges')
+  }
+
   return (
     <div className="min-h-screen p-6 pt-12 bg-[var(--background)]">
       <div className="max-w-7xl mx-auto px-8">
@@ -66,6 +111,50 @@ export default function DashboardPage() {
                 Hello, {session?.user?.name}!
               </h1>
               
+              <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Active Challenges</h2>
+                  <Link 
+                    href="/challenges/filtered?type=active"
+                    className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
+                  >
+                    View All
+                  </Link>
+                </div>
+                {activeChallenges.length === 0 ? (
+                  <div className="text-center py-12 bg-white/40 dark:bg-black/10 rounded-3xl backdrop-blur-sm">
+                  <h3 className="text-xl font-semibold mb-2">No Active Challenges</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Ready to push yourself? Take on a new challenge or explore what others are doing!
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button 
+                      onClick={() => setShowChallengeModal(true)}
+                      className="px-6 py-3 font-medium border-2 border-[var(--accent)] text-[var(--accent)] 
+                        rounded-xl hover:bg-[var(--accent)]/10 transition-colors"
+                    >
+                      Create Challenge
+                    </button>
+                    <button
+                      onClick={handleScrollToCommunity}
+                      className="px-6 py-3 font-medium border-2 border-[var(--accent)] text-[var(--accent)] 
+                        rounded-xl hover:bg-[var(--accent)]/10 transition-colors"
+                    >
+                      View Community Challenges
+                    </button>
+                  </div>
+                </div>
+                ) : (
+                  <ChallengeList
+                    challenges={activeChallenges}
+                    title="Active Challenges"
+                    emptyStateType="active"
+                    singleRow={true}
+                    isLoading={isLoading}
+                  />
+                )}
+              </section>
+
               <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
                 <h2 className="text-xl font-semibold mb-4">Your Furry Family</h2>
                 
@@ -87,6 +176,33 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      <ChallengeFormModal
+        isOpen={showChallengeModal}
+        onClose={() => setShowChallengeModal(false)}
+        onSuccess={async () => {
+          // Refresh active challenges after creating a new one
+          if (session?.user?.id) {
+            const dogChallengesResponse = await fetch(`/api/challenges/dogs?createdBy=${session.user.id}&completed=false`)
+            const dogChallengesData = await dogChallengesResponse.json()
+            
+            const uniqueChallengeIds = Array.from(
+              new Set(dogChallengesData.dogChallenges.map((dc: any) => dc.challengeId))
+            )
+            
+            if (uniqueChallengeIds.length === 0) {
+              setActiveChallenges([])
+              return
+            }
+
+            const challengesPromises = uniqueChallengeIds.map(id =>
+              fetch(`/api/challenges/${id}`).then(res => res.json())
+            )
+            const challenges = await Promise.all(challengesPromises)
+            setActiveChallenges(challenges)
+          }
+        }}
+      />
 
       <PetFormModal 
         isOpen={isModalOpen}

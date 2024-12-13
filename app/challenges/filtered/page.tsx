@@ -34,6 +34,8 @@ function FilteredChallengesContent() {
         return 'Your Challenges'
       case 'community':
         return 'Community Challenges'
+      case 'active':
+        return 'Active Challenges'
       default:
         return 'All Challenges'
     }
@@ -41,6 +43,36 @@ function FilteredChallengesContent() {
 
   const fetchChallenges = async () => {
     try {
+      if (type === 'active') {
+        // First fetch all dog challenges for the current user
+        const dogChallengesResponse = await fetch(`/api/challenges/dogs?createdBy=${session?.user?.id}&completed=false`)
+        const dogChallengesData = await dogChallengesResponse.json()
+        
+        // Extract unique challenge IDs
+        const uniqueChallengeIds = Array.from(
+          new Set(
+            dogChallengesData.dogChallenges.map(
+              (dc: any) => dc.challengeId
+            )
+          )
+        )
+
+        // If there are no active challenges, set empty array and return
+        if (!uniqueChallengeIds.length) {
+          setChallenges([])
+          return
+        }
+
+        // Fetch the actual challenges using the challenge IDs
+        const challengesResponse = await fetch(
+          `/api/challenges?challengeIds=${uniqueChallengeIds.join(',')}`
+        )
+        const challengesData = await challengesResponse.json()
+        setChallenges(challengesData)
+        return
+      }
+
+      // Handle other types as before
       let url = '/api/challenges?'
       switch (type) {
         case 'daily':

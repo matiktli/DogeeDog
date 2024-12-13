@@ -9,6 +9,9 @@ import { Settings } from 'lucide-react'
 import LoadingScreen from '@/app/components/LoadingScreen'
 import UserFormModal from '@/app/components/UserFormModal'
 import Breadcrumb from '@/app/components/Breadcrumb'
+import Link from 'next/link'
+import ChallengeList from '@/app/challenges/ChallengeList'
+import { Challenge } from '@/app/types/challenge'
 
 interface UserData {
   _id: string
@@ -23,6 +26,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const [user, setUser] = useState<UserData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [activeChallenges, setActiveChallenges] = useState<Challenge[]>([])
 
   const { data: session } = useSession({
     required: true,
@@ -49,6 +53,39 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
     if (resolvedParams.id) {
       fetchUser()
+    }
+  }, [resolvedParams.id])
+
+  useEffect(() => {
+    const fetchActiveChallenges = async () => {
+      try {
+        // First fetch incomplete dog challenges for the profile user
+        const dogChallengesResponse = await fetch(`/api/challenges/dogs?createdBy=${resolvedParams.id}&completed=false`)
+        const dogChallengesData = await dogChallengesResponse.json()
+        
+        // Get unique challenge IDs
+        const uniqueChallengeIds = Array.from(
+          new Set(dogChallengesData.dogChallenges.map((dc: any) => dc.challengeId))
+        )
+        
+        if (uniqueChallengeIds.length === 0) {
+          setActiveChallenges([])
+          return
+        }
+
+        // Fetch the actual challenges
+        const challengesPromises = uniqueChallengeIds.map(id =>
+          fetch(`/api/challenges/${id}`).then(res => res.json())
+        )
+        const challenges = await Promise.all(challengesPromises)
+        setActiveChallenges(challenges)
+      } catch (error) {
+        console.error('Error fetching active challenges:', error)
+      }
+    }
+
+    if (resolvedParams.id) {
+      fetchActiveChallenges()
     }
   }, [resolvedParams.id])
 
@@ -111,6 +148,59 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
               </div>
             </div>
           </div>
+
+          {/* Active Challenges Section */}
+          <section className="mt-8">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Active Challenges</h2>
+              <Link 
+                href={`/challenges/filtered?type=active&userId=${resolvedParams.id}`}
+                className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
+              >
+                View All
+              </Link>
+            </div>
+            <div className="bg-white dark:bg-black/20 rounded-2xl shadow-lg overflow-hidden">
+              {activeChallenges.length === 0 ? (
+                <div className="text-center py-12">
+                  <h3 className="text-xl font-semibold mb-2">
+                    {isCurrentUser ? 'No Active Challenges' : `${user.name} has no active challenges`}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    {isCurrentUser 
+                      ? 'Ready to push yourself? Take on a new challenge or explore what others are doing!'
+                      : 'Check back later to see what challenges they take on.'}
+                  </p>
+                  {isCurrentUser && (
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <button 
+                        onClick={() => setShowEditModal(true)}
+                        className="px-6 py-3 font-medium border-2 border-[var(--accent)] text-[var(--accent)] 
+                          rounded-xl hover:bg-[var(--accent)]/10 transition-colors"
+                      >
+                        Create Challenge
+                      </button>
+                      <Link
+                        href="/challenges#community-challenges"
+                        className="px-6 py-3 font-medium border-2 border-[var(--accent)] text-[var(--accent)] 
+                          rounded-xl hover:bg-[var(--accent)]/10 transition-colors"
+                      >
+                        View Community Challenges
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <ChallengeList
+                  challenges={activeChallenges}
+                  title="Active Challenges"
+                  emptyStateType="active"
+                  singleRow={true}
+                  isLoading={isLoading}
+                />
+              )}
+            </div>
+          </section>
 
           {/* Pet Statistics Section */}
           <section className="mt-8">

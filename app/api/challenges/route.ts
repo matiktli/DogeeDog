@@ -21,12 +21,14 @@ export async function GET(req: Request) {
     const type = searchParams.get('type')
     const period = searchParams.get('period')
     const createdBy = searchParams.get('createdBy')
+    const challengeIds = searchParams.get('challengeIds')?.split(',')
 
     // Build query
     const query: {
       type?: string
       period?: string
       createdBy?: string |object
+      _id?: { $in: string[] }
     } = {}
 
     if (type) query.type = type
@@ -38,6 +40,10 @@ export async function GET(req: Request) {
       } else {
         query.createdBy = createdBy
       }
+    }
+
+    if (challengeIds?.length) {
+      query._id = { $in: challengeIds }
     }
 
     const challenges = await Challenge.find(query).sort({ createdAt: -1 })
