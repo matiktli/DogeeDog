@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Bot, Loader2 } from 'lucide-react'
 import GradientButton from '../components/GradientButton'
 import { Challenge } from '@/app/types/challenge'
@@ -31,6 +31,23 @@ export default function ChallengeFormModal({
     description: initialData?.description || '',
     reward: initialData?.reward || 10,
   })
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        title: initialData?.title || '',
+        description: initialData?.description || '',
+        reward: initialData?.reward || 10,
+      })
+      setSelectedEmoji(initialData?.icon || '')
+      setSelectedPeriod(initialData?.period || 'DAY')
+      setTitleError(null)
+      setDescriptionError(null)
+      setRewardError(null)
+      setIsLoading(false)
+      setIsGenerating(false)
+    }
+  }, [isOpen, initialData])
 
   const validateTitle = (value: string): boolean => {
     if (value.length < 2) {
@@ -76,12 +93,16 @@ export default function ChallengeFormModal({
 
       const [generatedChallenge] = await response.json()
       
-      setFormData({
-        title: generatedChallenge.title,
-        description: generatedChallenge.description,
-        reward: generatedChallenge.reward,
-      })
-      setSelectedEmoji(generatedChallenge.icon)
+      const updateFormWithGeneratedData = () => {
+        setFormData({
+          title: generatedChallenge.title,
+          description: generatedChallenge.description,
+          reward: generatedChallenge.reward,
+        })
+        setSelectedEmoji(generatedChallenge.icon)
+      }
+
+      setTimeout(updateFormWithGeneratedData, 0)
 
     } catch (error) {
       console.error('Error generating challenge:', error)
@@ -147,11 +168,21 @@ export default function ChallengeFormModal({
     }
   }
 
+  const handleModalContentClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+  }
+
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md relative">
+    <div 
+      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md relative"
+        onClick={handleModalContentClick}
+      >
         <button
           onClick={onClose}
           className="absolute right-2 top-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"

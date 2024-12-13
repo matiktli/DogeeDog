@@ -24,6 +24,7 @@ function ChallengesContent() {
   const searchParams = useSearchParams()
   const [viewModalOpen, setViewModalOpen] = useState(false)
   const [viewChallenge, setViewChallenge] = useState<Challenge | undefined>(undefined)
+  const [activeChallenges, setActiveChallenges] = useState<Challenge[]>([])
 
   const fetchChallenges = async () => {
     try {
@@ -48,9 +49,41 @@ function ChallengesContent() {
     }
   }
 
+  const fetchActiveChallenges = async () => {
+    try {
+      // First fetch incomplete dog challenges
+      const dogChallengesResponse = await fetch(`/api/challenges/dogs?createdBy=${session?.user?.id}&completed=false`)
+      const dogChallengesData = await dogChallengesResponse.json()
+      
+      // Get unique challenge IDs
+      const uniqueChallengeIds = Array.from(
+        new Set(dogChallengesData.dogChallenges.map((dc: any) => dc.challengeId))
+      )
+      
+      if (uniqueChallengeIds.length === 0) {
+        setActiveChallenges([])
+        return
+      }
+
+      // Fetch the actual challenges
+      const challengesPromises = uniqueChallengeIds.map(id =>
+        fetch(`/api/challenges/${id}`).then(res => res.json())
+      )
+      const challenges = await Promise.all(challengesPromises)
+      setActiveChallenges(challenges)
+    } catch (error) {
+      console.error('Error fetching active challenges:', error)
+    }
+  }
+
   useEffect(() => {
     if (session?.user?.id) {
-      withLoading(fetchChallenges)
+      withLoading(async () => {
+        await Promise.all([
+          fetchActiveChallenges(),
+          fetchChallenges()
+        ])
+      })
     }
   }, [session?.user?.id, withLoading])
 
@@ -86,6 +119,13 @@ function ChallengesContent() {
     withLoading(fetchChallenges)
   }
 
+  const handleScrollToCommunity = () => {
+    const communitySection = document.querySelector('#community-challenges')
+    if (communitySection) {
+      communitySection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   return (
     <div className="min-h-screen p-6 pt-24 bg-[var(--background)]">
       <div className="max-w-7xl mx-auto px-8">
@@ -95,6 +135,28 @@ function ChallengesContent() {
             { label: 'Challenges' }
           ]}
         />
+        {/* Active Challenges */}
+        <section className="mb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Active Challenges</h2>
+            <Link 
+              href="/challenges/filtered?type=active"
+              className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
+            >
+              View All
+            </Link>
+          </div>
+          <ChallengeList
+            challenges={activeChallenges}
+            title="Active Challenges"
+            emptyStateType="active"
+            singleRow={true}
+            isLoading={isLoading}
+            onAddClick={handleCreateChallenge}
+            onViewCommunity={handleScrollToCommunity}
+          />
+        </section>
+
         {/* System Daily Challenges */}
         <section className="mb-12">
           <div className="flex justify-between items-center mb-6">
@@ -160,8 +222,8 @@ function ChallengesContent() {
           </section>
         )}
 
-        {/* Community Challenges */}
-        <section className="mb-12">
+        {/* Community Challenges - Added id for scrolling */}
+        <section id="community-challenges" className="mb-12">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">Community Challenges</h2>
             <Link 

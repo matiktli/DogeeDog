@@ -10,12 +10,13 @@ import Loading from '@/app/components/Loading'
 interface ChallengeListProps {
   challenges: Challenge[]
   title: string
-  emptyStateType?: 'user' | 'system'
+  emptyStateType?: 'user' | 'system' | 'active'
   showAddButton?: boolean
   onAddClick?: () => void
   onChallengeDelete?: () => void
   singleRow?: boolean
   isLoading?: boolean
+  onViewCommunity?: () => void
 }
 
 export default function ChallengeList({ 
@@ -25,13 +26,41 @@ export default function ChallengeList({
   onAddClick, 
   onChallengeDelete,
   singleRow = false,
-  isLoading = false
+  isLoading = false,
+  onViewCommunity
 }: ChallengeListProps) {
   if (isLoading) {
     return <Loading height="h-[240px]" />
   }
 
   if (challenges.length === 0) {
+    if (emptyStateType === 'active') {
+      return (
+        <div className="text-center py-12 bg-white/40 dark:bg-black/10 rounded-3xl backdrop-blur-sm">
+          <h3 className="text-xl font-semibold mb-2">No Active Challenges</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            Ready to push yourself? Take on a new challenge or explore what others are doing!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button 
+              onClick={onAddClick}
+              className="px-6 py-3 font-medium border-2 border-[var(--accent)] text-[var(--accent)] 
+                rounded-xl hover:bg-[var(--accent)]/10 transition-colors"
+            >
+              Create Challenge
+            </button>
+            <button
+              onClick={onViewCommunity}
+              className="px-6 py-3 font-medium border-2 border-[var(--accent)] text-[var(--accent)] 
+                rounded-xl hover:bg-[var(--accent)]/10 transition-colors"
+            >
+              View Community Challenges
+            </button>
+          </div>
+        </div>
+      )
+    }
+
     if (emptyStateType === 'user') {
       return (
         <div className="text-center py-12 bg-white/40 dark:bg-black/10 rounded-3xl backdrop-blur-sm">
