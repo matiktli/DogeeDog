@@ -5,6 +5,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { v4 as uuidv4 } from 'uuid'
 import User from '@/app/models/User'
 import connectDB from '@/app/lib/mongodb'
+import { revalidateTag } from 'next/cache'
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -13,6 +14,9 @@ const s3 = new S3Client({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
 })
+
+const CACHE_TAG_USER = 'user'
+const CACHE_TAG_USERS = 'users'
 
 export async function GET(
   request: NextRequest
@@ -41,7 +45,13 @@ export async function GET(
         email: session.user.id === id ? user.email : undefined
       }
 
-      return NextResponse.json(userResponse)
+      // Return cached response
+      return NextResponse.json(userResponse, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+          'Tags': CACHE_TAG_USER
+        },
+      })
     } catch (error) {
       console.error('Error fetching user:', error)
       return NextResponse.json(
@@ -80,6 +90,7 @@ export async function GET(
       User.countDocuments(query)
     ])
 
+    // Return cached response for users list
     return NextResponse.json({
       users,
       pagination: {
@@ -88,6 +99,11 @@ export async function GET(
         totalItems: total,
         totalPages: Math.ceil(total / limit)
       }
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=150',
+        'Tags': CACHE_TAG_USERS
+      },
     })
   } catch (error) {
     console.error('Error listing users:', error)
@@ -163,6 +179,10 @@ export async function PUT(
     if (!updatedUser) {
       return NextResponse.json({ error: 'Failed to update user' }, { status: 500 })
     }
+
+    // After successful update, revalidate the cache
+    revalidateTag(CACHE_TAG_USER)
+    revalidateTag(CACHE_TAG_USERS)
 
     console.log('Updated user:', updatedUser)
     return NextResponse.json(updatedUser)

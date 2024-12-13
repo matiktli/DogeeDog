@@ -5,6 +5,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { v4 as uuidv4 } from 'uuid'
 import dbConnect from '@/app/lib/mongodb'
 import { Dog } from '@/app/models/Dog'
+import { CACHE_TAG_DOG, revalidateDogCache } from '@/app/lib/cache'
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -39,7 +40,13 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(dog)
+    // Return cached response
+    return NextResponse.json(dog, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+        'Tags': `${CACHE_TAG_DOG}-${id}`,
+      },
+    })
   } catch (error) {
     console.error('Error fetching dog:', error)
     return NextResponse.json(
@@ -117,6 +124,9 @@ export async function PUT(
       { new: true }
     )
 
+    // Revalidate cache after update
+    revalidateDogCache(id)
+
     return NextResponse.json(updatedDog)
   } catch (error) {
     console.error('Error updating dog:', error)
@@ -150,6 +160,9 @@ export async function DELETE(
     }
 
     await Dog.findByIdAndDelete(id)
+
+    // Revalidate cache after deletion
+    revalidateDogCache(id)
 
     return NextResponse.json({ message: 'Dog deleted successfully' })
   } catch (error) {

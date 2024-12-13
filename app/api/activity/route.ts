@@ -3,6 +3,10 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/auth'
 import User from '@/app/models/User'
 import connectDB from '@/app/lib/mongodb'
+import { revalidateTag } from 'next/cache'
+
+// Add cache tag constant
+const CACHE_TAG_ACTIVITY = 'activity'
 
 export async function GET(
     request: NextRequest
@@ -22,6 +26,9 @@ export async function GET(
         const type = searchParams.get('type')
         const userId = searchParams.get('userId')
         const challengeId = searchParams.get('challengeId')
+
+        // Create a cache key based on the query parameters
+        const cacheKey = `${page}-${limit}-${type || ''}-${userId || ''}-${challengeId || ''}`
 
         const skip = (page - 1) * limit
 
@@ -340,6 +347,11 @@ export async function GET(
                 totalItems: total,
                 totalPages: Math.ceil(total / limit)
             }
+        }, {
+            headers: {
+                'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+                'Tags': `${CACHE_TAG_ACTIVITY}-${cacheKey}`,
+            },
         })
 
     } catch (error) {
@@ -349,4 +361,9 @@ export async function GET(
             { status: 500 }
         )
     }
+}
+
+// Add a revalidation helper function that can be imported by other routes
+export function revalidateActivityCache() {
+    revalidateTag(CACHE_TAG_ACTIVITY)
 } 

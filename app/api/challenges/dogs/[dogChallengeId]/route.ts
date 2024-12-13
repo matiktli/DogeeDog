@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { DogChallenge } from '@/app/models/DogChallenge'
+import { revalidateActivityCache } from '../../../activity/route'
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -38,6 +39,9 @@ export async function PATCH(request: NextRequest) {
       },
       { new: true }
     )
+
+    // After successfully updating the challenge
+    revalidateActivityCache()
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

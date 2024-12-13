@@ -5,6 +5,8 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { v4 as uuidv4 } from 'uuid'
 import { Dog } from '@/app/models/Dog'
 import dbConnect from '@/app/lib/mongodb'
+import { CACHE_TAG_DOGS, revalidateDogCache } from '@/app/lib/cache'
+import { revalidateActivityCache } from '../activity/route'
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
@@ -68,6 +70,10 @@ export async function POST(req: Request) {
         createdAt: new Date()
       })
 
+      // Revalidate both activity and dogs list caches
+      revalidateActivityCache()
+      revalidateDogCache(dog._id.toString())
+
       return NextResponse.json(dog)
     } catch (error) {
       console.error('Error processing request:', error)
@@ -87,10 +93,8 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
-    // Connect to database first
     await dbConnect()
 
-    // Check authentication
     const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -105,6 +109,9 @@ export async function GET(req: Request) {
     const name = searchParams.get('name')
     const breeds = searchParams.get('breeds')?.split(',')
     const gender = searchParams.get('gender')
+
+    // Create cache key based on query parameters
+    const cacheKey = `${userId || ''}-${name || ''}-${breeds?.join(',') || ''}-${gender || ''}`
 
     // Build query
     const query: {
@@ -122,7 +129,13 @@ export async function GET(req: Request) {
     // Fetch dogs
     const dogs = await Dog.find(query).sort({ createdAt: -1 })
 
-    return NextResponse.json(dogs)
+    // Return cached response
+    return NextResponse.json(dogs, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+        'Tags': `${CACHE_TAG_DOGS}-${cacheKey}`,
+      },
+    })
   } catch (error) {
     console.error('Error fetching dogs:', error)
     return NextResponse.json(
