@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const image = formData.get('image') as File
 
     // Validate required fields
-    if (!name || !breed || !gender || !image) {
+    if (!name || !breed || !gender) {
       return NextResponse.json(
         { error: 'Missing required fields' }, 
         { status: 400 }
@@ -45,19 +45,23 @@ export async function POST(req: Request) {
     }
 
     try {
-      // Upload image to S3
-      const randomId = uuidv4()
-      const key = `${process.env.NODE_ENV}/${randomId}/${image.name}`
+      let imageUrl = null
+      if (image) {
+        // Upload image to S3
+        const randomId = uuidv4()
+        const key = `${process.env.NODE_ENV}/${randomId}/${image.name}`
 
-      const buffer = Buffer.from(await image.arrayBuffer())
-      await s3.send(new PutObjectCommand({
-        Bucket: process.env.AWS_BUCKET_NAME!,
-        Key: key,
-        Body: buffer,
-        ContentType: image.type,
-      }))
+        const buffer = Buffer.from(await image.arrayBuffer())
+        await s3.send(new PutObjectCommand({
+          Bucket: process.env.AWS_BUCKET_NAME!,
+          Key: key,
+          Body: buffer,
+          ContentType: image.type,
+        }))
 
-      const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`
+        imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`
+      }
+      
 
       // Create dog record
       const dog = await Dog.create({

@@ -95,7 +95,6 @@ export default function PetFormModal({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!imagePreview && !initialData) return
 
     try {
       setIsLoading(true)
@@ -116,11 +115,9 @@ export default function PetFormModal({
       
       if (descriptionTextarea?.value) {
         formData.append('description', descriptionTextarea.value)
-      } else {
-        console.log('No description provided')
       }
 
-      // Only include image if it's changed or it's a new pet
+      // Only include image if it exists and has changed
       if (imagePreview && imagePreview !== initialData?.imageUrl) {
         const response = await fetch(imagePreview)
         const blob = await response.blob()
@@ -216,7 +213,7 @@ export default function PetFormModal({
                   type="file"
                   name="image"
                   accept="image/*"
-                  required={!initialData}
+                  required={false}
                   onChange={handleImageChange}
                   className="hidden"
                 />

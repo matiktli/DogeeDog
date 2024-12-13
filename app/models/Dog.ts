@@ -26,7 +26,7 @@ const dogSchema = new mongoose.Schema({
   },
   imageUrl: {
     type: String,
-    required: true
+    default: ''
   },
   createdAt: {
     type: Date,

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
+import { DEFAULT_DOG_AVATAR } from '../config/constants';
 
 interface SmallDogCardProps {
   imageUrl: string;
@@ -44,11 +45,12 @@ const SmallDogCard = ({
         }
       `}>
         <Image
-          src={imageUrl}
+          src={imageUrl || DEFAULT_DOG_AVATAR}
           alt={name}
           fill
           className={`
-            object-cover transition-transform
+            object-${imageUrl ? 'cover' : 'contain'} p-2
+            transition-transform
             ${isSelected ? 'scale-95' : ''}
             ${isCompleted ? 'blur-[1px] brightness-95' : ''}
           `}

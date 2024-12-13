@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { cn } from '../lib/utils'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { DEFAULT_DOG_AVATAR } from '../config/constants'
 
 interface AvatarGroupProps<T> {
   items: T[]
@@ -96,7 +97,7 @@ export function AvatarGroup<T>({
               }}
             >
               <Image
-                src={getImageUrl(item)}
+                src={getImageUrl(item) || DEFAULT_DOG_AVATAR}
                 alt={getName(item)}
                 fill
                 className={cn(

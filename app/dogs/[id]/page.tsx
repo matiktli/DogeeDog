@@ -4,11 +4,12 @@ import { useSession } from 'next-auth/react'
 import { redirect, useRouter } from 'next/navigation'
 import { useState, useEffect, useRef, use } from 'react'
 import Image from 'next/image'
-import { Dog, Settings, Edit, Trash2 } from 'lucide-react'
+import { Settings, Edit, Trash2 } from 'lucide-react'
 import LoadingScreen from '@/app/components/LoadingScreen'
 import Breadcrumb from '@/app/components/Breadcrumb'
 import DogChallengeList from '@/app/components/DogChallengeList'
 import { DogChallenge } from '@/app/types/dogchallenge'
+import { DEFAULT_DOG_AVATAR } from '@/app/config/constants'
 import DogProfile from '@/components/DogProfile'
 
 interface DogData {
@@ -171,18 +172,12 @@ export default function DogPage({ params }: PageProps) {
           {/* Dog Profile Section */}
           <div className="bg-white dark:bg-black/20 rounded-2xl overflow-hidden shadow-lg">
             <div className="relative h-64 w-full">
-              {dog.imageUrl ? (
-                <Image
-                  src={dog.imageUrl}
-                  alt={dog.name}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-                  <Dog className="w-16 h-16 text-gray-400" />
-                </div>
-              )}
+              <Image
+                src={dog.imageUrl || DEFAULT_DOG_AVATAR}
+                alt={dog.name}
+                fill
+                className={`object-${dog.imageUrl ? 'cover' : 'contain'} p-8`}
+              />
             </div>
             
             <div className="p-6">
