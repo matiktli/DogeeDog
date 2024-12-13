@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Cookie } from 'lucide-react'
 import { Challenge } from '@/app/types/challenge'
+import { useSession } from 'next-auth/react'
 import GradientButton from '../components/GradientButton'
 import DogSelectionModal from './DogSelectionModal'
 import { Dog } from '@/app/types/dog'
@@ -33,6 +34,7 @@ export default function ChallengeViewModal({
   isOpen,
   onClose
 }: ChallengeViewModalProps) {
+  const { data: session } = useSession()
   const [showDogSelection, setShowDogSelection] = useState(false)
   const [showGoodLuck, setShowGoodLuck] = useState(false)
   const [selectedDogNames, setSelectedDogNames] = useState<string[]>([])
@@ -49,9 +51,11 @@ export default function ChallengeViewModal({
 
   useEffect(() => {
     const fetchDogs = async () => {
+      if (!session?.user?.id) return
+      
       try {
         setIsLoadingDogs(true)
-        const response = await fetch('/api/dogs')
+        const response = await fetch('/api/dogs?userId=' + session.user.id)
         const data = await response.json()
         setDogs(data)
       } catch (error) {
@@ -62,9 +66,11 @@ export default function ChallengeViewModal({
     }
 
     const fetchParticipatingDogs = async () => {
+      if (!session?.user?.id) return
+      
       try {
         // First get all user's dogs
-        const dogsResponse = await fetch('/api/dogs')
+        const dogsResponse = await fetch('/api/dogs?userId=' + session.user.id)
         const userDogs = await dogsResponse.json()
         
         // Then fetch participating dogs for this challenge
@@ -92,11 +98,11 @@ export default function ChallengeViewModal({
       }
     }
 
-    if (isOpen) {
+    if (isOpen && session?.user?.id) {
       fetchDogs()
       fetchParticipatingDogs()
     }
-  }, [isOpen, challenge._id])
+  }, [isOpen, challenge._id, session?.user?.id])
 
   const handleDogClick = (dogId: string) => {
     setSelectedDogIds(prev => 
