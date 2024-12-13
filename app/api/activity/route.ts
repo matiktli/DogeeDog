@@ -3,10 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/lib/auth'
 import User from '@/app/models/User'
 import connectDB from '@/app/lib/mongodb'
-import { revalidateTag } from 'next/cache'
-
-// Add cache tag constant
-const CACHE_TAG_ACTIVITY = 'activity'
+import { CACHE_TAG_ACTIVITY } from '@/app/lib/cache'
 
 export async function GET(
     request: NextRequest
@@ -362,8 +359,3 @@ export async function GET(
         )
     }
 }
-
-// Add a revalidation helper function that can be imported by other routes
-export function revalidateActivityCache() {
-    revalidateTag(CACHE_TAG_ACTIVITY)
-} 

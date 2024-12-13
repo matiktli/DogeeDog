@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { DogChallenge } from '@/app/models/DogChallenge'
-import { revalidateActivityCache } from '../../../activity/route'
+import { revalidateActivityCache } from '@/app/lib/cache';
 
 export async function PATCH(request: NextRequest) {
   try {

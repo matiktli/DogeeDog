@@ -5,8 +5,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { v4 as uuidv4 } from 'uuid'
 import { Dog } from '@/app/models/Dog'
 import dbConnect from '@/app/lib/mongodb'
-import { CACHE_TAG_DOGS, revalidateDogCache } from '@/app/lib/cache'
-import { revalidateActivityCache } from '../activity/route'
+import { CACHE_TAG_DOGS, revalidateActivityCache, revalidateDogCache } from '@/app/lib/cache'
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION!,
