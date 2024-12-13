@@ -13,6 +13,7 @@ interface UserFormModalProps {
     name: string
     email: string
     imageUrl?: string
+    description?: string
   }
   onUpdate: () => void
 }
@@ -25,6 +26,8 @@ export default function UserFormModal({
 }: UserFormModalProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imageUrl || null)
   const [isLoading, setIsLoading] = useState(false)
+  const [description, setDescription] = useState(initialData?.description || '')
+  const maxChars = 400
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -41,6 +44,7 @@ export default function UserFormModal({
 
       const formData = new FormData()
       formData.append('name', nameInput.value)
+      formData.append('description', description)
 
       // Only include image if it's changed
       if (imagePreview && imagePreview !== initialData?.imageUrl) {
@@ -114,6 +118,24 @@ export default function UserFormModal({
               />
             </div>
 
+            {/* Description Input */}
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <label className="block text-sm font-medium">About</label>
+                <span className={`text-xs ${description.length > maxChars ? 'text-red-500' : 'text-gray-500'}`}>
+                  {description.length}/{maxChars}
+                </span>
+              </div>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={maxChars}
+                rows={4}
+                className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8B4513] dark:bg-gray-700 dark:border-gray-600 resize-none"
+                placeholder="Tell others about yourself and your pets..."
+              />
+            </div>
+
             {/* Email (read-only) */}
             <div>
               <label className="block text-sm font-medium mb-1">Email</label>
@@ -127,7 +149,7 @@ export default function UserFormModal({
 
             <GradientButton
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || description.length > maxChars}
               className="w-full py-3 font-medium mt-8"
             >
               {isLoading ? 'Saving...' : 'Save Changes'}

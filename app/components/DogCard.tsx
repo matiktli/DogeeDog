@@ -10,9 +10,9 @@ import { useSession } from 'next-auth/react'
 interface DogCardProps {
   id: string
   name: string
-  breed: string
-  gender: string
-  imageUrl: string
+  breed: string | undefined
+  gender: string | undefined
+  imageUrl: string | undefined
   userId: string
   onDelete?: () => void
 }

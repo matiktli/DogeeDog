@@ -12,6 +12,8 @@ import ChallengeList from '@/app/challenges/ChallengeList'
 import { Challenge } from '@/app/types/challenge'
 import ChallengeFormModal from '@/app/challenges/ChallengeFormModal'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import UserFormModal from '@/app/components/UserFormModal'
 
 interface Dog {
   _id: string
@@ -29,6 +31,8 @@ export default function DashboardPage() {
   const [activeChallenges, setActiveChallenges] = useState<Challenge[]>([])
   const [showChallengeModal, setShowChallengeModal] = useState(false)
   const router = useRouter()
+  const [userData, setUserData] = useState<any>(null)
+  const [showEditModal, setShowEditModal] = useState(false)
 
   const { data: session, status } = useSession({
     required: true,
@@ -89,6 +93,23 @@ export default function DashboardPage() {
     fetchActiveChallenges()
   }, [session?.user?.id])
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (session?.user?.id) {
+        try {
+          const response = await fetch(`/api/users/${session.user.id}`)
+          if (!response.ok) throw new Error('Failed to fetch user data')
+          const data = await response.json()
+          setUserData(data)
+        } catch (error) {
+          console.error('Error fetching user data:', error)
+        }
+      }
+    }
+
+    fetchUserData()
+  }, [session?.user?.id])
+
   const handleScrollToCommunity = () => {
     router.push('/challenges#community-challenges')
   }
@@ -111,6 +132,45 @@ export default function DashboardPage() {
                 Hello, {session?.user?.name}!
               </h1>
               
+              <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
+                <div className="flex items-center gap-4 mb-6">
+                  {userData?.image ? (
+                    <div className="relative w-20 h-20">
+                      <Image
+                        src={userData.image}
+                        alt={userData.name || ''}
+                        fill
+                        className="rounded-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-[var(--accent)] flex items-center justify-center text-white text-2xl">
+                      {session?.user?.name?.[0].toUpperCase()}
+                    </div>
+                  )}
+                  <div className="space-y-2 text-[var(--foreground)]/80">
+                    {session?.user?.email && (
+                      <p className="text-[var(--foreground)]/60">{session.user.email}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <h3 className="text-lg font-medium mb-2">About</h3>
+                  <p className="text-[var(--foreground)]/70">
+                    {userData?.description || 'Add a description to tell others about yourself and your pets!'}
+                  </p>
+                  {!userData?.description && (
+                    <button
+                      onClick={() => setShowEditModal(true)}
+                      className="mt-2 text-sm text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
+                    >
+                      Add description
+                    </button>
+                  )}
+                </div>
+              </section>
+
               <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-semibold">Active Challenges</h2>
@@ -213,6 +273,29 @@ export default function DashboardPage() {
             if (!response.ok) throw new Error('Failed to fetch dogs')
             const data = await response.json()
             setDogs(data)
+          }
+        }}
+      />
+
+      <UserFormModal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false)
+        }}
+        initialData={{
+          id: session?.user?.id || '',
+          name: userData?.name || '',
+          email: userData?.email || '',
+          imageUrl: userData?.image,
+          description: userData?.description
+        }}
+        onUpdate={() => {
+          // Refresh user data after update
+          if (session?.user?.id) {
+            fetch(`/api/users/${session.user.id}`)
+              .then(res => res.json())
+              .then(data => setUserData(data))
+              .catch(error => console.error('Error fetching user data:', error))
           }
         }}
       />

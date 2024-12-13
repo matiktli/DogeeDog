@@ -135,6 +135,7 @@ export async function PUT(
     const formData = await request.formData()
     const name = formData.get('name') as string
     const image = formData.get('image') as File | null
+    const description = formData.get('description') as string | null
 
     // First, verify the user exists
     const existingUser = await User.findById(id)
@@ -145,7 +146,8 @@ export async function PUT(
     // Create update object
     const updateData = {
       name: name,
-      imageUrl: existingUser.imageUrl
+      imageUrl: existingUser.imageUrl,
+      description: description ? description : existingUser.description
     }
 
     if (image) {
