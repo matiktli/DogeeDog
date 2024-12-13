@@ -135,10 +135,11 @@ function ChallengesContent() {
             { label: 'Challenges' }
           ]}
         />
+        
         {/* Active Challenges */}
-        <section className="mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Active Challenges</h2>
+        <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Active Challenges</h2>
             <Link 
               href="/challenges/filtered?type=active"
               className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
@@ -158,9 +159,9 @@ function ChallengesContent() {
         </section>
 
         {/* System Daily Challenges */}
-        <section className="mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Daily Challenges</h2>
+        <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Daily Challenges</h2>
             <Link 
               href="/challenges/filtered?type=daily"
               className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
@@ -178,9 +179,9 @@ function ChallengesContent() {
         </section>
 
         {/* System Weekly Challenges */}
-        <section className="mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Weekly Challenges</h2>
+        <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Weekly Challenges</h2>
             <Link 
               href="/challenges/filtered?type=weekly"
               className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
@@ -199,9 +200,9 @@ function ChallengesContent() {
 
         {/* User's Own Challenges */}
         {session?.user && (
-          <section className="mb-12">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Your Challenges</h2>
+          <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Your Challenges</h2>
               <Link 
                 href="/challenges/filtered?type=user"
                 className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
@@ -222,10 +223,10 @@ function ChallengesContent() {
           </section>
         )}
 
-        {/* Community Challenges - Added id for scrolling */}
-        <section id="community-challenges" className="mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Community Challenges</h2>
+        {/* Community Challenges */}
+        <section id="community-challenges" className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Community Challenges</h2>
             <Link 
               href="/challenges/filtered?type=community"
               className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"

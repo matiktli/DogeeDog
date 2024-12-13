@@ -79,7 +79,7 @@ export default function ChallengeList({
     }
 
     return (
-      <div className="bg-white/40 dark:bg-black/10 rounded-3xl backdrop-blur-sm p-8 text-center">
+      <div className="dark:bg-black/10 rounded-3xl backdrop-blur-sm p-8 text-center">
         <div className="flex flex-col items-center gap-4">
           <div className="p-4 rounded-full bg-[var(--background)]">
             <Trophy className="w-12 h-12 text-gray-400" />
