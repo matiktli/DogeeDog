@@ -2,10 +2,10 @@
 
 import Image from 'next/image'
 import { User } from '@/app/types/user'
-import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { AvatarGroup } from './AvatarGroup'
 import { useRouter } from 'next/navigation'
+import { BadgeCounter } from './BadgeCounter'
 
 interface UserCardProps {
   user: User
@@ -18,8 +18,6 @@ type Dog = {
 }
 
 export default function UserCard({ user }: UserCardProps) {
-  const { data: session } = useSession()
-  const isCurrentUser = session?.user?.id === user._id
   const [dogs, setDogs] = useState<Dog[]>([])
   const router = useRouter()
 
@@ -82,9 +80,7 @@ export default function UserCard({ user }: UserCardProps) {
               <h3 className="text-lg font-semibold truncate">
                 {user.name}
               </h3>
-              <p className="text-sm text-[var(--foreground)]/60">
-                {isCurrentUser ? 'You' : 'Member'}
-              </p>
+              <BadgeCounter userId={user._id} />
             </div>
           </div>
 
