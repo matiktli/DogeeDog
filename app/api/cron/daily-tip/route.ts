@@ -49,16 +49,18 @@ export async function GET(request: Request) {
       generatedTips = [generatedTips]
     }
 
-    // Save the generated tip to database
-    const savedTip = await DailyTip.create({
-      ...generatedTips[0],
-      createdAt: new Date()
-    })
+    //for each generated tip save it
+    for (const tip of generatedTips) {
+      await DailyTip.create({
+        ...tip,
+        createdAt: new Date()
+      })
+    }
 
     return NextResponse.json({ 
       success: true, 
       message: 'Daily tip generated successfully',
-      tip: savedTip 
+      tips: generatedTips 
     })
   } catch (error: any) {
     console.error('Cron job error:', error)
