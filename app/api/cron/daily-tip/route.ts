@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         },
         {
           role: "user",
-          content: prompts.tipGeneration(3),
+          content: prompts.tipGeneration(Number(process.env.DAILY_TIPS_TO_GENERATE))
         },
       ],
       temperature: 0.8,
