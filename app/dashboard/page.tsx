@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation'
 import UserFormModal from '@/app/components/UserFormModal'
 import ActivityHeatMap from '@/app/components/ActivityHeatMap'
 import UserProfileSection from '@/app/components/UserProfileSection'
+import { DailyTipsSlider } from '@/app/components/DailyTipsSlider'
 
 interface Dog {
   _id: string
@@ -290,6 +291,8 @@ export default function DashboardPage() {
           }
         }}
       />
+
+      <DailyTipsSlider />
     </div>
   )
 } 

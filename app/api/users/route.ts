@@ -42,7 +42,7 @@ export async function GET(
       User.find(query)
         .skip(skip)
         .limit(limit)
-        .select('name email image'),
+        .select('name email imageUrl'),
       User.countDocuments(query)
     ])
 

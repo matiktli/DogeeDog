@@ -42,3 +42,15 @@ body {
 .grid-rows-7 {
     grid-template-rows: repeat(7, minmax(0, 1fr));
 }
+
+/* Add these styles to your globals.css */
+.swiper-pagination-bullet {
+  width: 8px !important;
+  height: 8px !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  opacity: 1 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: hsl(var(--primary)) !important;
+}

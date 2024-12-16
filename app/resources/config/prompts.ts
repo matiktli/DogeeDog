@@ -1,5 +1,6 @@
 interface PromptConfig {
   challengeGeneration: (period: string, count: number) => string;
+  tipGeneration: (count: number) => string;
 }
 
 export const prompts: PromptConfig = {
@@ -85,5 +86,66 @@ export const prompts: PromptConfig = {
     - Invalid examples: "🎵🎨", "🐕‍🦺", "🌟✨"
     - Valid examples: "🎵", "🎨", "🐕"
     
-    These challenges are for a ${period.toLowerCase()}ly period. Push creative boundaries while keeping activities safe and achievable!`
+    These challenges are for a ${period.toLowerCase()}ly period. Push creative boundaries while keeping activities safe and achievable!`,
+  
+  tipGeneration: (count: number) => `Generate ${count} catchy and engaging daily tip${count > 1 ? 's' : ''} for dog owners. 
+    Return ONLY a raw JSON array with no additional formatting, markdown, or explanation text.
+    The response must be parseable by JSON.parse().
+
+    The response must exactly match this format (but with ${count} items):
+    [{"title":"Tip Title","description":"Tip description","icon":"🐕"}]
+
+    Each tip object must have these exact fields:
+      title: string       // Catchy, memorable title (2-6 words)
+      description: string // Clear, actionable advice (max 200 characters)
+      icon: string       // EXACTLY ONE emoji character - no combinations
+
+    Content Guidelines:
+    1. Titles should be:
+       - Catchy and memorable
+       - Use alliteration when possible
+       - Include action words
+       - Examples: "Paw-fect Playtime Prep", "Tail-Wagging Training Tips"
+
+    2. Descriptions should be:
+       - Clear and actionable
+       - Focus on one specific tip
+       - Include the "why" behind the advice
+       - Be positive and encouraging
+       - Use active voice
+       - Avoid technical jargon
+
+    3. Icons must be:
+       - Single emoji only
+       - Relevant to the tip content
+       - Dog-related when possible
+       - NO emoji combinations
+       - Examples: "🐕", "🦴", "❤️", "🎾", "🌟", "🏃"
+
+    Topic Categories:
+    - Training & Behavior
+    - Health & Wellness
+    - Exercise & Play
+    - Socialization
+    - Mental Stimulation
+    - Grooming & Care
+    - Nutrition & Feeding
+    - Safety & Prevention
+
+    Example Response Format:
+    [
+      {
+        "title": "Treat Time Timing",
+        "description": "Always reward your dog within 2 seconds of good behavior. Quick timing helps your pup make a clear connection between their action and the reward.",
+        "icon": "🦴"
+      }
+    ]
+
+    Response Requirements:
+    1. Must be valid JSON
+    2. Each tip must be unique
+    3. NO markdown formatting
+    4. NO additional text
+    5. STRICT: Each icon field must contain exactly one emoji
+    6. Descriptions must be clear and complete sentences`,
 }; 
