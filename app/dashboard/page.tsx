@@ -130,6 +130,8 @@ export default function DashboardPage() {
             <Loading height="h-[50vh]" />
           ) : (
             <>
+              <DailyTipsSlider />
+
               <h1 className="text-2xl font-bold mb-2">
                 Hello, {session?.user?.name}!
               </h1>
@@ -291,8 +293,6 @@ export default function DashboardPage() {
           }
         }}
       />
-
-      <DailyTipsSlider />
     </div>
   )
 } 

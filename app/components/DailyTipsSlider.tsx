@@ -20,7 +20,6 @@ interface DailyTipData {
 export function DailyTipsSlider() {
   const [tips, setTips] = useState<DailyTipData[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [isGenerating, setIsGenerating] = useState(false)
 
   const fetchTips = async () => {
     try {
@@ -38,72 +37,12 @@ export function DailyTipsSlider() {
     fetchTips()
   }, [])
 
-  const handleGenerateTip = async () => {
-    try {
-      setIsGenerating(true)
-      
-      // First generate the tip
-      const generateResponse = await fetch('/api/tips/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ count: 1 }),
-      })
-
-      if (!generateResponse.ok) {
-        throw new Error('Failed to generate tip')
-      }
-
-      const [generatedTip] = await generateResponse.json()
-
-      // Then save it to the database
-      const saveResponse = await fetch('/api/tips', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(generatedTip),
-      })
-
-      if (!saveResponse.ok) {
-        throw new Error('Failed to save tip')
-      }
-
-      // Refresh the tips list
-      await fetchTips()
-    } catch (error) {
-      console.error('Error generating tip:', error)
-    } finally {
-      setIsGenerating(false)
-    }
-  }
-
   if (isLoading) {
     return <Loading height="h-48" />
   }
 
   return (
     <div className="w-full mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Daily Tips</h2>
-        <button
-          onClick={handleGenerateTip}
-          disabled={isGenerating}
-          className="px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/80 
-            transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isGenerating ? (
-            <span className="flex items-center gap-2">
-              <Loading height="h-5" />
-              Generating...
-            </span>
-          ) : (
-            'Generate New Tip'
-          )}
-        </button>
-      </div>
-
       {tips.length === 0 ? (
         <div className="text-center py-12 bg-white/40 dark:bg-black/10 rounded-xl">
           <p className="text-gray-600 dark:text-gray-400">No tips available yet.</p>
@@ -131,7 +70,7 @@ export function DailyTipsSlider() {
         >
           {tips.map((tip) => (
             <SwiperSlide key={tip._id}>
-              <Card className="border-none shadow-lg">
+              <Card className="border-none shadow-lg bg-white/60 dark:bg-black/20 backdrop-blur-sm">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-center gap-3 mb-4">
                     <span className="text-2xl">{tip.icon}</span>
