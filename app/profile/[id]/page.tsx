@@ -13,6 +13,7 @@ import Link from 'next/link'
 import ChallengeList from '@/app/challenges/ChallengeList'
 import { Challenge } from '@/app/types/challenge'
 import DogCard from '@/app/components/DogCard'
+import ActivityHeatMap from '@/app/components/ActivityHeatMap'
 
 interface UserData {
   _id: string
@@ -193,6 +194,15 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                       Add description
                     </button>
                   )}
+                </div>
+              </section>
+
+              <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm overflow-hidden">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Activity</h2>
+                </div>
+                <div className="flex justify-center w-full overflow-hidden">
+                  <ActivityHeatMap userId={user._id} />
                 </div>
               </section>
 

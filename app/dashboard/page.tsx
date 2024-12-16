@@ -172,11 +172,11 @@ export default function DashboardPage() {
                 </div>
               </section>
 
-              <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm overflow-hidden">
+              <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-semibold">Activity</h2>
                 </div>
-                <div className="flex justify-center w-full overflow-hidden">
+                <div className="w-full">
                   <ActivityHeatMap userId={session.user.id} />
                 </div>
               </section>

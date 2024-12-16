@@ -126,13 +126,13 @@ export default function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
     }, [userId])
 
     return (
-        <div className="overflow-x-auto">
-            <table className="border-collapse">
+        <div className="w-full">
+            <table className="border-collapse w-full">
                 <thead>
                     <tr>
-                        <th className="p-1"></th>
+                        <th className="p-1 w-8"></th>
                         {MONTHS.map((month, monthIndex) => {
-                            const span  = monthSpans[monthIndex].span;
+                            const span = monthSpans[monthIndex].span;
                             return (
                                 <th 
                                     key={month} 
