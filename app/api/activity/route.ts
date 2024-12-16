@@ -120,13 +120,30 @@ export async function GET(
                     coll: 'challenges',
                     pipeline: [
                         {
+                            $addFields: {
+                                userLookup: {
+                                    $cond: {
+                                        if: { $eq: ["$createdBy", "SYSTEM"] },
+                                        then: null,
+                                        else: { $toObjectId: "$createdBy" }
+                                    }
+                                }
+                            }
+                        },
+                        {
                             $lookup: {
                                 from: 'users',
-                                let: { userId: { $toObjectId: '$createdBy' } },
+                                let: { userId: "$userLookup" },
                                 pipeline: [
                                     {
                                         $match: {
-                                            $expr: { $eq: ['$_id', '$$userId'] }
+                                            $expr: {
+                                                $cond: {
+                                                    if: { $eq: ["$$userId", null] },
+                                                    then: false,
+                                                    else: { $eq: ["$_id", "$$userId"] }
+                                                }
+                                            }
                                         }
                                     }
                                 ],
@@ -134,15 +151,33 @@ export async function GET(
                             }
                         },
                         {
-                            $unwind: '$user'
-                        },
-                        {
                             $project: {
                                 type: { $literal: 'NEW_CHALLENGE' },
                                 actor: {
-                                    _id: '$user._id',
-                                    name: '$user.name',
-                                    imageUrl: '$user.imageUrl'
+                                    $cond: {
+                                        if: { $eq: ["$createdBy", "SYSTEM"] },
+                                        then: {
+                                            _id: "SYSTEM",
+                                            name: "System",
+                                            imageUrl: null
+                                        },
+                                        else: {
+                                            $arrayElemAt: [
+                                                {
+                                                    $map: {
+                                                        input: "$user",
+                                                        as: "u",
+                                                        in: {
+                                                            _id: "$$u._id",
+                                                            name: "$$u.name",
+                                                            imageUrl: "$$u.imageUrl"
+                                                        }
+                                                    }
+                                                },
+                                                0
+                                            ]
+                                        }
+                                    }
                                 },
                                 data: {
                                     _id: '$_id',
