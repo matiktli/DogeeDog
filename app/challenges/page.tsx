@@ -203,12 +203,20 @@ function ChallengesContent() {
           <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">Your Challenges</h2>
-              <Link 
-                href="/challenges/filtered?type=user"
-                className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
-              >
-                View All
-              </Link>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleCreateChallenge}
+                  className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
+                >
+                  Create New
+                </button>
+                <Link 
+                  href="/challenges/filtered?type=user"
+                  className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
+                >
+                  View All
+                </Link>
+              </div>
             </div>
             <ChallengeList
               challenges={userChallenges}

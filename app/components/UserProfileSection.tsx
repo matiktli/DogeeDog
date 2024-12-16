@@ -30,7 +30,7 @@ export default function UserProfileSection({
   return (
     <>
       <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
-        <div className="flex items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
             {profileImage ? (
               <div className="relative w-20 h-20">
@@ -53,16 +53,6 @@ export default function UserProfileSection({
               <p><span className="font-medium">Member since:</span> {new Date(user.createdAt).toLocaleDateString()}</p>
             </div>
           </div>
-          
-          <div className="text-center">
-            <h4 className="text-sm font-medium mb-1 text-[var(--foreground)]/70">Achievement Badges</h4>
-            <div 
-              onClick={() => setIsModalOpen(true)}
-              className="cursor-pointer hover:opacity-80 transition-opacity"
-            >
-              <BadgeCounter userId={user._id} />
-            </div>
-          </div>
         </div>
         
         <div className="mt-4">
@@ -80,6 +70,26 @@ export default function UserProfileSection({
               Add description
             </button>
           )}
+        </div>
+
+        <div className="mt-6 md:hidden">
+          <h4 className="text-sm font-medium mb-1 text-[var(--foreground)]/70">Achievement Badges</h4>
+          <div 
+            onClick={() => setIsModalOpen(true)}
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            <BadgeCounter userId={user._id} />
+          </div>
+        </div>
+
+        <div className="hidden md:block absolute md:top-6 md:right-6">
+          <h4 className="text-sm font-medium mb-1 text-[var(--foreground)]/70">Achievement Badges</h4>
+          <div 
+            onClick={() => setIsModalOpen(true)}
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            <BadgeCounter userId={user._id} />
+          </div>
         </div>
       </section>
 

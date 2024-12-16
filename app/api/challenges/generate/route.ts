@@ -42,20 +42,21 @@ export async function POST(request: Request) {
     const prompt = prompts.challengeGeneration(period, count);
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4",
       messages: [
         {
           role: "system",
-          content: "You are a creative dog trainer who loves to make engaging and sometimes silly challenges for dog owners. Mix practical training with fun activities. Respond with raw JSON only, no markdown formatting or explanation text.",
+          content: "You are an innovative dog activity designer who creates unique, unexpected, and engaging challenges. Think outside the conventional dog training box and combine elements from different areas of life to create fresh experiences. Focus on novelty and creativity while maintaining safety and achievability.",
         },
         {
           role: "user",
           content: prompt,
         },
       ],
-      temperature: 0.9,
-      presence_penalty: 0.6,
-      frequency_penalty: 0.6,
+      temperature: 1.0,
+      presence_penalty: 0.8,
+      frequency_penalty: 0.8,
+      top_p: 0.95,
     });
 
     const response = completion.choices[0].message?.content;

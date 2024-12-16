@@ -129,51 +129,53 @@ export default function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
     }, [userId])
 
     return (
-        <div className="w-full">
-            <table className="border-collapse w-full">
-                <thead>
-                    <tr>
-                        <th className="p-1 w-8"></th>
-                        {MONTHS.map((month, monthIndex) => {
-                            const span = monthSpans[monthIndex].span;
-                            return (
-                                <th 
-                                    key={month} 
-                                    colSpan={span}
-                                    className="text-xs text-gray-500 font-normal p-1"
-                                >
-                                    {month}
-                                </th>
-                            );
-                        })}
-                    </tr>
-                </thead>
-                <tbody>
-                    {DAYS.map((day, rowIndex) => (
-                        <tr key={day}>
-                            <td className="text-xs text-gray-500 pr-2">{day}</td>
-                            {Array(totalColumns).fill(null).map((_, colIndex) => (
-                                <td 
-                                    key={colIndex}
-                                    className="p-[1px] relative group"
-                                >
-                                    {activityMap[rowIndex][colIndex].date && (
-                                        <>
-                                            <div 
-                                                className={`w-3 h-3 rounded-sm ${getActivityColor(activityMap[rowIndex][colIndex].count)}`}
-                                            >
-                                            </div>
-                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
-                                                {activityMap[rowIndex][colIndex].count} activities on: {activityMap[rowIndex][colIndex].date}
-                                            </div>
-                                        </>
-                                    )}
-                                </td>
-                            ))}
+        <div className="w-full overflow-x-auto md:overflow-x-visible">
+            <div className="min-w-[800px] md:min-w-0">
+                <table className="border-collapse w-full">
+                    <thead>
+                        <tr>
+                            <th className="p-1 w-8"></th>
+                            {MONTHS.map((month, monthIndex) => {
+                                const span = monthSpans[monthIndex].span;
+                                return (
+                                    <th 
+                                        key={month} 
+                                        colSpan={span}
+                                        className="text-xs text-gray-500 font-normal p-1"
+                                    >
+                                        {month}
+                                    </th>
+                                );
+                            })}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {DAYS.map((day, rowIndex) => (
+                            <tr key={day}>
+                                <td className="text-xs text-gray-500 pr-2">{day}</td>
+                                {Array(totalColumns).fill(null).map((_, colIndex) => (
+                                    <td 
+                                        key={colIndex}
+                                        className="p-[1px] relative group"
+                                    >
+                                        {activityMap[rowIndex][colIndex].date && (
+                                            <>
+                                                <div 
+                                                    className={`w-3 h-3 rounded-sm ${getActivityColor(activityMap[rowIndex][colIndex].count)}`}
+                                                >
+                                                </div>
+                                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                                                    {activityMap[rowIndex][colIndex].count} activities on: {activityMap[rowIndex][colIndex].date}
+                                                </div>
+                                            </>
+                                        )}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 }
