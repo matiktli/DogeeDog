@@ -4,6 +4,7 @@ import { authOptions } from '@/app/lib/auth'
 import User from '@/app/models/User'
 import connectDB from '@/app/lib/mongodb'
 import { CACHE_TAG_ACTIVITY } from '@/app/lib/cache'
+import { Types } from 'mongoose'
 
 export async function GET(
     request: NextRequest
@@ -32,7 +33,23 @@ export async function GET(
         // Build match conditions based on query parameters
         const matchConditions: any = {}
         if (type) matchConditions.type = type
-        if (userId) matchConditions['actor._id'] = userId
+        if (userId) {
+            try {
+                matchConditions['actor._id'] = new Types.ObjectId(userId)
+            } catch {
+                console.warn('Invalid userId format:', userId)
+                // Return empty results if userId is invalid
+                return NextResponse.json({
+                    activities: [],
+                    pagination: {
+                        currentPage: page,
+                        pageSize: limit,
+                        totalItems: 0,
+                        totalPages: 0
+                    }
+                })
+            }
+        }
         if (challengeId) matchConditions['data.challenge._id'] = challengeId
 
         // Create a union of all activities using $unionWith

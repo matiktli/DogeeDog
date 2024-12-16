@@ -14,6 +14,7 @@ import ChallengeFormModal from '@/app/challenges/ChallengeFormModal'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import UserFormModal from '@/app/components/UserFormModal'
+import ActivityHeatMap from '@/app/components/ActivityHeatMap'
 
 interface Dog {
   _id: string
@@ -168,6 +169,15 @@ export default function DashboardPage() {
                       Add description
                     </button>
                   )}
+                </div>
+              </section>
+
+              <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm overflow-hidden">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Activity</h2>
+                </div>
+                <div className="flex justify-center w-full overflow-hidden">
+                  <ActivityHeatMap userId={session.user.id} />
                 </div>
               </section>
 

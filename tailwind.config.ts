@@ -11,6 +11,15 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        gray: {
+          100: '#f3f4f6',
+        },
+        green: {
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e',
+        },
       },
       keyframes: {
         'card-load': {
@@ -31,7 +40,10 @@ export default {
         'card-load': 'card-load 1.5s ease-in-out forwards',
         'card-unload': 'card-unload 1.5s ease-in-out',
         'in': 'in 0.5s ease-out',
-      }
+      },
+      transitionProperty: {
+        'opacity': 'opacity',
+      },
     },
   },
   plugins: [
