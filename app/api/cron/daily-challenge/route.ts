@@ -55,7 +55,8 @@ export async function GET(request: Request) {
         ...challenge,
         period: 'DAY',
         type: 'SYSTEM',
-        createdAt: new Date()
+        createdAt: new Date(),
+        createdBy: 'SYSTEM'
       }))
 
       // Save challenges to database
