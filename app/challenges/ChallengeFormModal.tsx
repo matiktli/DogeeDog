@@ -26,6 +26,7 @@ export default function ChallengeFormModal({
   const [selectedEmoji, setSelectedEmoji] = useState<string>(initialData?.icon || '')
   const [selectedPeriod, setSelectedPeriod] = useState<'DAY' | 'WEEK'>(initialData?.period || 'DAY')
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isTyping, setIsTyping] = useState(false)
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
     description: initialData?.description || '',
@@ -73,6 +74,13 @@ export default function ChallengeFormModal({
 
   const handleGenerateWithAI = async () => {
     try {
+      setFormData({
+        title: '',
+        description: '',
+        reward: 10,
+      })
+      setSelectedEmoji('')
+      
       setIsGenerating(true)
       const response = await fetch('/api/challenges/generate', {
         method: 'POST',
@@ -93,16 +101,30 @@ export default function ChallengeFormModal({
 
       const [generatedChallenge] = await response.json()
       
-      const updateFormWithGeneratedData = () => {
-        setFormData({
-          title: generatedChallenge.title,
-          description: generatedChallenge.description,
-          reward: generatedChallenge.reward,
-        })
-        setSelectedEmoji(generatedChallenge.icon)
+      setIsTyping(true)
+      
+      for (let i = 0; i <= generatedChallenge.title.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 30))
+        setFormData(prev => ({
+          ...prev,
+          title: generatedChallenge.title.slice(0, i)
+        }))
       }
 
-      setTimeout(updateFormWithGeneratedData, 0)
+      for (let i = 0; i <= generatedChallenge.description.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 10))
+        setFormData(prev => ({
+          ...prev,
+          description: generatedChallenge.description.slice(0, i)
+        }))
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        reward: generatedChallenge.reward,
+      }))
+      setSelectedEmoji(generatedChallenge.icon)
+      setIsTyping(false)
 
     } catch (error) {
       console.error('Error generating challenge:', error)
@@ -303,7 +325,7 @@ export default function ChallengeFormModal({
               <button
                 type="button"
                 onClick={handleGenerateWithAI}
-                disabled={isGenerating || isLoading}
+                disabled={isGenerating || isLoading || isTyping}
                 className="flex items-center justify-center gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-xl border-2 
                   border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)]/10 
                   transition-colors disabled:opacity-50 font-medium text-sm"
