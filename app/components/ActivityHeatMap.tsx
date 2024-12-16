@@ -18,7 +18,7 @@ interface ActivityResponse {
 }
 
 interface ActivityHeatMapProps {
-    userId: string
+    userId?: string | undefined
 }
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -56,7 +56,12 @@ export default function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
     useEffect(() => {
         const fetchActivities = async () => {
             try {
-                const response = await fetch(`/api/activity?userId=${userId}&size=1000`)
+                let response;
+                if (userId) {
+                    response = await fetch(`/api/activity?userId=${userId}&size=1000`)
+                } else {
+                    response = await fetch(`/api/activity?size=1000`)
+                }
                 const data: ActivityResponse = await response.json()
                 
                 // Initialize the map with proper dates
@@ -120,9 +125,7 @@ export default function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
             }
         }
 
-        if (userId) {
-            fetchActivities()
-        }
+        fetchActivities()
     }, [userId])
 
     return (
