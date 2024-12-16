@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { use } from 'react'
-import Image from 'next/image'
 import { Settings } from 'lucide-react'
 import LoadingScreen from '@/app/components/LoadingScreen'
 import UserFormModal from '@/app/components/UserFormModal'
@@ -14,6 +13,7 @@ import ChallengeList from '@/app/challenges/ChallengeList'
 import { Challenge } from '@/app/types/challenge'
 import DogCard from '@/app/components/DogCard'
 import ActivityHeatMap from '@/app/components/ActivityHeatMap'
+import UserProfileSection from '@/app/components/UserProfileSection'
 
 interface UserData {
   _id: string
@@ -153,49 +153,11 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 )}
               </div>
 
-              {/* User Profile Section */}
-              <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
-                <div className="flex items-center gap-4 mb-6">
-                  {user.imageUrl ? (
-                    <div className="relative w-20 h-20">
-                      <Image
-                        src={user.imageUrl}
-                        alt={user.name}
-                        fill
-                        className="rounded-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-20 h-20 rounded-full bg-[var(--accent)] flex items-center justify-center text-white text-2xl">
-                      {user.name[0].toUpperCase()}
-                    </div>
-                  )}
-                  <div className="space-y-2 text-[var(--foreground)]/80">
-                    {isCurrentUser && user.email && (
-                      <p className="text-[var(--foreground)]/60">{user.email}</p>
-                    )}
-                    <p><span className="font-medium">Member since:</span> {new Date(user.createdAt).toLocaleDateString()}</p>
-                  </div>
-                </div>
-                
-                {/* Add About section */}
-                <div className="mt-4">
-                  <h3 className="text-lg font-medium mb-2">About</h3>
-                  <p className="text-[var(--foreground)]/70">
-                    {user.description || (isCurrentUser ? 
-                      'Add a description to tell others about yourself and your pets!' : 
-                      'No description available.')}
-                  </p>
-                  {isCurrentUser && !user.description && (
-                    <button
-                      onClick={() => setShowEditModal(true)}
-                      className="mt-2 text-sm text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
-                    >
-                      Add description
-                    </button>
-                  )}
-                </div>
-              </section>
+              <UserProfileSection
+                user={user}
+                isCurrentUser={isCurrentUser}
+                onEditClick={() => setShowEditModal(true)}
+              />
 
               <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm overflow-hidden">
                 <div className="flex justify-between items-center mb-4">

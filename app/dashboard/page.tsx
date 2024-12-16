@@ -12,9 +12,9 @@ import ChallengeList from '@/app/challenges/ChallengeList'
 import { Challenge } from '@/app/types/challenge'
 import ChallengeFormModal from '@/app/challenges/ChallengeFormModal'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import UserFormModal from '@/app/components/UserFormModal'
 import ActivityHeatMap from '@/app/components/ActivityHeatMap'
+import UserProfileSection from '@/app/components/UserProfileSection'
 
 interface Dog {
   _id: string
@@ -133,44 +133,17 @@ export default function DashboardPage() {
                 Hello, {session?.user?.name}!
               </h1>
               
-              <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
-                <div className="flex items-center gap-4 mb-6">
-                  {userData?.image ? (
-                    <div className="relative w-20 h-20">
-                      <Image
-                        src={userData.image}
-                        alt={userData.name || ''}
-                        fill
-                        className="rounded-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-20 h-20 rounded-full bg-[var(--accent)] flex items-center justify-center text-white text-2xl">
-                      {session?.user?.name?.[0].toUpperCase()}
-                    </div>
-                  )}
-                  <div className="space-y-2 text-[var(--foreground)]/80">
-                    {session?.user?.email && (
-                      <p className="text-[var(--foreground)]/60">{session.user.email}</p>
-                    )}
-                  </div>
+              {userData ? (
+                <UserProfileSection
+                  user={userData}
+                  isCurrentUser={true}
+                  onEditClick={() => setShowEditModal(true)}
+                />
+              ) : (
+                <div className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
+                  <Loading height="h-[200px]" />
                 </div>
-
-                <div className="mt-4">
-                  <h3 className="text-lg font-medium mb-2">About</h3>
-                  <p className="text-[var(--foreground)]/70">
-                    {userData?.description || 'Add a description to tell others about yourself and your pets!'}
-                  </p>
-                  {!userData?.description && (
-                    <button
-                      onClick={() => setShowEditModal(true)}
-                      className="mt-2 text-sm text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
-                    >
-                      Add description
-                    </button>
-                  )}
-                </div>
-              </section>
+              )}
 
               <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
                 <div className="flex justify-between items-center mb-4">
