@@ -22,7 +22,9 @@
       "@/*": ["./*"]
     },
     "baseUrl": ".",
-    "typeRoots": ["./node_modules/@types", "./app/types"]
+    "typeRoots": ["./node_modules/@types", "./app/types"],
+    "removeComments": true,
+    "noEmitOnError": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

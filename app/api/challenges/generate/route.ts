@@ -87,11 +87,10 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(challenges);
-  } catch (error) {
-    console.error('Error generating challenges:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate challenges' },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ error: 'An error occurred' }, { status: 500 })
+    }
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
 } 
