@@ -130,7 +130,7 @@ export default function ActivityHeatMap({ userId }: ActivityHeatMapProps) {
 
     return (
         <div className="w-full overflow-x-auto md:overflow-x-visible">
-            <div className="min-w-[800px] md:min-w-0">
+            <div className="min-w-[800px] md:min-w-0 pr-6">
                 <table className="border-collapse w-full">
                     <thead>
                         <tr>
