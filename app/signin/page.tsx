@@ -52,7 +52,7 @@ export default function SignIn() {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signIn('google', { callbackUrl: 'https://dogee-dog.com/dashboard' })
+      await signIn('google', { callbackUrl: '/dashboard' })
     } catch (error) {
       console.error('Google sign-in error:', error)
       setError('Failed to sign in with Google')
