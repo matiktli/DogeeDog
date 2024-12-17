@@ -5,6 +5,13 @@ import User from '@/app/models/User';
 import { connectToDatabase } from '@/app/lib/db';
 import bcrypt from "bcryptjs";
 
+interface GoogleProfile {
+  sub: string;
+  name: string;
+  email: string;
+  picture?: string;
+}
+
 const handler = NextAuth({
   providers: [
     GoogleProvider({
@@ -48,22 +55,24 @@ const handler = NextAuth({
         try {
           await connectToDatabase();
           
+          const googleProfile = profile as GoogleProfile;
           let dbUser = await User.findOne({ email: user.email });
           
           if (!dbUser) {
             dbUser = await User.create({
               email: user.email,
               name: user.name,
-              imageUrl: user.image,
+              imageUrl: googleProfile.picture || null,
               emailConfirmed: true,
-              googleId: profile.sub,
+              googleId: googleProfile.sub,
               provider: 'google',
             });
           } else if (!dbUser.googleId) {
             await User.findByIdAndUpdate(dbUser._id, {
-              googleId: profile.sub,
+              googleId: googleProfile.sub,
               provider: 'google',
               emailConfirmed: true,
+              imageUrl: googleProfile.picture || null,
             });
           }
           
@@ -83,6 +92,7 @@ const handler = NextAuth({
         const dbUser = await User.findOne({ email: session.user.email });
         if (dbUser) {
           session.user.id = dbUser._id.toString();
+          session.user.image = dbUser.imageUrl;
         }
       }
       return session;
