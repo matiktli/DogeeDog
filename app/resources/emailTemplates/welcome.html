@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #4A4A4A;
+      background: #F9F9F9;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    .icon-container {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .icon-container img {
+      width: 90px;
+      height: 90px;
+      border-radius: 20px;
+      padding: 16px;
+      background: #FFF5E4;
+      transition: transform 0.2s ease;
+    }
+
+    .icon-container img:hover {
+      transform: scale(1.02);
+    }
+
+    h1 {
+      color: #FF8551;
+      margin-bottom: 24px;
+      font-size: 28px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    p {
+      color: #666666;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .message-container {
+      margin: 32px 0;
+    }
+
+    .button-container {
+      text-align: center;
+      margin: 32px 0;
+    }
+
+    .button {
+      background: #FF8551;
+      color: white;
+      padding: 16px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(255, 133, 81, 0.2);
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .button:hover {
+      background: #E49B0F;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(228, 155, 15, 0.25);
+    }
+
+    .signature {
+      color: #E49B0F;
+      font-weight: 600;
+      font-size: 15px;
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .divider {
+      height: 1px;
+      background: #EAEAEA;
+      margin: 32px 0;
+    }
+
+    .emoji {
+      font-size: 18px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon-container">
+      <img src="https://dogeedog.s3.eu-west-2.amazonaws.com/public/icon.png" alt="DogeeDog Logo" />
+    </div>
+
+    <h1>Welcome to DogeeDog, {{name}}! <span class="emoji">🎉</span></h1>
+
+    <div class="message-container">
+      <p>Woof! <span class="emoji">🐾</span> We're absolutely thrilled to have you join our pack!</p>
+      <p>Ready to embark on an exciting journey? Discover amazing challenges and meet fellow dog lovers in our growing community.</p>
+    </div>
+    
+    <div class="button-container">
+      <a href="{{magicLink}}" class="button">
+        Let's Get Started! <span class="emoji">🐕</span>
+      </a>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="signature">Tail wags and treats,<br>The DogeeDog Team</p>
+  </div>
+</body>
+</html> 

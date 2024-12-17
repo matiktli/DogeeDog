@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/app/lib/mongodb';
 import User from '@/app/models/User';
+import { sendWelcomeEmail } from '@/app/services/email';
 
 export async function POST(request: Request) {
   try {
@@ -29,6 +30,8 @@ export async function POST(request: Request) {
       name,
       emailConfirmed: false,
     });
+
+    await sendWelcomeEmail(user.email, user.name);
 
     // Remove password hash from response
     const userWithoutPassword = {
