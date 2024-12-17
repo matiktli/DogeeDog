@@ -168,7 +168,7 @@ export default function SignUp() {
                 })}
                 type="email"
                 id="email"
-                placeholder="habits@garden.com"
+                placeholder="dog-lover-3000@email.com"
                 className={`w-full px-4 py-3 rounded-lg border ${
                   errors.email ? 'border-red-500' : 'border-[var(--foreground)]/20'
                 } bg-transparent focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all`}
