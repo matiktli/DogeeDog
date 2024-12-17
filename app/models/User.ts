@@ -26,6 +26,13 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  payment: {
+    priceId: String,
+    customerId: String,
+    hasAccess: Boolean,
+    paidAt: Date,
+    cancelledAt: Date
+  },
   createdAt: {
     type: Date,
     default: Date.now,
