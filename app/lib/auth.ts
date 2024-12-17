@@ -63,7 +63,7 @@ export const authOptions: AuthOptions = {
     redirect({ url, baseUrl }) {
       // Allows relative callback URLs
       if (url.startsWith("/")) {
-        var redirectUrl = `${baseUrl}${url}`;
+        const redirectUrl = `${baseUrl}${url}`;
         console.log('Google sign in redirect1: ', redirectUrl)
         return redirectUrl
       }
