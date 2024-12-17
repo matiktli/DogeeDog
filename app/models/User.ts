@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   },
   passwordHash: {
     type: String,
-    required: true,
+    required: false,
   },
   name: {
     type: String,
@@ -26,6 +26,16 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  googleId: {
+    type: String,
+    sparse: true,
+    unique: true,
+  },
+  provider: {
+    type: String,
+    enum: ['credentials', 'google'],
+    default: 'credentials'
+  },
   payment: {
     priceId: String,
     customerId: String,
@@ -42,7 +52,8 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Check if the model exists before creating a new one
+userSchema.index({ googleId: 1 }, { sparse: true });
+
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 export default User; 

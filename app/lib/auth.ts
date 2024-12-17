@@ -85,3 +85,14 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
 } 
+
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      image?: string;
+    }
+  }
+} 
