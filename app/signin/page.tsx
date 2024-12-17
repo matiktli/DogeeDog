@@ -134,14 +134,9 @@ export default function SignIn() {
           </div>
           
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label htmlFor="password" className="block text-sm font-medium text-[var(--foreground)]/80">
-                Password
-              </label>
-              <Link href="/forgot-password" className="text-sm text-[var(--accent)] hover:underline">
-                Forgotten password?
-              </Link>
-            </div>
+            <label htmlFor="password" className="block text-sm font-medium text-[var(--foreground)]/80 mb-2">
+              Password
+            </label>
             <input
               {...register('password', {
                 required: 'Password is required'
@@ -168,12 +163,14 @@ export default function SignIn() {
         </form>
 
         {/* Sign Up Link */}
-        <p className="mt-6 text-center text-[var(--foreground)]/60">
-          Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-[var(--accent)] hover:underline">
-            Sign up
-          </Link>
-        </p>
+        <div className="mt-6 text-center">
+          <p className="text-[var(--foreground)]/60">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="text-[var(--accent)] hover:underline">
+              Sign up
+            </Link>
+          </p>
+        </div>
       </div>
       {isLoading && <LoadingScreen />}
     </div>
