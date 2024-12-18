@@ -9,14 +9,14 @@ interface PriceConfig {
 export const prices: PriceConfig[] = [
     {
         key: 'MONTHLY',
-        link: process.env.PRICE_LINK_MONTH,
+        link: process.env.NEXT_PUBLIC_PRICE_LINK_MONTH,
         priceId: process.env.PRICE_ID_MONTH,
         price: 5.00,
         duration: '/month'
     },
     {
         key: 'ONE_TIME',
-        link: process.env.PRICE_LINK_ONE_TIME,
+        link: process.env.NEXT_PUBLIC_PRICE_LINK_ONE_TIME,
         priceId: process.env.PRICE_ID_ONE_TIME,
         price: 50.00,
         duration: '/one-time'

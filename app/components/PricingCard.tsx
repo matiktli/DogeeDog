@@ -1,10 +1,49 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { prices } from '@/app/resources/config/prices'
 
 export default function PricingCard() {
+  const { data: session } = useSession()
   const [isLifetime, setIsLifetime] = useState(false)
-  const price = isLifetime ? 50 : 5
+  
+  const selectedPrice = prices.find(p => {
+    const result = isLifetime ? p.key === 'ONE_TIME' : p.key === 'MONTHLY'
+    return result
+  })
+
+  const getButtonText = () => {
+    if (!session) {
+      return "START 7-DAY FREE TRIAL"
+    }
+    return isLifetime 
+      ? "🌟 UNLOCK LIFETIME ACCESS" 
+      : "🚀 UPGRADE YOUR JOURNEY"
+  }
+
+  const getButtonLink = () => {
+    if (!session) {
+      return '/signup'
+    }
+    return selectedPrice?.link || '/pricing'
+  }
+
+  const isPaymentLinkMissing = session && selectedPrice && !selectedPrice.link
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (session && selectedPrice?.link) {
+      e.preventDefault()
+      const email = encodeURIComponent(session.user?.email || '')
+      const paymentUrl = `${selectedPrice.link}${email ? `?prefilled_email=${email}` : ''}`
+      
+      window.open(
+        paymentUrl,
+        'StripePayment',
+        'width=600,height=800,menubar=no,toolbar=no,location=no'
+      )
+    }
+  }
 
   return (
     <div className="w-full max-w-xl mx-auto text-center">
@@ -14,7 +53,7 @@ export default function PricingCard() {
       
       <div className="bg-white dark:bg-black/20 rounded-2xl p-8 shadow-lg mb-8">
         <div className="flex items-baseline justify-center mb-2">
-          <span className="text-5xl font-bold text-[var(--foreground)]">${price}</span>
+          <span className="text-5xl font-bold text-[var(--foreground)]">${selectedPrice?.price}</span>
           <span className="text-lg text-[var(--foreground)]/60 ml-1">
             {isLifetime ? '' : '/month'}
           </span>
@@ -39,44 +78,66 @@ export default function PricingCard() {
           </span>
         </div>
 
-        <Link 
-          href="/signup"
-          className="block w-full py-4 bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors text-xl mb-4"
-        >
-          START 7-DAY FREE TRIAL
-        </Link>
+        {isPaymentLinkMissing ? (
+          <button 
+            disabled
+            className="block w-full py-4 bg-[var(--accent)]/50 text-white rounded-lg text-xl mb-4 cursor-not-allowed"
+          >
+            Payment link unavailable
+          </button>
+        ) : (
+          <Link 
+            href={getButtonLink()}
+            onClick={handleClick}
+            className="block w-full py-4 bg-[var(--accent)] text-white rounded-lg hover:bg-[var(--accent)]/90 transition-colors text-xl mb-4"
+          >
+            {getButtonText()}
+          </Link>
+        )}
         
-        <p className="text-sm text-[var(--foreground)]/60">
-          No credit card required
-        </p>
+        {!session && (
+          <p className="text-sm text-[var(--foreground)]/60">
+            No credit card required
+          </p>
+        )}
 
         <ul className="mt-8 space-y-4 text-left">
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Unlimited walk tracking and detailed statistics</span>
+            <span>🎯 Daily & weekly challenges to keep you and your pup motivated</span>
           </li>
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Daily walk reminders and route planning</span>
+            <span>✨ Create custom challenges for your unique dog journey</span>
           </li>
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Track walks on any device (iOS, Android, web)</span>
+            <span>🏆 Earn badges, treats, and exclusive rewards for completed challenges</span>
           </li>
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Build your dog&apos;s walking achievements</span>
+            <span>📊 Addictive activity charts that visualize your progress</span>
           </li>
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Complete daily walking quests and earn rewards</span>
+            <span>🌟 Join other dog lovers sharing tips and celebrating wins</span>
           </li>
           <li className="flex items-center gap-2">
             <CheckIcon />
-            <span>Join community of 5,000+ happy dogs</span>
+            <span>💪 Level up your dog&apos;s fitness with personalized goals</span>
+          </li>
+          <li className="flex items-center gap-2">
+            <CheckIcon />
+            <span>🤝 Connect with nearby dog owners for group challenges</span>
           </li>
         </ul>
       </div>
+
+      {session && (
+        <p className="text-sm text-[var(--foreground)]/60 mt-4">
+          🔒 Secure payment powered by Stripe
+        </p>
+      )}
     </div>
   )
 }
