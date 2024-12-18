@@ -12,6 +12,7 @@ import GoodLuckModal from './GoodLuckModal'
 import SmallCardList from '../components/SmallCardList'
 import CongratulationsModal from './CongratulationsModal'
 import Loading from '../components/Loading'
+import PetFormModal from '../components/PetFormModal'
 
 interface ChallengeViewModalProps {
   challenge: Challenge
@@ -48,6 +49,7 @@ export default function ChallengeViewModal({
   const progressTimerRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const [completedDogs, setCompletedDogs] = useState<Dog[]>([])
   const [dogChallenges, setDogChallenges] = useState<DogChallenge[]>([])
+  const [showPetForm, setShowPetForm] = useState(false)
 
   useEffect(() => {
     const fetchDogs = async () => {
@@ -216,6 +218,10 @@ export default function ChallengeViewModal({
     }
   }, [])
 
+  const handlePetFormClose = async () => {
+    setShowPetForm(false)
+  }
+
   if (!isOpen) return null
 
   return (
@@ -320,6 +326,9 @@ export default function ChallengeViewModal({
         challenge={challenge}
         preloadedDogs={dogs}
         onChallengeAccepted={handleChallengeAccepted}
+        onAddNewPet={() => {
+          setShowPetForm(true)
+        }}
       />
 
       <GoodLuckModal
@@ -337,6 +346,11 @@ export default function ChallengeViewModal({
         completedDogs={completedDogs}
         challengeIcon={challenge.icon}
         reward={challenge.reward}
+      />
+
+      <PetFormModal
+        isOpen={showPetForm}
+        onClose={handlePetFormClose}
       />
     </Portal>
   )

@@ -13,6 +13,7 @@ interface DogSelectionModalProps {
   onClose: () => void
   preloadedDogs: Dog[]
   onChallengeAccepted: (dogNames: string[]) => void
+  onAddNewPet: (fromEmptyState?: boolean) => void
 }
 
 interface DogChallenge {
@@ -30,7 +31,8 @@ export default function DogSelectionModal({
   isOpen,
   onClose,
   preloadedDogs,
-  onChallengeAccepted
+  onChallengeAccepted,
+  onAddNewPet
 }: DogSelectionModalProps) {
   const [selectedDogs, setSelectedDogs] = useState<Dog[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -114,6 +116,10 @@ export default function DogSelectionModal({
   }
 
   const getButtonText = () => {
+    if (preloadedDogs.length === 0) {
+      return 'Add New Puppy'
+    }
+
     if (isLoading) return 'Accepting Challenge...'
     
     const availableDogs = getAvailableDogCount()
@@ -127,6 +133,15 @@ export default function DogSelectionModal({
     }
     
     return 'Accept Challenge'
+  }
+
+  const handleButtonClick = () => {
+    if (preloadedDogs.length === 0) {
+      onClose()
+      onAddNewPet(true)
+      return
+    }
+    handleAcceptChallenge()
   }
 
   if (!isOpen) return null
@@ -144,30 +159,42 @@ export default function DogSelectionModal({
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-6">Select Your Dogs</h2>
           
-          <div className="grid grid-cols-4 gap-4 mb-6 h-[90px] content-start overflow-y-auto px-2">
-            {preloadedDogs.map(dog => {
-              const state = getDogChallengeState(dog._id)
-              return (
-                <div key={dog._id} className="h-fit">
-                  <SmallDogCard
-                    imageUrl={dog.imageUrl}
-                    name={dog.name}
-                    onClick={() => handleDogSelect(dog)}
-                    isSelected={selectedDogs.includes(dog)}
-                    isCompleted={state === 'completed'}
-                    isInProgress={state === 'in_progress'}
-                    challengeIcon={challenge.icon}
-                  />
-                </div>
-              )
-            })}
-          </div>
+          {preloadedDogs.length === 0 ? (
+            <div className="text-center mb-6">
+              <div className="text-6xl mb-4">🐕</div>
+              <p className="text-lg mb-2">No Pups Found!</p>
+              <p className="text-[var(--foreground)]/60">
+                Add your first furry friend to start taking on challenges together!
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-4 gap-4 mb-6 h-[90px] content-start overflow-y-auto px-2">
+              {preloadedDogs.map(dog => {
+                const state = getDogChallengeState(dog._id)
+                return (
+                  <div key={dog._id} className="h-fit">
+                    <SmallDogCard
+                      imageUrl={dog.imageUrl}
+                      name={dog.name}
+                      onClick={() => handleDogSelect(dog)}
+                      isSelected={selectedDogs.includes(dog)}
+                      isCompleted={state === 'completed'}
+                      isInProgress={state === 'in_progress'}
+                      challengeIcon={challenge.icon}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          )}
 
           <GradientButton
-            onClick={handleAcceptChallenge}
-            disabled={selectedDogs.length === 0 || isLoading || getAvailableDogCount() === 0}
+            onClick={handleButtonClick}
+            disabled={
+              (preloadedDogs.length > 0 && (selectedDogs.length === 0 || isLoading || getAvailableDogCount() === 0))
+            }
             className={`w-full px-6 py-3 font-medium ${
-              getAvailableDogCount() === 0 ? 'bg-gray-500/20 cursor-default' : ''
+              preloadedDogs.length > 0 && getAvailableDogCount() === 0 ? 'bg-gray-500/20 cursor-default' : ''
             }`}
           >
             {getButtonText()}
