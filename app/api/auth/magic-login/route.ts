@@ -36,7 +36,11 @@ export async function GET(request: Request) {
 
     // Set session cookie
     const cookieStore = await cookies();
-    cookieStore.set('next-auth.session-token', sessionToken, {
+    const cookieName = process.env.NODE_ENV === 'production' 
+      ? '__Secure-next-auth.session-token'
+      : 'next-auth.session-token';
+
+    cookieStore.set(cookieName, sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -44,7 +48,11 @@ export async function GET(request: Request) {
     });
 
     // Set callback URL cookie for NextAuth
-    cookieStore.set('next-auth.callback-url', '/dashboard', {
+    const callbackCookieName = process.env.NODE_ENV === 'production'
+      ? '__Secure-next-auth.callback-url'
+      : 'next-auth.callback-url';
+
+    cookieStore.set(callbackCookieName, '/dashboard', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
