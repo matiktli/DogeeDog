@@ -33,7 +33,7 @@ export default function ExpiredTrialOverlay({ user: initialUser }: ExpiredTrialO
   // Modified condition to show overlay for both expired trial and ended subscription
   if (
     !user || 
-    user.payment.hasAccess || 
+    user.payment?.hasAccess || 
     user.isTrial || 
     PUBLIC_PATHS.includes(currentPath)
   ) return null
