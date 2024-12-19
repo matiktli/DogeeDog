@@ -92,7 +92,7 @@ declare module 'next-auth' {
       id: string;
       email: string;
       name: string;
-      image?: string;
+      image?: string | null;
       hasAccess?: boolean;
       isTrial?: boolean;
     }
