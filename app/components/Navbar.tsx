@@ -87,7 +87,7 @@ export default function Navbar() {
             </span>
           </Link>
           {session && (
-            <div className="ml-8 flex-1 max-w-[400px]">
+            <div className="ml-8 flex-1 max-w-[400px] hidden md:block">
               <TrialBanner user={user} />
             </div>
           )}
@@ -257,25 +257,34 @@ export default function Navbar() {
           <div className="flex flex-col h-full px-4">
             {/* User greeting for mobile */}
             {session && (
-              <div className="flex items-center gap-3 py-6 mt-4 border-b border-[var(--foreground)]/10">
-                {user?.imageUrl ? (
-                  <div className="relative w-10 h-10 [box-shadow:_2px_2px_4px_rgb(0_0_0_/_20%)] rounded-full">
-                    <Image
-                      src={user.imageUrl}
-                      alt={user.name || ''}
-                      fill
-                      className="rounded-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-[var(--accent)] flex items-center justify-center text-white [box-shadow:_2px_2px_4px_rgb(0_0_0_/_20%)]">
-                    {session.user?.name?.[0]?.toUpperCase() || 'U'}
-                  </div>
-                )}
-                <span className="text-[var(--foreground)]">
-                  Hi, {session.user?.name?.split(' ')[0]}
-                </span>
-              </div>
+              <>
+                <div className="flex items-center gap-3 py-6 mt-4 border-b border-[var(--foreground)]/10">
+                  {user?.imageUrl ? (
+                    <div className="relative w-10 h-10 [box-shadow:_2px_2px_4px_rgb(0_0_0_/_20%)] rounded-full">
+                      <Image
+                        src={user.imageUrl}
+                        alt={user.name || ''}
+                        fill
+                        className="rounded-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-[var(--accent)] flex items-center justify-center text-white [box-shadow:_2px_2px_4px_rgb(0_0_0_/_20%)]">
+                      {session.user?.name?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                  )}
+                  <span className="text-[var(--foreground)]">
+                    Hi, {session.user?.name?.split(' ')[0]}
+                  </span>
+                </div>
+                {/* Add TrialBanner here */}
+                <div className="py-3">
+                  <TrialBanner 
+                    user={user} 
+                    onUpgradeClick={() => setIsMobileMenuOpen(false)} 
+                  />
+                </div>
+              </>
             )}
 
             <div className="flex-1 mt-4">
