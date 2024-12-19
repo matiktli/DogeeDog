@@ -45,14 +45,37 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ }) {
-      return true
-    },
-    async session({ session, token }) {
-      if (session?.user) {
-        session.user.id = token.sub as string
+    async signIn({ user, account }) {
+      // Connect to database
+      await dbConnect();
+      
+      if (account?.provider === "google") {
+        // Find or create user for Google sign-in
+        const dbUser = await User.findOne({ email: user.email });
+        if (!dbUser) {
+          // Create new user if doesn't exist
+          await User.create({
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          });
+          return true;
+        }
+        return true;
       }
-      return session
+      return true;
+    },
+    async session({ session }) {
+      if (session?.user) {
+        await dbConnect();
+        // Look up user in database by email
+        const dbUser = await User.findOne({ email: session.user.email });
+        if (dbUser) {
+          // Use database ID instead of OAuth provider's ID
+          session.user.id = dbUser._id.toString();
+        }
+      }
+      return session;
     },
     async jwt({ token, user }) {
       if (user) {
