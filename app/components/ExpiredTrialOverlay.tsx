@@ -30,8 +30,16 @@ export default function ExpiredTrialOverlay({ user: initialUser }: ExpiredTrialO
     initialData: initialUser
   })
   
-  // Don't show if user has access, is in trial period, or on public paths
-  if (!user || user.payment?.paidAt || user.isTrial || PUBLIC_PATHS.includes(currentPath)) return null
+  // Modified condition to show overlay for both expired trial and ended subscription
+  if (
+    !user || 
+    user.payment.hasAccess || 
+    user.isTrial || 
+    PUBLIC_PATHS.includes(currentPath)
+  ) return null
+
+  // Determine if this is an expired subscription or trial
+  const isExpiredSubscription = user.payment?.paidAt && !user.hasAccess
 
   return (
     <div className="fixed inset-x-0 top-16 bottom-0 z-40">
@@ -46,9 +54,15 @@ export default function ExpiredTrialOverlay({ user: initialUser }: ExpiredTrialO
           className="w-full max-w-md mx-4"
         >
           <div className="bg-background rounded-lg shadow-lg border border-border p-6 text-center">
-            <h2 className="text-2xl font-bold mb-2">Trial Period Expired</h2>
+            <h2 className="text-2xl font-bold mb-2">
+              {isExpiredSubscription ? 'Subscription Ended' : 'Trial Period Expired'}
+            </h2>
             <p className="text-muted-foreground mb-6">
-              Your free trial has ended. Upgrade now to continue accessing all features and keep track of your pet&apos;s achievements!
+              {isExpiredSubscription ? (
+                'Your subscription has ended. Renew now to continue accessing all features and keep track of your pet\'s achievements!'
+              ) : (
+                'Your free trial has ended. Upgrade now to continue accessing all features and keep track of your pet\'s achievements!'
+              )}
             </p>
             <Link
               href="/pricing"
