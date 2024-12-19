@@ -4,6 +4,8 @@ import GradientButton from '../components/GradientButton'
 import Confetti from '../components/Confetti'
 import SmallCardList from '../components/SmallCardList'
 import { Dog } from '../types/dog'
+import { useState } from 'react'
+import ClaimRewardModal from './ClaimRewardModal'
 
 interface CongratulationsModalProps {
   isOpen: boolean
@@ -20,6 +22,8 @@ export default function CongratulationsModal({
   challengeIcon,
   reward
 }: CongratulationsModalProps) {
+  const [showClaimModal, setShowClaimModal] = useState(false)
+
   if (!isOpen) return null
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -29,6 +33,10 @@ export default function CongratulationsModal({
   }
 
   const totalReward = reward * completedDogs.length
+
+  const handleClaimClick = () => {
+    setShowClaimModal(true)
+  }
 
   return (
     <Portal>
@@ -77,15 +85,24 @@ export default function CongratulationsModal({
             </div>
 
             <GradientButton
-              onClick={onClose}
+              onClick={handleClaimClick}
               className="px-6 py-3 font-medium w-full"
               variant="solid"
             >
-              Keep Going!
+              Claim Your Reward! 🎁
             </GradientButton>
           </div>
         </div>
       </div>
+
+      <ClaimRewardModal 
+        isOpen={showClaimModal}
+        onClose={() => {
+          setShowClaimModal(false)
+          onClose()
+        }}
+        challengeIcon={challengeIcon}
+      />
     </Portal>
   )
 } 

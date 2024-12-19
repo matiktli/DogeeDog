@@ -34,12 +34,38 @@ export default {
         in: {
           '0%': { opacity: '0', transform: 'translateX(-10px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(-3deg)' },
+          '50%': { transform: 'rotate(3deg)' },
+        },
+        jumpOut: {
+          '0%': { 
+            transform: 'scale(0.3) translateY(20px)',
+            opacity: '0'
+          },
+          '30%': { 
+            transform: 'scale(0.5) translateY(-60px)',
+            opacity: '0.5'
+          },
+          '60%': { 
+            transform: 'scale(1.2) translateY(-30px) rotate(20deg)',
+            opacity: '1'
+          },
+          '80%': { 
+            transform: 'scale(0.9) translateY(-10px) rotate(-10deg)',
+          },
+          '100%': { 
+            transform: 'scale(1) translateY(0) rotate(0deg)',
+          },
         }
       },
       animation: {
         'card-load': 'card-load 1.5s ease-in-out forwards',
         'card-unload': 'card-unload 1.5s ease-in-out',
         'in': 'in 0.5s ease-out',
+        wiggle: 'wiggle 200ms ease-in-out',
+        jumpOut: 'jumpOut 800ms cubic-bezier(0.34, 1.56, 0.64, 1)',
       },
       transitionProperty: {
         'opacity': 'opacity',
