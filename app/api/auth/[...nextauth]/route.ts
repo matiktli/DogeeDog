@@ -93,6 +93,8 @@ const handler = NextAuth({
         if (dbUser) {
           session.user.id = dbUser._id.toString();
           session.user.image = dbUser.imageUrl;
+          session.user.hasAccess = dbUser.payment?.hasAccess || false;
+          session.user.isTrial = dbUser.isTrial;
         }
       }
       return session;

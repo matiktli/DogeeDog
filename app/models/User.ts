@@ -49,7 +49,16 @@ const userSchema = new mongoose.Schema({
   },
 }, {
   strict: true,
-  timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+userSchema.virtual('isTrial').get(function() {
+  const TRIAL_DURATION_DAYS = 7;
+  const trialEndDate = new Date(this.createdAt);
+  trialEndDate.setDate(trialEndDate.getDate() + TRIAL_DURATION_DAYS);
+  return new Date() <= trialEndDate;
 });
 
 userSchema.index({ googleId: 1 }, { sparse: true });
