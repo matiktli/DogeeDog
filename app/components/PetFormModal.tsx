@@ -165,7 +165,7 @@ export default function PetFormModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
       <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md relative">
         <button
           onClick={onClose}
@@ -270,7 +270,7 @@ export default function PetFormModal({
               )}
 
               {showSuggestions && filteredBreeds.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-[70] w-full mt-1 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl shadow-lg max-h-60 overflow-auto">
                   {filteredBreeds.map((breed) => (
                     <button
                       key={breed.key}
@@ -367,7 +367,7 @@ export default function PetFormModal({
 
       {/* Image Cropper Modal */}
       {showCropper && imagePreview && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+        <div className="fixed inset-0 z-[80] bg-black/50 flex items-center justify-center">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl max-w-xl w-full mx-4">
             <h3 className="text-2xl font-bold mb-4 text-[#8B4513]">Crop Image</h3>
             <div className="max-h-[60vh] overflow-hidden flex items-center justify-center bg-gray-100 dark:bg-gray-900 rounded-lg">
