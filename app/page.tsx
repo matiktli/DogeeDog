@@ -2,6 +2,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Link from 'next/link'
 import PricingCard from './components/PricingCard'
+import DemoFlow from './components/demo/DemoFlow'
 
 export default function Home() {
   return (
@@ -36,6 +37,11 @@ export default function Home() {
               I HAVE AN ACCOUNT
             </Link>
           </div>
+        </section>
+
+        {/* Hero Section */}
+        <section className="w-full max-w-6xl px-6 pt-32 pb-32 text-center">
+          <DemoFlow />
         </section>
 
         {/* Stats Section */}
