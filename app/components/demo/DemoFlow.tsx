@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import DemoPetFormModal from './DemoPetFormModal'
 import DemoChallengeCard from './DemoChallengeCard'
 import DemoChallengeViewModal from './DemoChallengeViewModal'
 import DemoCongratulationsModal from './DemoCongratulationsModal'
@@ -18,28 +17,44 @@ const DEMO_CHALLENGE = {
   type: 'SYSTEM'
 }
 
+const DEMO_DOGS = [
+  {
+    _id: 'demo-dog-1',
+    name: 'Luna',
+    breed: 'Golden Retriever',
+    icon: '🐕',
+    age: 3,
+  },
+  {
+    _id: 'demo-dog-2',
+    name: 'Max',
+    breed: 'German Shepherd',
+    icon: '🦮',
+    age: 2,
+  },
+  {
+    _id: 'demo-dog-3',
+    name: 'Bella',
+    breed: 'French Bulldog',
+    icon: '🐶',
+    age: 1,
+  }
+]
+
 export default function DemoFlow() {
   const [step, setStep] = useState(1)
   const [showTip, setShowTip] = useState(true)
   const [demoDog, setDemoDog] = useState<any>(null)
-  const [showPetForm, setShowPetForm] = useState(false)
   const [showChallengeView, setShowChallengeView] = useState(false)
   const [showCongrats, setShowCongrats] = useState(false)
   const [showClaimReward, setShowClaimReward] = useState(false)
 
   const tips = {
-    1: "👋 Let's start by adding your furry friend! Click 'Add Dog' to begin.",
+    1: "👋 Let's start by selecting your demo dog!",
     2: "Great! Now let's try a challenge. Click on the challenge card!",
     3: "Click on your dog's icon to complete the challenge!",
     4: "Amazing! Time to celebrate your achievement!",
     5: "Last step - claim your reward by tapping the gift! 🎁"
-  }
-
-  const handleDogCreated = (dog: any) => {
-    setDemoDog(dog)
-    setShowPetForm(false)
-    setStep(2)
-    setShowTip(true)
   }
 
   return (
@@ -64,12 +79,23 @@ export default function DemoFlow() {
 
         <div className="flex flex-col items-center gap-8">
           {step === 1 && (
-            <button
-              onClick={() => setShowPetForm(true)}
-              className="px-6 py-3 bg-[#FF8551] text-white rounded-xl hover:bg-[#FF8551]/90 transition-colors"
-            >
-              Add Dog
-            </button>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">
+              {DEMO_DOGS.map((dog) => (
+                <button
+                  key={dog._id}
+                  onClick={() => {
+                    setDemoDog(dog);
+                    setStep(2);
+                    setShowTip(true);
+                  }}
+                  className="flex flex-col items-center gap-2 p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all"
+                >
+                  <span className="text-4xl">{dog.icon}</span>
+                  <h3 className="font-bold text-lg">{dog.name}</h3>
+                  <p className="text-gray-600 text-sm">{dog.breed}</p>
+                </button>
+              ))}
+            </div>
           )}
 
           {step >= 2 && demoDog && (
@@ -85,12 +111,6 @@ export default function DemoFlow() {
             </div>
           )}
         </div>
-
-        <DemoPetFormModal
-          isOpen={showPetForm}
-          onClose={() => setShowPetForm(false)}
-          onSubmit={handleDogCreated}
-        />
 
         <DemoChallengeViewModal
           isOpen={showChallengeView}

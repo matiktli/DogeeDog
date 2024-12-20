@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import Portal from '../Portal'
-import Image from 'next/image'
 
 interface DemoChallengeViewModalProps {
   isOpen: boolean
@@ -16,7 +15,7 @@ interface DemoChallengeViewModalProps {
   }
   dog: {
     name: string
-    imageUrl: string
+    icon: string
   }
   onComplete: () => void
 }
@@ -68,13 +67,8 @@ export default function DemoChallengeViewModal({
                 onClick={handleDogClick}
                 className={`relative group ${isWiggling ? 'animate-wiggle' : ''}`}
               >
-                <div className="w-24 h-24 rounded-full overflow-hidden relative">
-                  <Image
-                    src={dog.imageUrl}
-                    alt={dog.name}
-                    fill
-                    className="object-cover"
-                  />
+                <div className="w-24 h-24 rounded-full bg-[#FF8551]/10 flex items-center justify-center">
+                  <span className="text-5xl">{dog.icon}</span>
                 </div>
                 <div className="absolute inset-0 bg-black/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
