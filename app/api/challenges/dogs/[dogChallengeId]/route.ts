@@ -5,6 +5,7 @@ import { revalidateActivityCache } from '@/app/lib/cache';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/lib/auth';
 import { Challenge } from '@/app/models/Challenge';
+import { AchievementCalculator } from '@/app/lib/AchievementCalculator';
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -45,13 +46,19 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Update the challenge progress using Mongoose model
-    await DogChallenge.findByIdAndUpdate(
+    const updatedDogChallenge = await DogChallenge.findByIdAndUpdate(
       dogChallengeId,
       {
         $set: updateObj
       },
       { new: true }
     )
+
+    // Update achievements based on challenge progress
+    await AchievementCalculator.updateAchievementProgress(
+      session?.user.id as string,
+      updatedDogChallenge
+    );
 
     // After successfully updating the challenge
     revalidateActivityCache()

@@ -150,13 +150,5 @@
       "rewardIcon": "🧭",
       "reward": 120,
       "key": "WEEKEND_5_EXPLORE"
-    },
-    {
-      "name": "Puppy Partner",
-      "description": "Complete challenges with a puppy under 1 year old for 10 days.",
-      "target": 10,
-      "rewardIcon": "🐶",
-      "reward": 120,
-      "key": "PUPPY_10_DAYS"
     }
 ]  
