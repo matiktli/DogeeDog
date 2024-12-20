@@ -28,7 +28,7 @@ export class AchievementCalculator {
               if (dogChallenge.completedDate) {
                 try {
                   const completedCount = await DogChallengeDb.countDocuments({
-                    userId,
+                    createdBy: userId,
                     completedDate: { $exists: true }
                   });
                   await AchievementManager.updateUserAchievementProgress(
@@ -142,7 +142,7 @@ export class AchievementCalculator {
       tomorrow.setDate(tomorrow.getDate() + 1);
 
       const completedToday = await DogChallengeDb.countDocuments({
-        userId,
+        createdBy: userId,
         completedDate: {
           $gte: today,
           $lt: tomorrow
@@ -174,7 +174,7 @@ export class AchievementCalculator {
   private static async calculateStreak(userId: string): Promise<number> {
     try {
       const challenges = await DogChallengeDb.find({
-        userId,
+        createdBy: userId,
         completedDate: { $exists: true }
       }).sort({ completedDate: -1 });
 
@@ -268,7 +268,7 @@ export class AchievementCalculator {
     try {
       // Get all completed challenges
       const challenges = await DogChallengeDb.find({
-        userId,
+        createdBy: userId,
         completedDate: { $exists: true }
       });
 
