@@ -54,15 +54,12 @@ export class AchievementManager {
    * Updates the progress of a user's achievement
    */
   static async updateUserAchievementProgress(
-    achievementId: string,
+    achievement: any,
     userId: string,
     progress: number
   ): Promise<IUserAchievementProgress> {
     try {
-      const achievement = await Achievement.findById(achievementId);
-      if (!achievement) {
-        throw new Error('Achievement not found');
-      }
+      console.log("Attempting to update achievement progress for user", userId, "with achievement", achievement.key, "and progress", progress);
 
       const userProgress = await UserAchievementProgress.findOneAndUpdate(
         { userId, 'achievement.key': achievement.key },
