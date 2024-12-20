@@ -110,6 +110,12 @@ export default function Navbar() {
                 Challenges
               </Link>
               <Link 
+                href="/missions" 
+                className="px-4 py-2 text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
+              >
+                Missions
+              </Link>
+              <Link 
                 href="/community" 
                 className="px-4 py-2 text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
               >
@@ -303,6 +309,13 @@ export default function Navbar() {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Challenges
+                  </Link>
+                  <Link
+                    href="/missions"
+                    className="block py-3 text-[var(--foreground)] hover:text-[var(--accent)] transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Missions
                   </Link>
                   <Link
                     href="/community"
