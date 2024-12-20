@@ -7,6 +7,7 @@ export interface DogChallenge {
     current: number
     goal: number
   }
+  completedDate: Date | null
   createdBy: string
   createdAt: Date
 }

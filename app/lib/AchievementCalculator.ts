@@ -1,6 +1,8 @@
-import { DogChallenge } from '../models/DogChallenge';
+import { DogChallenge } from '../types/dogchallenge';
 import { AchievementManager } from './AchievementManager';
 import { Achievement } from '../models/Achievement';
+import { DogChallenge as DogChallengeDb } from '../models/DogChallenge';
+import { UserChallengeBadge } from '../models/UserChallengeBadge';
 
 export class AchievementCalculator {
   /**
@@ -8,7 +10,7 @@ export class AchievementCalculator {
    */
   static async updateAchievementProgress(
     userId: string,
-    dogChallenge: any
+    dogChallenge: DogChallenge
   ): Promise<void> {
     try {
       const achievements = await Achievement.find();
@@ -24,7 +26,7 @@ export class AchievementCalculator {
             case 'COMPLETE_50_CHALLENGES':
               if (dogChallenge.completedDate) {
                 try {
-                  const completedCount = await DogChallenge.countDocuments({
+                  const completedCount = await DogChallengeDb.countDocuments({
                     userId,
                     completedDate: { $exists: true }
                   });
@@ -138,7 +140,7 @@ export class AchievementCalculator {
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
 
-      const completedToday = await DogChallenge.countDocuments({
+      const completedToday = await DogChallengeDb.countDocuments({
         userId,
         completedDate: {
           $gte: today,
@@ -170,8 +172,32 @@ export class AchievementCalculator {
 
   private static async calculateStreak(userId: string): Promise<number> {
     try {
-      // Implementation pending
-      return 0;
+      const challenges = await DogChallengeDb.find({
+        userId,
+        completedDate: { $exists: true }
+      }).sort({ completedDate: -1 });
+
+      if (challenges.length === 0) return 0;
+
+      let currentStreak = 1;
+      let lastDate = new Date(challenges[0].completedDate!);
+      lastDate.setHours(0, 0, 0, 0);
+
+      for (let i = 1; i < challenges.length; i++) {
+        const currentDate = new Date(challenges[i].completedDate!);
+        currentDate.setHours(0, 0, 0, 0);
+
+        const diffDays = Math.floor((lastDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+          currentStreak++;
+          lastDate = currentDate;
+        } else {
+          break;
+        }
+      }
+
+      return currentStreak;
     } catch (error) {
       console.error(`Error calculating streak for user ${userId}:`, error);
       return 0;
@@ -180,8 +206,8 @@ export class AchievementCalculator {
 
   private static async countUniqueBadges(userId: string): Promise<number> {
     try {
-      // Implementation pending
-      return 0;
+      const uniqueBadges = await UserChallengeBadge.distinct('icon', { userId });
+      return uniqueBadges.length;
     } catch (error) {
       console.error(`Error counting unique badges for user ${userId}:`, error);
       return 0;
@@ -190,7 +216,24 @@ export class AchievementCalculator {
 
   private static async updateWeekendProgress(userId: string, achievementId: string): Promise<void> {
     try {
-      // Implementation pending
+      // Get all completed weekend challenges
+      const weekendChallenges = await DogChallengeDb.find({
+        userId,
+        completedDate: { $exists: true }
+      });
+
+      // Filter and count challenges completed on weekends
+      const weekendCount = weekendChallenges.filter(challenge => {
+        const completedDate = new Date(challenge.completedDate!);
+        const day = completedDate.getDay();
+        return day === 0 || day === 6; // 0 is Sunday, 6 is Saturday
+      }).length;
+
+      await AchievementManager.updateUserAchievementProgress(
+        achievementId,
+        userId,
+        weekendCount
+      );
     } catch (error) {
       console.error(`Error updating weekend progress for user ${userId}, achievement ${achievementId}:`, error);
     }
@@ -198,7 +241,23 @@ export class AchievementCalculator {
 
   private static async updateEarlyRiserProgress(userId: string, achievementId: string): Promise<void> {
     try {
-      // Implementation pending
+      // Get all completed challenges
+      const challenges = await DogChallengeDb.find({
+        userId,
+        completedDate: { $exists: true }
+      });
+
+      // Count early morning completions
+      const earlyMorningCount = challenges.filter(challenge => {
+        const completedDate = new Date(challenge.completedDate!);
+        return completedDate.getHours() < 8;
+      }).length;
+
+      await AchievementManager.updateUserAchievementProgress(
+        achievementId,
+        userId,
+        earlyMorningCount
+      );
     } catch (error) {
       console.error(`Error updating early riser progress for user ${userId}, achievement ${achievementId}:`, error);
     }
@@ -206,7 +265,23 @@ export class AchievementCalculator {
 
   private static async updateNightOwlProgress(userId: string, achievementId: string): Promise<void> {
     try {
-      // Implementation pending
+      // Get all completed challenges
+      const challenges = await DogChallengeDb.find({
+        userId,
+        completedDate: { $exists: true }
+      });
+
+      // Count night time completions
+      const nightTimeCount = challenges.filter(challenge => {
+        const completedDate = new Date(challenge.completedDate!);
+        return completedDate.getHours() >= 21;
+      }).length;
+
+      await AchievementManager.updateUserAchievementProgress(
+        achievementId,
+        userId,
+        nightTimeCount
+      );
     } catch (error) {
       console.error(`Error updating night owl progress for user ${userId}, achievement ${achievementId}:`, error);
     }
