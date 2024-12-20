@@ -1,0 +1,162 @@
+[
+    {
+      "name": "Daily Streak Champion",
+      "description": "Complete challenges for 3 consecutive days.",
+      "target": 3,
+      "rewardIcon": "🔥",
+      "reward": 100,
+      "key": "STREAK_3_DAYS"
+    },
+    {
+      "name": "Daily Streak Champion x2",
+      "description": "Complete challenges for 7 consecutive days.",
+      "target": 7,
+      "rewardIcon": "🔥🔥",
+      "reward": 200,
+      "key": "STREAK_7_DAYS"
+    },
+    {
+      "name": "Daily Streak Champion x3",
+      "description": "Complete challenges for 14 consecutive days.",
+      "target": 14,
+      "rewardIcon": "🔥🔥🔥",
+      "reward": 300,
+      "key": "STREAK_14_DAYS"
+    },
+    {
+      "name": "Challenge Starter",
+      "description": "Complete 1st challenge.",
+      "target": 1,
+      "rewardIcon": "🎉",
+      "reward": 100,
+      "key": "COMPLETE_1_CHALLENGES"
+    },
+    {
+      "name": "Challenge Starter x2",
+      "description": "Complete 3 challenges.",
+      "target": 3,
+      "rewardIcon": "🎉🎉",
+      "reward": 200,
+      "key": "COMPLETE_3_CHALLENGES"
+    },
+    {
+      "name": "Challenge Starter x3",
+      "description": "Complete 5 challenges.",
+      "target": 5,
+      "rewardIcon": "🎉🎉🎉",
+      "reward": 400,
+      "key": "COMPLETE_5_CHALLENGES"
+    },
+    {
+      "name": "Challenge Pro",
+      "description": "Complete 10 challenges in total.",
+      "target": 10,
+      "rewardIcon": "🏆",
+      "reward": 100,
+      "key": "COMPLETE_10_CHALLENGES"
+    },
+    {
+      "name": "Challenge Pro x2",
+      "description": "Complete 25 challenges in total.",
+      "target": 25,
+      "rewardIcon": "🏆🏆",
+      "reward": 200,
+      "key": "COMPLETE_25_CHALLENGES"
+    },
+    {
+      "name": "Challenge Pro x3",
+      "description": "Complete 50 challenges in total.",
+      "target": 50,
+      "rewardIcon": "🏆🏆🏆",
+      "reward": 300,
+      "key": "COMPLETE_50_CHALLENGES"
+    },
+    {
+      "name": "Badge Collector",
+      "description": "Collect 10 unique challenge badges.",
+      "target": 10,
+      "rewardIcon": "🎖️",
+      "reward": 150,
+      "key": "COLLECT_10_BADGES"
+    },
+    {
+      "name": "Consistency King",
+      "description": "Complete at least one challenge every day for a month.",
+      "target": 30,
+      "rewardIcon": "👑",
+      "reward": 250,
+      "key": "STREAK_30_DAYS"
+    },
+    {
+      "name": "Consistency King x2",
+      "description": "Complete at least one challenge every day for two month.",
+      "target": 60,
+      "rewardIcon": "👑👑",
+      "reward": 600,
+      "key": "STREAK_60_DAYS"
+    },
+    {
+      "name": "Weekend Warrior",
+      "description": "Complete challenges on 10 consecutive weekends.",
+      "target": 10,
+      "rewardIcon": "⚔️",
+      "reward": 120,
+      "key": "WEEKEND_10_CONSECUTIVE"
+    },
+    {
+      "name": "Early Riser",
+      "description": "Complete challenges before 8 AM for 5 days straight.",
+      "target": 5,
+      "rewardIcon": "🌅",
+      "reward": 100,
+      "key": "EARLY_RISER_5_DAYS"
+    },
+    {
+      "name": "Double Duty",
+      "description": "Complete two challenges in a single day.",
+      "target": 2,
+      "rewardIcon": "⚡",
+      "reward": 75,
+      "key": "TWO_CHALLENGES_ONE_DAY"
+    },
+    {
+      "name": "Night Owl",
+      "description": "Complete challenges after 9 PM for 3 days in a row.",
+      "target": 3,
+      "rewardIcon": "🌙",
+      "reward": 70,
+      "key": "NIGHT_OWL_3_DAYS"
+    },
+    {
+      "name": "Night Owl x2",
+      "description": "Complete challenges after 9 PM for 6 days in a row.",
+      "target": 6,
+      "rewardIcon": "🌙🌙",
+      "reward": 150,
+      "key": "NIGHT_OWL_6_DAYS"
+    },
+    {
+      "name": "Night Owl x3",
+      "description": "Complete challenges after 9 PM for 9 days in a row.",
+      "target": 9,
+      "rewardIcon": "🌙🌙🌙",
+      "reward": 200,
+      "key": "NIGHT_OWL_9_DAYS"
+    },
+    {
+      "name": "Weekend Explorer",
+      "description": "Complete challenges on 5 different weekends.",
+      "target": 5,
+      "rewardIcon": "🧭",
+      "reward": 120,
+      "key": "WEEKEND_5_EXPLORE"
+    },
+    {
+      "name": "Puppy Partner",
+      "description": "Complete challenges with a puppy under 1 year old for 10 days.",
+      "target": 10,
+      "rewardIcon": "🐶",
+      "reward": 120,
+      "key": "PUPPY_10_DAYS"
+    }
+]  
