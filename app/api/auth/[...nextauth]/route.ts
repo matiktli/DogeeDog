@@ -4,6 +4,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import User from '@/app/models/User';
 import { connectToDatabase } from '@/app/lib/db';
 import bcrypt from "bcryptjs";
+import { AchievementManager } from '@/app/lib/AchievementManager';
+import { initializeServer } from '@/app/lib/init';
 
 interface GoogleProfile {
   sub: string;
@@ -11,6 +13,9 @@ interface GoogleProfile {
   email: string;
   picture?: string;
 }
+
+// Initialize server before setting up auth
+await initializeServer();
 
 const handler = NextAuth({
   providers: [
@@ -122,6 +127,21 @@ const handler = NextAuth({
   debug: process.env.NODE_ENV === 'development',
   session: {
     strategy: "jwt",
+  },
+  events: {
+    async signIn({ user }) {
+      try {
+        // Create achievement progresses for the user if they don't exist yet
+        const existingProgress = await AchievementManager.fetchUserAchievementProgressList(user.id);
+        if (existingProgress.length === 0) {
+          await AchievementManager.createUserAchievementProgressesForNewUser(user.id);
+          console.log('Created achievement progresses for new user:', user.id);
+        }
+      } catch (error) {
+        console.error('Error in signIn event:', error);
+        // Don't throw the error to avoid blocking sign-in
+      }
+    }
   },
 });
 
