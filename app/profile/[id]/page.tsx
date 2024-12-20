@@ -14,6 +14,7 @@ import { Challenge } from '@/app/types/challenge'
 import DogCard from '@/app/components/DogCard'
 import ActivityHeatMap from '@/app/components/ActivityHeatMap'
 import UserProfileSection from '@/app/components/UserProfileSection'
+import { MiniAchievementList } from '@/app/components/MiniAchievementList'
 
 interface UserData {
   _id: string
@@ -250,13 +251,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 )}
               </section>
 
-              {/* Pet Statistics Section */}
-              <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
-                <h2 className="text-xl font-semibold mb-4">Pet Statistics</h2>
-                <p className="text-[var(--foreground)]/60">
-                  Pet statistics coming soon...
-                </p>
-              </section>
+              <MiniAchievementList userId={resolvedParams.id} />
             </>
           )}
         </div>
