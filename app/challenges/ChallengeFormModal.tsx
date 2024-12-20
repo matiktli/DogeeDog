@@ -223,6 +223,7 @@ export default function ChallengeFormModal({
               <EmojiPicker
                 onEmojiSelect={setSelectedEmoji}
                 selectedEmoji={selectedEmoji}
+                buttonType="button"
               />
             </div>
 
