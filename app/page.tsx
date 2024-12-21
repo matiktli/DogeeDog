@@ -12,40 +12,65 @@ export default function Home() {
       <div className="flex flex-col items-center min-h-screen">
         {/* Hero Section - Enhanced with gradient and better spacing */}
         <section className="w-full bg-gradient-to-b from-[var(--secondary)]/5 to-transparent">
-          <div className="max-w-7xl mx-auto px-6 pt-24 pb-16">
+          <div className="max-w-7xl mx-auto px-6 pt-32 pb-24">
             <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div className="text-left space-y-8">
-                <div className="inline-block px-4 py-2 bg-[var(--accent)]/10 rounded-full">
-                  <span className="text-[var(--accent)] font-medium">🐕 Dog Walking Reimagined</span>
+              <div className="text-left space-y-6">
+                <div className="inline-block px-4 py-2 bg-[var(--accent)]/10 rounded-full border border-[var(--accent)]/20 backdrop-blur-sm">
+                  <span className="text-[var(--accent)] font-medium flex items-center gap-2">
+                    <span className="text-xl">🐕</span> Dog Walking Reimagined
+                  </span>
                 </div>
-                <h1>
-                  <div className="text-6xl font-normal text-[var(--accent)] font-[var(--font-anchor-jack)] leading-tight">
-                    Upgrade your walks
-                  </div>
-                  <div className="text-5xl font-normal text-[var(--foreground)] font-[var(--font-anchor-jack)] mt-3 leading-tight">
-                    with your furry friend
-                  </div>
-                </h1>
-                <p className="text-xl text-[var(--foreground)]/80 leading-relaxed">
-                  Turn your daily dog walks into exciting quests to beat procrastination
-                  and boost both yours and your dog&apos;s health!
-                </p>
-                <div className="flex flex-col sm:flex-row items-start gap-4 pt-4">
+                
+                <div className="space-y-4">
+                  <h1 className="space-y-2">
+                    <div className="text-7xl font-normal bg-gradient-to-r from-[var(--accent)] to-[var(--accent)]/80 text-transparent bg-clip-text font-[var(--font-anchor-jack)] leading-tight">
+                      Upgrade your walks
+                    </div>
+                    <div className="text-5xl font-normal text-[var(--foreground)]/90 font-[var(--font-anchor-jack)] leading-tight">
+                      with your furry friend
+                    </div>
+                  </h1>
+                  <p className="text-xl text-[var(--foreground)]/70 leading-relaxed max-w-xl">
+                    Turn your daily dog walks into exciting quests to beat procrastination
+                    and boost both yours and your dog&apos;s health!
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-start gap-4 pt-6">
                   <Link 
                     href="/signup"
-                    className="px-8 py-4 bg-[var(--accent)] text-white rounded-xl hover:bg-[var(--accent)]/90 transition-all hover:shadow-lg hover:scale-105 text-xl font-medium"
+                    className="group px-8 py-4 bg-[var(--accent)] text-white rounded-xl 
+                    transition-all duration-300 hover:shadow-lg hover:shadow-[var(--accent)]/20 
+                    hover:scale-102 text-lg font-medium flex items-center gap-2
+                    border border-[var(--accent)]/20"
                   >
-                    START WALKING TOGETHER
+                    Get Started Free
+                    <svg 
+                      className="w-4 h-4 transition-transform group-hover:translate-x-1" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M17 8l4 4m0 0l-4 4m4-4H3" 
+                      />
+                    </svg>
                   </Link>
                   <Link 
                     href="/signin"
-                    className="px-8 py-4 text-[var(--foreground)] hover:text-[var(--accent)] transition-colors font-medium"
+                    className="group px-8 py-4 text-[var(--foreground)]/80 
+                    hover:text-[var(--accent)] transition-colors duration-300 
+                    font-medium flex items-center gap-2 hover:bg-[var(--accent)]/5 rounded-xl"
                   >
-                    I HAVE AN ACCOUNT →
+                    Sign In
+                    <span className="transition-transform group-hover:translate-x-1 text-sm">→</span>
                   </Link>
                 </div>
               </div>
-              <div className="relative p-4 bg-white/50 dark:bg-black/5 rounded-2xl shadow-xl">
+              <div className="relative p-6 bg-white/50 dark:bg-black/5 rounded-2xl shadow-xl backdrop-blur-sm border border-white/20">
                 <DemoFlow />
               </div>
             </div>
@@ -69,7 +94,7 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8">
               <div className="bg-white/50 dark:bg-black/5 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all">
                 <div className="w-12 h-12 bg-[var(--accent)]/10 rounded-xl flex items-center justify-center mb-6">
-                  <span className="text-2xl">📊</span>
+                  <span className="text-2xl">���</span>
                 </div>
                 <h3 className="text-2xl font-bold mb-4">Track Challenges</h3>
                 <p className="text-[var(--foreground)]/80 leading-relaxed">
