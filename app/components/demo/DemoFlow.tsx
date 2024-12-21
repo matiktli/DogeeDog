@@ -6,6 +6,7 @@ import DemoChallengeViewModal from './DemoChallengeViewModal'
 import DemoCongratulationsModal from './DemoCongratulationsModal'
 import DemoClaimRewardModal from './DemoClaimRewardModal'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
 
 const DEMO_CHALLENGE = {
   _id: 'demo-challenge',
@@ -41,6 +42,23 @@ const DEMO_DOGS = [
   }
 ]
 
+const DEMO_TIPS = {
+  1: {
+    text: "Pick your furry friend to start the adventure!",
+    rotation: 200,
+    className: "translate-y-[-50px]",
+    arrowContainerClass: "flex items-center gap-1 translate-x-[50px]",
+    textClass: "ml-1 font-medium text-gray-600 bg-white/80 px-3 py-1.5 rounded-lg shadow-sm backdrop-blur-sm animate-tip-wiggle"
+  },
+  2: {
+    text: "Click this challenge card!",
+    rotation: 200,
+    className: "translate-y-[-30px]",
+    arrowContainerClass: "flex items-center gap-1 translate-x-[50px]",
+    textClass: "ml-1 font-medium text-gray-600 bg-white/80 px-3 py-1.5 rounded-lg shadow-sm backdrop-blur-sm animate-tip-wiggle"
+  }
+}
+
 export default function DemoFlow() {
   const [step, setStep] = useState(1)
   const [showTip, setShowTip] = useState(true)
@@ -58,9 +76,9 @@ export default function DemoFlow() {
   }
 
   return (
-    <div className="py-16 px-4">
+    <div className="py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">
+        <h2 className="text-3xl font-bold text-center mb-4">
           See How It Works
         </h2>
 
@@ -70,14 +88,14 @@ export default function DemoFlow() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="bg-[#FF8551]/10 p-4 rounded-xl mb-8 text-center"
+              className="bg-[#FF8551]/10 p-3 rounded-xl mb-4 text-center"
             >
               {tips[step as keyof typeof tips]}
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="flex flex-col items-center gap-8">
+        <div className="flex flex-col items-center gap-4">
           {step === 1 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">
               {DEMO_DOGS.map((dog) => (
@@ -88,7 +106,7 @@ export default function DemoFlow() {
                     setStep(2);
                     setShowTip(true);
                   }}
-                  className="flex flex-col items-center gap-2 p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all"
+                  className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all"
                 >
                   <span className="text-4xl">{dog.icon}</span>
                   <h3 className="font-bold text-lg">{dog.name}</h3>
@@ -108,6 +126,28 @@ export default function DemoFlow() {
                   setShowTip(true)
                 }}
               />
+            </div>
+          )}
+        </div>
+
+        <div className="relative mt-7">
+          {(step === 1 || step === 2) && (
+            <div className={DEMO_TIPS[step as 1 | 2].arrowContainerClass}>
+              <div className={DEMO_TIPS[step as 1 | 2].className}>
+                <Image
+                  src="/curved-arrow.svg"
+                  width={60}
+                  height={60}
+                  alt="Arrow"
+                  className="opacity-50 transform"
+                  style={{
+                    transform: `rotate(${DEMO_TIPS[step as 1 | 2].rotation}deg)`
+                  }}
+                />
+              </div>
+              <p className={`text-gray-500 text-sm ${DEMO_TIPS[step as 1 | 2].textClass}`}>
+                {DEMO_TIPS[step as 1 | 2].text}
+              </p>
             </div>
           )}
         </div>

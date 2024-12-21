@@ -94,7 +94,7 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8">
               <div className="bg-white/50 dark:bg-black/5 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all">
                 <div className="w-12 h-12 bg-[var(--accent)]/10 rounded-xl flex items-center justify-center mb-6">
-                  <span className="text-2xl">���</span>
+                  <span className="text-2xl">📈</span>
                 </div>
                 <h3 className="text-2xl font-bold mb-4">Track Challenges</h3>
                 <p className="text-[var(--foreground)]/80 leading-relaxed">

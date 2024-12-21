@@ -58,6 +58,10 @@ export default {
           '100%': { 
             transform: 'scale(1) translateY(0) rotate(0deg)',
           },
+        },
+        'tip-wiggle': {
+          '0%, 100%': { transform: 'rotate(-1deg)' },
+          '50%': { transform: 'rotate(1deg)' }
         }
       },
       animation: {
@@ -66,6 +70,7 @@ export default {
         'in': 'in 0.5s ease-out',
         wiggle: 'wiggle 200ms ease-in-out',
         jumpOut: 'jumpOut 800ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'tip-wiggle': 'tip-wiggle 3s ease-in-out infinite',
       },
       transitionProperty: {
         'opacity': 'opacity',
