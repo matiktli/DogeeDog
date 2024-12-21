@@ -28,7 +28,36 @@ export default function Footer() {
           <div>
             <h3 className="font-bold mb-4 text-[var(--foreground)]">RESOURCES</h3>
             <ul className="space-y-3">
-              {/* Add resources here when needed */}
+              <li>
+                <Link 
+                  href="https://www.thesprucepets.com/dogs-4162034" 
+                  className="text-[var(--foreground)]/80 hover:text-[var(--accent)] transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  The Spruce Pets
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="https://www.hachettebookgroup.com/titles/monks-of-new-skete/the-art-of-raising-a-puppy-revised-edition/9780316083270/?lens=little-brown" 
+                  className="text-[var(--foreground)]/80 hover:text-[var(--accent)] transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  The Art of Raising a Puppy
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="https://karenwpryor.com/books/" 
+                  className="text-[var(--foreground)]/80 hover:text-[var(--accent)] transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Karen Pryor&apos;s Books
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -37,13 +66,13 @@ export default function Footer() {
             <h3 className="font-bold mb-4 text-[var(--foreground)]">SOCIAL</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="https://twitter.com" className="text-[var(--foreground)]/80 hover:text-[var(--accent)] transition-colors">
-                  Twitter
-                </Link>
-              </li>
-              <li>
-                <Link href="https://facebook.com" className="text-[var(--foreground)]/80 hover:text-[var(--accent)] transition-colors">
-                  Facebook
+                <Link 
+                  href="https://x.com/kit12875" 
+                  className="text-[var(--foreground)]/80 hover:text-[var(--accent)] transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  X (Twitter)
                 </Link>
               </li>
             </ul>
@@ -69,7 +98,7 @@ export default function Footer() {
 
         {/* Bottom Section */}
         <div className="text-center pt-8 border-t border-[var(--foreground)]/10">
-          <div className="text-[var(--foreground)]/60 mb-4">1% better every day</div>
+          <div className="text-[var(--foreground)]/60 mb-4">Pawsitive progress, every day</div>
           <div className="flex items-center justify-center gap-2 text-[var(--foreground)]/80">
             <span>Built with ❤️ by</span>
             <Link 

@@ -3,6 +3,7 @@ import Footer from './components/Footer'
 import Link from 'next/link'
 import PricingCard from './components/PricingCard'
 import DemoFlow from './components/demo/DemoFlow'
+import VideoSection from './components/VideoSection'
 
 export default function Home() {
   return (
@@ -11,7 +12,7 @@ export default function Home() {
       <div className="flex flex-col items-center min-h-screen">
         {/* Hero Section - Enhanced with gradient and better spacing */}
         <section className="w-full bg-gradient-to-b from-[var(--secondary)]/5 to-transparent">
-          <div className="max-w-7xl mx-auto px-6 pt-40 pb-32">
+          <div className="max-w-7xl mx-auto px-6 pt-24 pb-16">
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <div className="text-left space-y-8">
                 <div className="inline-block px-4 py-2 bg-[var(--accent)]/10 rounded-full">
@@ -51,30 +52,10 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Stats Section - Enhanced with cards */}
-        <section className="w-full py-20">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-white/50 dark:bg-black/5 p-8 rounded-2xl text-center shadow-sm">
-                <div className="text-5xl font-bold text-[var(--accent)]">4.8/5</div>
-                <div className="text-[var(--foreground)]/80 mt-2 font-medium">from 2,000+ walkers</div>
-              </div>
-              <div className="bg-white/50 dark:bg-black/5 p-8 rounded-2xl text-center shadow-sm">
-                <div className="text-5xl font-bold text-[var(--accent)]">10,000+</div>
-                <div className="text-[var(--foreground)]/80 mt-2 font-medium">walks completed</div>
-              </div>
-              <div className="bg-white/50 dark:bg-black/5 p-8 rounded-2xl text-center shadow-sm">
-                <div className="text-5xl font-bold text-[var(--accent)]">5,000+</div>
-                <div className="text-[var(--foreground)]/80 mt-2 font-medium">happy dogs</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Solution Section - Enhanced with icons and better cards */}
-        <section className="w-full px-6 py-32 bg-gradient-to-b from-[var(--secondary)]/5 to-transparent">
+        {/* Solution Section - Reduced padding */}
+        <section className="w-full px-6 py-12 bg-gradient-to-b from-[var(--secondary)]/5 to-transparent">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center max-w-2xl mx-auto mb-20">
+            <div className="text-center max-w-2xl mx-auto mb-12">
               <div className="inline-block px-4 py-2 bg-[var(--accent)]/10 rounded-full mb-4">
                 <span className="text-[var(--accent)] font-medium">Features</span>
               </div>
@@ -90,37 +71,50 @@ export default function Home() {
                 <div className="w-12 h-12 bg-[var(--accent)]/10 rounded-xl flex items-center justify-center mb-6">
                   <span className="text-2xl">📊</span>
                 </div>
-                <h3 className="text-2xl font-bold mb-4">Track Progress</h3>
+                <h3 className="text-2xl font-bold mb-4">Track Challenges</h3>
                 <p className="text-[var(--foreground)]/80 leading-relaxed">
-                  Monitor your walking streaks, distance covered, and time spent with your furry friend.
+                  Keep track of your challenge streaks and watch your progress grow as you complete more activities with your dog.
                 </p>
               </div>
               <div className="bg-white/50 dark:bg-black/5 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all">
                 <div className="w-12 h-12 bg-[var(--accent)]/10 rounded-xl flex items-center justify-center mb-6">
-                  <span className="text-2xl">🏆</span>
+                  <span className="text-2xl">🎮</span>
                 </div>
-                <h3 className="text-2xl font-bold mb-4">Earn Rewards</h3>
+                <h3 className="text-2xl font-bold mb-4">Gamified Walking</h3>
                 <p className="text-[var(--foreground)]/80 leading-relaxed">
-                  Get points and badges for consistent walking. Unlock achievements for you and your dog.
+                  Transform daily dog activities into fun challenges. Complete quests and unlock achievements together.
                 </p>
               </div>
               <div className="bg-white/50 dark:bg-black/5 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all">
                 <div className="w-12 h-12 bg-[var(--accent)]/10 rounded-xl flex items-center justify-center mb-6">
-                  <span className="text-2xl">👥</span>
+                  <span className="text-2xl">🐕</span>
                 </div>
-                <h3 className="text-2xl font-bold mb-4">Join Community</h3>
+                <h3 className="text-2xl font-bold mb-4">Dog Lovers Community</h3>
                 <p className="text-[var(--foreground)]/80 leading-relaxed">
-                  Connect with other dog owners, share routes, and participate in challenges.
+                  Join a community of passionate dog owners, share experiences, and participate in group challenges.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Problems Section - Enhanced with better visuals */}
-        <section className="w-full px-6 py-32">
+        {/* Video Section */}
+        <section className="w-full px-6 py-12">
+          <VideoSection 
+            badge="🦮 Dog Challenges"
+            title="Adventure together"
+            description="Transform your daily dog activities into exciting quests! Complete challenges together, earn rewards. Make every moment with your furry friend count!"
+            buttonText="START YOUR ADVENTURE"
+            buttonLink="/signup"
+            videoSrc="videos/demo_complete_dog_challenge.mp4"
+            videoPosition="left"
+          />
+        </section>
+
+        {/* Problems Section - Reduced padding */}
+        <section className="w-full px-6 py-12">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center max-w-2xl mx-auto mb-20">
+            <div className="text-center max-w-2xl mx-auto mb-12">
               <div className="inline-block px-4 py-2 bg-[var(--accent)]/10 rounded-full mb-4">
                 <span className="text-[var(--accent)] font-medium">Common Challenges</span>
               </div>
@@ -151,8 +145,21 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="w-full py-32 bg-gradient-to-b from-transparent to-[var(--secondary)]/5">
+        {/* New Video Section - Challenges and Missions */}
+        <section className="w-full px-6 py-12">
+          <VideoSection 
+            badge="🎯 Challenges & Missions"
+            title="Complete quests together"
+            description="Turn ordinary walks into exciting missions! Each challenge completed brings rewards and strengthens your bond. From simple tasks to daily adventures, make every activity count!"
+            buttonText="JOIN THE ADVENTURE"
+            buttonLink="/signup"
+            videoSrc="videos/demo_missions.mp4"
+            videoPosition="right"
+          />
+        </section>
+
+        {/* CTA Section - Reduced padding */}
+        <section className="w-full py-12 bg-gradient-to-b from-transparent to-[var(--secondary)]/5">
           <PricingCard />
         </section>
 
