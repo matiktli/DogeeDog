@@ -35,6 +35,7 @@ export default function DashboardPage() {
   const router = useRouter()
   const [userData, setUserData] = useState<any>(null)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [completedChallenges, setCompletedChallenges] = useState<Challenge[]>([])
 
   const { data: session, status } = useSession({
     required: true,
@@ -93,6 +94,39 @@ export default function DashboardPage() {
     }
 
     fetchActiveChallenges()
+  }, [session?.user?.id])
+
+  useEffect(() => {
+    const fetchCompletedChallenges = async () => {
+      if (!session?.user?.id) return
+
+      try {
+        // Fetch completed dog challenges
+        const dogChallengesResponse = await fetch(`/api/challenges/dogs?createdBy=${session.user.id}&completed=true`)
+        const dogChallengesData = await dogChallengesResponse.json()
+        
+        // Get unique challenge IDs
+        const uniqueChallengeIds = Array.from(
+          new Set(dogChallengesData.dogChallenges.map((dc: any) => dc.challengeId))
+        )
+        
+        if (uniqueChallengeIds.length === 0) {
+          setCompletedChallenges([])
+          return
+        }
+
+        // Fetch the actual challenges
+        const challengesPromises = uniqueChallengeIds.map(id =>
+          fetch(`/api/challenges/${id}`).then(res => res.json())
+        )
+        const challenges = await Promise.all(challengesPromises)
+        setCompletedChallenges(challenges)
+      } catch (error) {
+        console.error('Error fetching completed challenges:', error)
+      }
+    }
+
+    fetchCompletedChallenges()
   }, [session?.user?.id])
 
   useEffect(() => {
@@ -210,6 +244,33 @@ export default function DashboardPage() {
               </section>
 
               <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Completed Challenges</h2>
+                  <Link 
+                    href="/challenges/filtered?type=completed"
+                    className="text-[var(--accent)] hover:text-[var(--accent)]/80 transition-colors"
+                  >
+                    View All
+                  </Link>
+                </div>
+                {completedChallenges.length === 0 ? (
+                  <div className="text-center py-12 bg-white/40 dark:bg-black/10 rounded-3xl backdrop-blur-sm">
+                    <h3 className="text-xl font-semibold mb-2">No Completed Challenges Yet</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                      Complete your active challenges to see them here!
+                    </p>
+                  </div>
+                ) : (
+                  <ChallengeList
+                    challenges={completedChallenges}
+                    title="Completed Challenges"
+                    singleRow={true}
+                    isLoading={isLoading}
+                  />
+                )}
+              </section>
+
+              <section className="mt-8 bg-white/40 dark:bg-black/10 rounded-3xl p-6 backdrop-blur-sm">
                 <h2 className="text-xl font-semibold mb-4">Your Furry Family</h2>
                 
                 <DogList 
@@ -235,25 +296,42 @@ export default function DashboardPage() {
         isOpen={showChallengeModal}
         onClose={() => setShowChallengeModal(false)}
         onSuccess={async () => {
-          // Refresh active challenges after creating a new one
           if (session?.user?.id) {
-            const dogChallengesResponse = await fetch(`/api/challenges/dogs?createdBy=${session.user.id}&completed=false`)
-            const dogChallengesData = await dogChallengesResponse.json()
+            // Fetch active challenges
+            const activeDogChallengesResponse = await fetch(`/api/challenges/dogs?createdBy=${session.user.id}&completed=false`)
+            const activeDogChallengesData = await activeDogChallengesResponse.json()
             
-            const uniqueChallengeIds = Array.from(
-              new Set(dogChallengesData.dogChallenges.map((dc: any) => dc.challengeId))
+            const activeUniqueIds = Array.from(
+              new Set(activeDogChallengesData.dogChallenges.map((dc: any) => dc.challengeId))
             )
             
-            if (uniqueChallengeIds.length === 0) {
+            if (activeUniqueIds.length > 0) {
+              const activeChallengesPromises = activeUniqueIds.map(id =>
+                fetch(`/api/challenges/${id}`).then(res => res.json())
+              )
+              const activeChallenges = await Promise.all(activeChallengesPromises)
+              setActiveChallenges(activeChallenges)
+            } else {
               setActiveChallenges([])
-              return
             }
 
-            const challengesPromises = uniqueChallengeIds.map(id =>
-              fetch(`/api/challenges/${id}`).then(res => res.json())
+            // Fetch completed challenges
+            const completedDogChallengesResponse = await fetch(`/api/challenges/dogs?createdBy=${session.user.id}&completed=true`)
+            const completedDogChallengesData = await completedDogChallengesResponse.json()
+            
+            const completedUniqueIds = Array.from(
+              new Set(completedDogChallengesData.dogChallenges.map((dc: any) => dc.challengeId))
             )
-            const challenges = await Promise.all(challengesPromises)
-            setActiveChallenges(challenges)
+            
+            if (completedUniqueIds.length > 0) {
+              const completedChallengesPromises = completedUniqueIds.map(id =>
+                fetch(`/api/challenges/${id}`).then(res => res.json())
+              )
+              const completedChallenges = await Promise.all(completedChallengesPromises)
+              setCompletedChallenges(completedChallenges)
+            } else {
+              setCompletedChallenges([])
+            }
           }
         }}
       />

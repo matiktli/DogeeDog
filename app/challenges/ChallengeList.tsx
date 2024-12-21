@@ -17,6 +17,7 @@ interface ChallengeListProps {
   singleRow?: boolean
   isLoading?: boolean
   onViewCommunity?: () => void
+  isCompleted?: boolean
 }
 
 export default function ChallengeList({ 
